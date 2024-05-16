@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "dgSpecHash": "UCrUDX0wVrSMQn9HBS9ODU1UHi2OIpEB7HTWssqy+iUljk+S9LDcb7CR9IHRQ4ZZjwJIfZIXx6i9OVIiNyVCxw==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\rares\\Documents\\Misc Programs\\Programming\\Manga Library Manager\\Manga Library Manager.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\rares\\.nuget\\packages\\dotnetzip\\1.16.0\\dotnetzip.1.16.0.nupkg.sha512",
+    "C:\\Users\\rares\\.nuget\\packages\\flurl\\4.0.0\\flurl.4.0.0.nupkg.sha512",
+    "C:\\Users\\rares\\.nuget\\packages\\microsoft.netcore.platforms\\3.1.1\\microsoft.netcore.platforms.3.1.1.nupkg.sha512",
+    "C:\\Users\\rares\\.nuget\\packages\\microsoft.win32.systemevents\\4.7.0\\microsoft.win32.systemevents.4.7.0.nupkg.sha512",
+    "C:\\Users\\rares\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
+    "C:\\Users\\rares\\.nuget\\packages\\system.drawing.common\\4.7.0\\system.drawing.common.4.7.0.nupkg.sha512",
+    "C:\\Users\\rares\\.nuget\\packages\\system.security.accesscontrol\\4.7.0\\system.security.accesscontrol.4.7.0.nupkg.sha512",
+    "C:\\Users\\rares\\.nuget\\packages\\system.security.permissions\\4.7.0\\system.security.permissions.4.7.0.nupkg.sha512",
+    "C:\\Users\\rares\\.nuget\\packages\\system.security.principal.windows\\4.7.0\\system.security.principal.windows.4.7.0.nupkg.sha512",
+    "C:\\Users\\rares\\.nuget\\packages\\system.text.encoding.codepages\\4.7.1\\system.text.encoding.codepages.4.7.1.nupkg.sha512",
+    "C:\\Users\\rares\\.nuget\\packages\\system.windows.extensions\\4.7.0\\system.windows.extensions.4.7.0.nupkg.sha512"
+  ],
+  "logs": []
+}

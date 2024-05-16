@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manga Library Manager", "Manga Library Manager.csproj", "{8F5E112A-6EEC-46F1-A5F0-845D93AE1BCE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8F5E112A-6EEC-46F1-A5F0-845D93AE1BCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F5E112A-6EEC-46F1-A5F0-845D93AE1BCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F5E112A-6EEC-46F1-A5F0-845D93AE1BCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F5E112A-6EEC-46F1-A5F0-845D93AE1BCE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3CA463A5-5A70-41F2-87EE-94C6D8938D33}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,7 @@
+C:\Users\rares\Documents\Misc Programs\Programming\Manga Library Manager\bin\Release\net8.0-windows\publish\win-x86\Manga Library Manager.exe
+C:\Users\rares\Documents\Misc Programs\Programming\Manga Library Manager\bin\Release\net8.0-windows\publish\win-x86\Manga Library Manager.dll
+C:\Users\rares\Documents\Misc Programs\Programming\Manga Library Manager\bin\Release\net8.0-windows\publish\win-x86\Manga Library Manager.deps.json
+C:\Users\rares\Documents\Misc Programs\Programming\Manga Library Manager\bin\Release\net8.0-windows\publish\win-x86\Manga Library Manager.runtimeconfig.json
+C:\Users\rares\Documents\Misc Programs\Programming\Manga Library Manager\bin\Release\net8.0-windows\publish\win-x86\Manga Library Manager.pdb
+C:\Users\rares\Documents\Misc Programs\Programming\Manga Library Manager\bin\Release\net8.0-windows\publish\win-x86\DotNetZip.dll
+C:\Users\rares\Documents\Misc Programs\Programming\Manga Library Manager\bin\Release\net8.0-windows\publish\win-x86\Newtonsoft.Json.dll
