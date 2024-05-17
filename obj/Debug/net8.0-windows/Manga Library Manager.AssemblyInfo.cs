@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Manga Library Manager")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c8c31091607bc8e115af5e37cfd6c0c18f83df39")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ec9dc30d9d7e4e1f42d109cd3c1809a01df5fe4f")]
 [assembly: System.Reflection.AssemblyProductAttribute("Manga Library Manager")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Manga Library Manager")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

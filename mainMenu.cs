@@ -35,7 +35,6 @@ namespace Manga_Library_Manager
         private Regex chapterRegex = new Regex("Ch\\.[0-9.]+"), titleSanitationRegex = new Regex("[^a-zA-Z0-9 ]");
         private Dictionary<string, string> titleDictionary = new Dictionary<string, string>();
         private DateTime lastClickedTime = DateTime.MinValue;
-        private string oldText;
         public static string jsonDump;
 
         public mainMenu()
