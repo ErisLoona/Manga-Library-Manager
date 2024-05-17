@@ -35,6 +35,7 @@ namespace Manga_Library_Manager
         private Regex chapterRegex = new Regex("Ch\\.[0-9.]+"), titleSanitationRegex = new Regex("[^a-zA-Z0-9 ]");
         private Dictionary<string, string> titleDictionary = new Dictionary<string, string>();
         private DateTime lastClickedTime = DateTime.MinValue;
+        private string oldText;
         public static string jsonDump;
 
         public mainMenu()
@@ -230,26 +231,9 @@ namespace Manga_Library_Manager
         private void linkTextBox_TextChanged(object sender, EventArgs e)
         {
             if (titleDictionary.ContainsKey(linkTextBox.Text) == true)
-                linkTextBox.Text = titleDictionary[linkTextBox.Text];
+                BeginInvoke(new Action(() => linkTextBox.Text = titleDictionary[linkTextBox.Text]));
             ((eBook)mangaList.SelectedItem).Link = linkTextBox.Text;
             toolTip.SetToolTip(linkTextBox, linkTextBox.Text);
-        }
-
-        private void linkTextBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            #region idk how this got here but I need it
-            if (titleDictionary.ContainsKey(linkTextBox.Text) == true)
-            {
-                var bw = new BackgroundWorker();
-                bw.DoWork += (sdr, args) => args.Result = args.Argument;
-                bw.RunWorkerCompleted += (sdr, args) =>
-                {
-                    linkTextBox.Text = (string)args.Result;
-                    bw.Dispose();
-                };
-                bw.RunWorkerAsync(titleDictionary[linkTextBox.Text]);
-            }
-            #endregion
         }
 
         private void linkTextBox_MouseDoubleClick(object sender, MouseEventArgs e)

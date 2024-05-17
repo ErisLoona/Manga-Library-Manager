@@ -323,7 +323,6 @@
             linkTextBox.Name = "linkTextBox";
             linkTextBox.Size = new Size(328, 27);
             linkTextBox.TabIndex = 3;
-            linkTextBox.SelectedIndexChanged += linkTextBox_SelectedIndexChanged;
             linkTextBox.TextChanged += linkTextBox_TextChanged;
             linkTextBox.MouseDown += linkTextBox_MouseDoubleClick;
             // 

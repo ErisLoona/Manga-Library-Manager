@@ -21,3 +21,4 @@ C:\Users\rares\Documents\Misc Programs\Programming\Manga Library Manager\bin\Deb
 C:\Users\rares\Documents\Misc Programs\Programming\Manga Library Manager\obj\Debug\net8.0-windows\Manga_Library_Manager.dumpJSON.resources
 C:\Users\rares\Documents\Misc Programs\Programming\Manga Library Manager\obj\Debug\net8.0-windows\Manga_Library_Manager.Properties.Resources.resources
 C:\Users\rares\Documents\Misc Programs\Programming\Manga Library Manager\bin\Debug\net8.0-windows\Flurl.dll
+C:\Users\rares\Documents\Misc Programs\Programming\Manga Library Manager\obj\Debug\net8.0-windows\Manga Library Manager.sourcelink.json

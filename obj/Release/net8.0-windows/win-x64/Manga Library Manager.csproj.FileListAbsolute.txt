@@ -21,3 +21,4 @@ C:\Users\rares\Documents\Misc Programs\Programming\Manga Library Manager\obj\Rel
 C:\Users\rares\Documents\Misc Programs\Programming\Manga Library Manager\obj\Release\net8.0-windows\win-x64\Manga Library Manager.genruntimeconfig.cache
 C:\Users\rares\Documents\Misc Programs\Programming\Manga Library Manager\obj\Release\net8.0-windows\win-x64\ref\Manga Library Manager.dll
 C:\Users\rares\Documents\Misc Programs\Programming\Manga Library Manager\bin\Release\net8.0-windows\win-x64\Flurl.dll
+C:\Users\rares\Documents\Misc Programs\Programming\Manga Library Manager\obj\Release\net8.0-windows\win-x64\Manga Library Manager.sourcelink.json
