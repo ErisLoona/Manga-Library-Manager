@@ -34,6 +34,7 @@ namespace Manga_Library_Manager
         private bool filterToggled = false;
         private Regex chapterRegex = new Regex("Ch\\.[0-9.]+"), titleSanitationRegex = new Regex("[^a-zA-Z0-9 ]");
         private Dictionary<string, string> titleDictionary = new Dictionary<string, string>();
+        private List<bool> apiResponseOngoing = new List<bool>();
         private DateTime lastClickedTime = DateTime.MinValue;
         public static string jsonDump;
 
@@ -137,6 +138,7 @@ namespace Manga_Library_Manager
             if (((eBook)mangaList.SelectedItem).Link == String.Empty)
             {
                 titleDictionary.Clear();
+                apiResponseOngoing.Clear();
                 if (thread1.IsBusy == false)
                     thread1.RunWorkerAsync(argument: ((eBook)mangaList.SelectedItem).Title);
             }
@@ -198,6 +200,7 @@ namespace Manga_Library_Manager
                 {
                     string title = entry.SelectToken("attributes").SelectToken("title").SelectToken("en").Value<string>();
                     titleDictionary[title] = "https://mangadex.org/title/" + entry.SelectToken("id").Value<string>();
+                    apiResponseOngoing.Add(entry.SelectToken("attributes").SelectToken("status").Value<string>() == "ongoing" || entry.SelectToken("attributes").SelectToken("status").Value<string>() == "hiatus");
                     autocompleteTemp.Add(title);
                 }
             }
@@ -211,6 +214,7 @@ namespace Manga_Library_Manager
                     if (book.Title == t.Item2)
                     {
                         book.Link = titleDictionary[autocompleteTemp[0]];
+                        book.Ongoing = apiResponseOngoing[0];
                         break;
                     }
             }
@@ -230,7 +234,10 @@ namespace Manga_Library_Manager
         private void linkTextBox_TextChanged(object sender, EventArgs e)
         {
             if (titleDictionary.ContainsKey(linkTextBox.Text) == true)
+            {
+                ongoingCheckbox.Checked = apiResponseOngoing[linkTextBox.SelectedIndex];
                 BeginInvoke(new Action(() => linkTextBox.Text = titleDictionary[linkTextBox.Text]));
+            }
             ((eBook)mangaList.SelectedItem).Link = linkTextBox.Text;
             toolTip.SetToolTip(linkTextBox, linkTextBox.Text);
         }
