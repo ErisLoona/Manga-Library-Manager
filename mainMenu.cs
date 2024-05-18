@@ -441,8 +441,22 @@ namespace Manga_Library_Manager
         private void deleteEntryButton_Click(object sender, EventArgs e)
         {
             if (sender == deleteEntryButton)
-                if (MessageBox.Show("Are you sure you want to delete this entry?", "Deletion confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+            {
+                DialogResult result = MessageBox.Show("Would you like to also delete the file?", "Deletion confirmation", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+                if (result == DialogResult.Cancel)
                     return;
+                else if (result == DialogResult.Yes)
+                {
+                    try
+                    {
+                        File.Delete(((eBook)mangaList.SelectedItem).Path);
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Could not delete file!", "Write error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
             books.Remove(((eBook)mangaList.SelectedItem));
             searchTextBoxAutomcompleteStrings.Remove(((eBook)mangaList.SelectedItem).Title);
             mangaList.Items.RemoveAt(mangaList.SelectedIndex);
