@@ -33,6 +33,7 @@
             layoutTable = new TableLayoutPanel();
             tableLayoutPanel1 = new TableLayoutPanel();
             tableLayoutPanel2 = new TableLayoutPanel();
+            tagsButtons = new Button();
             filterButton = new Button();
             scanButton = new Button();
             addMangaButton = new Button();
@@ -58,6 +59,10 @@
             checkOnlineButton = new Button();
             openInExplorerButton = new Button();
             lastChapterOnlineLabel = new Label();
+            tableLayoutPanel9 = new TableLayoutPanel();
+            editTagsButton = new Button();
+            tagsTextBox = new TextBox();
+            ratingLabel = new Label();
             openFileDialog = new OpenFileDialog();
             toolTip = new ToolTip(components);
             checkOnlineTimer = new System.Windows.Forms.Timer(components);
@@ -75,6 +80,7 @@
             ((System.ComponentModel.ISupportInitialize)lastChapterNumber).BeginInit();
             tableLayoutPanel7.SuspendLayout();
             tableLayoutPanel5.SuspendLayout();
+            tableLayoutPanel9.SuspendLayout();
             SuspendLayout();
             // 
             // layoutTable
@@ -115,10 +121,12 @@
             // 
             // tableLayoutPanel2
             // 
-            tableLayoutPanel2.ColumnCount = 3;
-            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33333F));
-            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
-            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel2.ColumnCount = 4;
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+            tableLayoutPanel2.Controls.Add(tagsButtons, 3, 0);
             tableLayoutPanel2.Controls.Add(filterButton, 2, 0);
             tableLayoutPanel2.Controls.Add(scanButton, 1, 0);
             tableLayoutPanel2.Controls.Add(addMangaButton, 0, 0);
@@ -131,6 +139,25 @@
             tableLayoutPanel2.Size = new Size(786, 45);
             tableLayoutPanel2.TabIndex = 0;
             // 
+            // tagsButtons
+            // 
+            tagsButtons.BackColor = Color.FromArgb(248, 200, 220);
+            tagsButtons.Dock = DockStyle.Fill;
+            tagsButtons.FlatAppearance.BorderSize = 0;
+            tagsButtons.FlatAppearance.MouseDownBackColor = Color.FromArgb(188, 152, 167);
+            tagsButtons.FlatAppearance.MouseOverBackColor = Color.FromArgb(255, 229, 240);
+            tagsButtons.FlatStyle = FlatStyle.Flat;
+            tagsButtons.Font = new Font("Calibri", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            tagsButtons.ForeColor = Color.Black;
+            tagsButtons.Location = new Point(595, 5);
+            tagsButtons.Margin = new Padding(7, 5, 7, 5);
+            tagsButtons.Name = "tagsButtons";
+            tagsButtons.Size = new Size(184, 35);
+            tagsButtons.TabIndex = 6;
+            tagsButtons.Text = "Filter by Tags";
+            tagsButtons.UseVisualStyleBackColor = false;
+            tagsButtons.Click += tagsButtons_Click;
+            // 
             // filterButton
             // 
             filterButton.BackColor = Color.FromArgb(248, 200, 220);
@@ -141,10 +168,10 @@
             filterButton.FlatStyle = FlatStyle.Flat;
             filterButton.Font = new Font("Calibri", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             filterButton.ForeColor = Color.Black;
-            filterButton.Location = new Point(531, 5);
+            filterButton.Location = new Point(399, 5);
             filterButton.Margin = new Padding(7, 5, 7, 5);
             filterButton.Name = "filterButton";
-            filterButton.Size = new Size(248, 35);
+            filterButton.Size = new Size(182, 35);
             filterButton.TabIndex = 2;
             filterButton.Text = "Showing All";
             filterButton.UseVisualStyleBackColor = false;
@@ -160,10 +187,10 @@
             scanButton.FlatStyle = FlatStyle.Flat;
             scanButton.Font = new Font("Calibri", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             scanButton.ForeColor = Color.Black;
-            scanButton.Location = new Point(269, 5);
+            scanButton.Location = new Point(203, 5);
             scanButton.Margin = new Padding(7, 5, 7, 5);
             scanButton.Name = "scanButton";
-            scanButton.Size = new Size(248, 35);
+            scanButton.Size = new Size(182, 35);
             scanButton.TabIndex = 1;
             scanButton.Text = "Scan Directory";
             scanButton.UseVisualStyleBackColor = false;
@@ -182,7 +209,7 @@
             addMangaButton.Location = new Point(7, 5);
             addMangaButton.Margin = new Padding(7, 5, 7, 5);
             addMangaButton.Name = "addMangaButton";
-            addMangaButton.Size = new Size(248, 35);
+            addMangaButton.Size = new Size(182, 35);
             addMangaButton.TabIndex = 0;
             addMangaButton.Text = "Add Manga";
             addMangaButton.UseVisualStyleBackColor = false;
@@ -285,18 +312,23 @@
             tableLayoutPanel3.Controls.Add(tableLayoutPanel7, 0, 0);
             tableLayoutPanel3.Controls.Add(tableLayoutPanel5, 0, 3);
             tableLayoutPanel3.Controls.Add(lastChapterOnlineLabel, 0, 4);
+            tableLayoutPanel3.Controls.Add(tableLayoutPanel9, 0, 6);
+            tableLayoutPanel3.Controls.Add(tagsTextBox, 0, 8);
+            tableLayoutPanel3.Controls.Add(ratingLabel, 0, 7);
             tableLayoutPanel3.Dock = DockStyle.Fill;
             tableLayoutPanel3.Location = new Point(0, 118);
             tableLayoutPanel3.Margin = new Padding(0);
             tableLayoutPanel3.Name = "tableLayoutPanel3";
-            tableLayoutPanel3.RowCount = 7;
+            tableLayoutPanel3.RowCount = 9;
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 12F));
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 12F));
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 6F));
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 12F));
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 6F));
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 6F));
-            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 46F));
+            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 8F));
+            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 6F));
+            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 32F));
             tableLayoutPanel3.Size = new Size(338, 538);
             tableLayoutPanel3.TabIndex = 1;
             // 
@@ -374,7 +406,7 @@
             resetButton.Name = "resetButton";
             resetButton.Size = new Size(35, 64);
             resetButton.TabIndex = 3;
-            toolTip.SetToolTip(resetButton, "Reset Last Chapter to File Data");
+            toolTip.SetToolTip(resetButton, "Reset Last Chapter from file.");
             resetButton.UseVisualStyleBackColor = false;
             resetButton.Click += resetButton_Click;
             // 
@@ -542,6 +574,68 @@
             lastChapterOnlineLabel.TextAlign = ContentAlignment.MiddleCenter;
             lastChapterOnlineLabel.Visible = false;
             // 
+            // tableLayoutPanel9
+            // 
+            tableLayoutPanel9.ColumnCount = 3;
+            tableLayoutPanel9.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel9.ColumnStyles.Add(new ColumnStyle());
+            tableLayoutPanel9.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel9.Controls.Add(editTagsButton, 1, 0);
+            tableLayoutPanel9.Dock = DockStyle.Fill;
+            tableLayoutPanel9.Location = new Point(0, 288);
+            tableLayoutPanel9.Margin = new Padding(0);
+            tableLayoutPanel9.Name = "tableLayoutPanel9";
+            tableLayoutPanel9.RowCount = 1;
+            tableLayoutPanel9.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel9.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            tableLayoutPanel9.Size = new Size(338, 43);
+            tableLayoutPanel9.TabIndex = 6;
+            // 
+            // editTagsButton
+            // 
+            editTagsButton.BackColor = Color.FromArgb(248, 200, 220);
+            editTagsButton.Dock = DockStyle.Fill;
+            editTagsButton.FlatAppearance.BorderSize = 0;
+            editTagsButton.FlatAppearance.MouseDownBackColor = Color.FromArgb(188, 152, 167);
+            editTagsButton.FlatAppearance.MouseOverBackColor = Color.FromArgb(255, 229, 240);
+            editTagsButton.FlatStyle = FlatStyle.Flat;
+            editTagsButton.Font = new Font("Calibri", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            editTagsButton.ForeColor = Color.Black;
+            editTagsButton.Location = new Point(120, 5);
+            editTagsButton.Margin = new Padding(7, 5, 7, 5);
+            editTagsButton.Name = "editTagsButton";
+            editTagsButton.Size = new Size(98, 33);
+            editTagsButton.TabIndex = 4;
+            editTagsButton.Text = "Edit Tags";
+            editTagsButton.UseVisualStyleBackColor = false;
+            editTagsButton.Click += editTagsButton_Click;
+            // 
+            // tagsTextBox
+            // 
+            tagsTextBox.BackColor = Color.DimGray;
+            tagsTextBox.BorderStyle = BorderStyle.None;
+            tagsTextBox.Dock = DockStyle.Fill;
+            tagsTextBox.ForeColor = Color.White;
+            tagsTextBox.Location = new Point(0, 363);
+            tagsTextBox.Margin = new Padding(0);
+            tagsTextBox.Multiline = true;
+            tagsTextBox.Name = "tagsTextBox";
+            tagsTextBox.ReadOnly = true;
+            tagsTextBox.ScrollBars = ScrollBars.Vertical;
+            tagsTextBox.Size = new Size(338, 175);
+            tagsTextBox.TabIndex = 7;
+            // 
+            // ratingLabel
+            // 
+            ratingLabel.AutoSize = true;
+            ratingLabel.Dock = DockStyle.Fill;
+            ratingLabel.Location = new Point(3, 331);
+            ratingLabel.Name = "ratingLabel";
+            ratingLabel.Size = new Size(332, 32);
+            ratingLabel.TabIndex = 8;
+            ratingLabel.Text = "Rating: Unknown";
+            ratingLabel.TextAlign = ContentAlignment.MiddleCenter;
+            // 
             // openFileDialog
             // 
             openFileDialog.FileName = "Select Manga(s)";
@@ -599,6 +693,7 @@
             tableLayoutPanel7.ResumeLayout(false);
             tableLayoutPanel7.PerformLayout();
             tableLayoutPanel5.ResumeLayout(false);
+            tableLayoutPanel9.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -637,5 +732,10 @@
         private NumericUpDown lastChapterNumber;
         private TableLayoutPanel tableLayoutPanel8;
         private System.ComponentModel.BackgroundWorker thread1;
+        private Button tagsButtons;
+        private TableLayoutPanel tableLayoutPanel9;
+        private Button editTagsButton;
+        private TextBox tagsTextBox;
+        private Label ratingLabel;
     }
 }

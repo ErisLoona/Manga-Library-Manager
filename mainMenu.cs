@@ -6,8 +6,6 @@ using System.Globalization;
 using Newtonsoft.Json.Linq;
 using System.Diagnostics;
 using Flurl;
-using static Manga_Library_Manager.mainMenu;
-using System.ComponentModel;
 
 namespace Manga_Library_Manager
 {
@@ -18,9 +16,10 @@ namespace Manga_Library_Manager
             public string Title;
             public string Path;
             public decimal LastChapter;
-            public bool ManualChapterSet;
             public bool Ongoing;
             public string Link;
+            public string CotentRating;
+            public List<string> Tags;
 
             public override string ToString()
             {
@@ -30,13 +29,18 @@ namespace Manga_Library_Manager
 
         private List<eBook> books = new List<eBook>();
         private AutoCompleteStringCollection searchTextBoxAutomcompleteStrings = new AutoCompleteStringCollection();
-        private List<string> files = new List<string>();
-        private bool filterToggled = false;
+        private List<string> files = new List<string>(), ratingsList = new List<string>();
+        private bool filterToggled = false, filterTags = false;
         private Regex chapterRegex = new Regex("Ch\\.[0-9.]+"), titleSanitationRegex = new Regex("[^a-zA-Z0-9 ]");
         private Dictionary<string, string> titleDictionary = new Dictionary<string, string>();
+        private Dictionary<string, List<string>> tagsDictionary = new Dictionary<string, List<string>>();
         private List<bool> apiResponseOngoing = new List<bool>();
         private DateTime lastClickedTime = DateTime.MinValue;
         public static string jsonDump;
+        public static List<string> uniqueTags = new List<string>(), includedTags = new List<string>(), excludedTags = new List<string>(), includedRatings = new List<string>() { "Safe", "Suggestive", "Erotica", "Pornographic" };
+        public static Dictionary<string, int> tagsUsage = new Dictionary<string, int>();
+        public static eBook currentlySelectedBook;
+        public static bool inclusionMode = true, exclusionMode = false; //true = and, false = or
 
         public mainMenu()
         {
@@ -82,6 +86,16 @@ namespace Manga_Library_Manager
             {
                 mangaList.Items.Add(book);
                 searchTextBoxAutomcompleteStrings.Add(book.Title);
+                foreach (string tag in book.Tags)
+                {
+                    if (uniqueTags.Contains(tag) == false)
+                    {
+                        uniqueTags.Add(tag);
+                        tagsUsage[tag] = 1;
+                    }
+                    if (tagsUsage.ContainsKey(tag))
+                        tagsUsage[tag]++;
+                }
             }
             mangaList.EndUpdate();
             searchTextBox.AutoCompleteSource = AutoCompleteSource.CustomSource;
@@ -101,6 +115,9 @@ namespace Manga_Library_Manager
             linkTextBox.Visible = show;
             resetButton.Visible = show;
             mangaDescCover.Visible = show;
+            editTagsButton.Visible = show;
+            tagsTextBox.Visible = show;
+            ratingLabel.Visible = show;
             if (show == false)
             {
                 mangaDescTitle.Text = string.Empty;
@@ -116,7 +133,8 @@ namespace Manga_Library_Manager
             lastChapterOnlineLabel.Text = "Last chapter online: ...";
             ongoingOnlineLabel.Visible = false;
             ongoingOnlineLabel.Text = String.Empty;
-            searchTextBoxAutomcompleteStrings.Clear();
+            ratingLabel.Text = "Rating: Unknown";
+            tagsTextBox.Text = String.Empty;
             linkTextBox.Items.Clear();
             if (mangaDescCover.BackgroundImage != null)
                 mangaDescCover.BackgroundImage.Dispose();
@@ -138,6 +156,8 @@ namespace Manga_Library_Manager
             if (((eBook)mangaList.SelectedItem).Link == String.Empty)
             {
                 titleDictionary.Clear();
+                tagsDictionary.Clear();
+                ratingsList.Clear();
                 apiResponseOngoing.Clear();
                 if (thread1.IsBusy == false)
                     thread1.RunWorkerAsync(argument: ((eBook)mangaList.SelectedItem).Title);
@@ -168,6 +188,12 @@ namespace Manga_Library_Manager
             ongoingCheckbox.Checked = ((eBook)mangaList.SelectedItem).Ongoing;
             lastChapterNumber.Value = ((eBook)mangaList.SelectedItem).LastChapter;
             linkTextBox.Text = ((eBook)mangaList.SelectedItem).Link;
+            if (((eBook)mangaList.SelectedItem).CotentRating == String.Empty)
+                ratingLabel.Text = "Rating: Unknown";
+            else
+                ratingLabel.Text = "Rating: " + ((eBook)mangaList.SelectedItem).CotentRating;
+            if (((eBook)mangaList.SelectedItem).Tags.Count > 0)
+                tagsTextBox.Text = "Tags: " + String.Join(", ", ((eBook)mangaList.SelectedItem).Tags);
             mangaDescControls(true);
         }
 
@@ -193,15 +219,26 @@ namespace Manga_Library_Manager
         {
             ValueTuple<JObject, string> t = ((ValueTuple<JObject, string>)e.Result);
             JObject apiResult = t.Item1;
-            List<string> autocompleteTemp = new List<string>();
+            List<string> autocompleteTemp = new List<string>(), tempTags = new List<string>();
             try
             {
                 foreach (JToken entry in apiResult.SelectToken("data"))
                 {
+                    tempTags.Clear();
                     string title = entry.SelectToken("attributes").SelectToken("title").SelectToken("en").Value<string>();
                     titleDictionary[title] = "https://mangadex.org/title/" + entry.SelectToken("id").Value<string>();
                     apiResponseOngoing.Add(entry.SelectToken("attributes").SelectToken("status").Value<string>() == "ongoing" || entry.SelectToken("attributes").SelectToken("status").Value<string>() == "hiatus");
                     autocompleteTemp.Add(title);
+                    foreach (JToken tag in entry.SelectToken("attributes").SelectToken("tags"))
+                    {
+                        string groupTemp = tag.SelectToken("attributes").SelectToken("group").Value<string>();
+                        if (groupTemp == "genre" || groupTemp == "theme")
+                            tempTags.Add(tag.SelectToken("attributes").SelectToken("name").SelectToken("en").Value<string>());
+                    }
+                    tagsDictionary[title] = tempTags.ToList();
+                    string tempRating = entry.SelectToken("attributes").SelectToken("contentRating").Value<string>();
+                    tempRating = tempRating.Substring(0, 1).ToUpper() + tempRating.Substring(1);
+                    ratingsList.Add(tempRating);
                 }
             }
             catch
@@ -215,6 +252,14 @@ namespace Manga_Library_Manager
                     {
                         book.Link = titleDictionary[autocompleteTemp[0]];
                         book.Ongoing = apiResponseOngoing[0];
+                        book.CotentRating = ratingsList[0];
+                        book.Tags = tagsDictionary[autocompleteTemp[0]];
+                        foreach (string tag in tagsDictionary[autocompleteTemp[0]])
+                            if (uniqueTags.Contains(tag) == false)
+                            {
+                                uniqueTags.Add(tag);
+                                tagsUsage[tag] = 1;
+                            }
                         break;
                     }
             }
@@ -236,6 +281,10 @@ namespace Manga_Library_Manager
             if (titleDictionary.ContainsKey(linkTextBox.Text) == true)
             {
                 ongoingCheckbox.Checked = apiResponseOngoing[linkTextBox.SelectedIndex];
+                ratingLabel.Text = "Rating: " + ratingsList[linkTextBox.SelectedIndex];
+                ((eBook)mangaList.SelectedItem).CotentRating = ratingsList[linkTextBox.SelectedIndex];
+                tagsTextBox.Text = "Tags: " + String.Join(", ", tagsDictionary[linkTextBox.Text]);
+                ((eBook)mangaList.SelectedItem).Tags = tagsDictionary[linkTextBox.Text];
                 BeginInvoke(new Action(() => linkTextBox.Text = titleDictionary[linkTextBox.Text]));
             }
             ((eBook)mangaList.SelectedItem).Link = linkTextBox.Text;
@@ -269,7 +318,6 @@ namespace Manga_Library_Manager
         private void lastChapterNumber_ValueChanged(object sender, EventArgs e)
         {
             ((eBook)mangaList.SelectedItem).LastChapter = lastChapterNumber.Value;
-            ((eBook)mangaList.SelectedItem).ManualChapterSet = true;
         }
 
         private void resetButton_Click(object sender, EventArgs e)
@@ -316,7 +364,6 @@ namespace Manga_Library_Manager
                 ((eBook)mangaList.SelectedItem).LastChapter = 0M;
             }
             lastChapterNumber.Value = ((eBook)mangaList.SelectedItem).LastChapter;
-            ((eBook)mangaList.SelectedItem).ManualChapterSet = false;
         }
 
         private void openInExplorerButton_Click(object sender, EventArgs e)
@@ -462,6 +509,32 @@ namespace Manga_Library_Manager
             mangaList.Items.RemoveAt(mangaList.SelectedIndex);
         }
 
+        private void editTagsButton_Click(object sender, EventArgs e)
+        {
+            currentlySelectedBook = (eBook)mangaList.SelectedItem;
+            uniqueTags.Clear();
+            tagsUsage.Clear();
+            foreach (eBook book in books)
+                foreach (string tag in book.Tags)
+                {
+                    if (uniqueTags.Contains(tag) == false)
+                    {
+                        uniqueTags.Add(tag);
+                        tagsUsage[tag] = 1;
+                    }
+                    if (tagsUsage.ContainsKey(tag))
+                        tagsUsage[tag]++;
+                }
+            editTags tagsForm = new editTags();
+            tagsForm.ShowDialog();
+            tagsForm.Dispose();
+            ratingLabel.Text = "Rating: " + ((eBook)mangaList.SelectedItem).CotentRating;
+            if (((eBook)mangaList.SelectedItem).Tags.Count > 0)
+                tagsTextBox.Text = "Tags: " + String.Join(", ", ((eBook)mangaList.SelectedItem).Tags);
+            else
+                tagsTextBox.Text = String.Empty;
+        }
+
         private void searchTextBox_Leave(object sender, EventArgs e)
         {
             if (searchTextBox.Text == String.Empty)
@@ -535,7 +608,14 @@ namespace Manga_Library_Manager
             {
                 using (ZipFile epub = ZipFile.Read(path))
                 {
-                    epub["content.opf"].Extract(stream);
+                    try
+                    {
+                        epub["content.opf"].Extract(stream);
+                    }
+                    catch
+                    {
+                        epub["OEBPS/content.opf"].Extract(stream);
+                    }
                 }
                 stream.Position = 0;
                 doc.Load(stream);
@@ -579,9 +659,10 @@ namespace Manga_Library_Manager
                     temp.Path = path;
                 if (temp.Path[0] == Path.DirectorySeparatorChar)
                     temp.Path = temp.Path.Substring(1);
-                temp.ManualChapterSet = false;
                 temp.Ongoing = false;
                 temp.Link = String.Empty;
+                temp.CotentRating = String.Empty;
+                temp.Tags = new List<string>();
                 try
                 {
                     MatchCollection chapters = chapterRegex.Matches(desc);
@@ -595,7 +676,7 @@ namespace Manga_Library_Manager
                     temp.LastChapter = 0M;
                 }
                 books.Add(temp);
-                if (filterToggled == false)
+                if (filterToggled == false && filterTags == false)
                 {
                     mangaList.Items.Add(temp);
                     searchTextBoxAutomcompleteStrings.Add(title);
@@ -636,6 +717,105 @@ namespace Manga_Library_Manager
                 }
                 mangaList.EndUpdate();
             }
+        }
+
+        private void tagsButtons_Click(object sender, EventArgs e)
+        {
+            mangaList.SelectedIndex = -1;
+            uniqueTags.Clear();
+            tagsUsage.Clear();
+            foreach (eBook book in books)
+                foreach (string tag in book.Tags)
+                {
+                    if (uniqueTags.Contains(tag) == false)
+                    {
+                        uniqueTags.Add(tag);
+                        tagsUsage[tag] = 1;
+                    }
+                    if (tagsUsage.ContainsKey(tag))
+                        tagsUsage[tag]++;
+                }
+            tagsFilter filterForm = new tagsFilter();
+            filterForm.ShowDialog();
+            filterForm.Dispose();
+            if (includedRatings.Count == 4 && includedTags.Count == 0 && excludedTags.Count == 0)
+            {
+                tagsButtons.Font = new Font(tagsButtons.Font, FontStyle.Bold);
+                tagsButtons.Text = "Filter by Tags";
+                mangaList.BeginUpdate();
+                mangaList.Items.Clear();
+                searchTextBoxAutomcompleteStrings.Clear();
+                foreach (eBook book in books)
+                {
+                    if (filterToggled == true && book.Ongoing == false)
+                        continue;
+                    mangaList.Items.Add(book);
+                    searchTextBoxAutomcompleteStrings.Add(book.Title);
+                }
+                mangaList.EndUpdate();
+                filterTags = false;
+                return;
+            }
+            filterTags = true;
+            tagsButtons.Font = new Font(tagsButtons.Font, FontStyle.Bold | FontStyle.Italic);
+            tagsButtons.Text = "Filtering by Tags";
+            mangaList.BeginUpdate();
+            mangaList.Items.Clear();
+            searchTextBoxAutomcompleteStrings.Clear();
+            foreach (eBook book in books)
+            {
+                if (includedRatings.Contains(book.CotentRating) == false && book.CotentRating != String.Empty)
+                    continue;
+                if (inclusionMode == true)
+                {
+                    bool bad = false;
+                    foreach (string tag in includedTags)
+                        if (book.Tags.Contains(tag) == false)
+                        {
+                            bad = true;
+                            break;
+                        }
+                    if (bad == true)
+                        continue;
+                    if (exclusionMode == true)
+                    {
+                        foreach (string tag in excludedTags)
+                            if (book.Tags.Contains(tag) == false)
+                            {
+                                bad = true;
+                                break;
+                            }
+                        if (bad == false && excludedTags.Count > 0)
+                            continue;
+                    }
+                    else
+                        if (book.Tags.Intersect(excludedTags).Any() == true)
+                            continue;
+                }
+                else
+                {
+                    if (book.Tags.Intersect(includedTags).Any() == false)
+                        continue;
+                    if (exclusionMode == true)
+                    {
+                        bool bad = false;
+                        foreach (string tag in excludedTags)
+                            if (book.Tags.Contains(tag) == false)
+                            {
+                                bad = true;
+                                break;
+                            }
+                        if (bad == false && excludedTags.Count > 0)
+                            continue;
+                    }
+                    else
+                        if (book.Tags.Intersect(excludedTags).Any() == true)
+                            continue;
+                }
+                mangaList.Items.Add(book);
+                searchTextBoxAutomcompleteStrings.Add(book.Title);
+            }
+            mangaList.EndUpdate();
         }
 
         private void mainMenu_FormClosing(object sender, FormClosingEventArgs e)

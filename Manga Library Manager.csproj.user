@@ -7,7 +7,13 @@
     <Compile Update="dumpJSON.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="editTags.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="mainMenu.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="tagsFilter.cs">
       <SubType>Form</SubType>
     </Compile>
   </ItemGroup>
