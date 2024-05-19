@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(editTags));
             tableLayoutPanel1 = new TableLayoutPanel();
             doneButton = new Button();
@@ -36,7 +37,9 @@
             tableLayoutPanel3 = new TableLayoutPanel();
             newTagButton = new Button();
             tagTextBox = new TextBox();
+            resetButton = new Button();
             tagsList = new CheckedListBox();
+            toolTip = new ToolTip(components);
             tableLayoutPanel1.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             tableLayoutPanel3.SuspendLayout();
@@ -121,6 +124,7 @@
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tableLayoutPanel3.Controls.Add(newTagButton, 2, 0);
             tableLayoutPanel3.Controls.Add(tagTextBox, 1, 0);
+            tableLayoutPanel3.Controls.Add(resetButton, 3, 0);
             tableLayoutPanel3.Dock = DockStyle.Fill;
             tableLayoutPanel3.Location = new Point(0, 32);
             tableLayoutPanel3.Margin = new Padding(0);
@@ -163,6 +167,27 @@
             tagTextBox.WordWrap = false;
             tagTextBox.KeyDown += tagTextBox_KeyDown;
             tagTextBox.Leave += tagTextBox_Leave;
+            // 
+            // resetButton
+            // 
+            resetButton.BackColor = Color.FromArgb(248, 200, 220);
+            resetButton.BackgroundImage = (Image)resources.GetObject("resetButton.BackgroundImage");
+            resetButton.BackgroundImageLayout = ImageLayout.Zoom;
+            resetButton.Dock = DockStyle.Fill;
+            resetButton.FlatAppearance.BorderSize = 0;
+            resetButton.FlatAppearance.MouseDownBackColor = Color.FromArgb(188, 152, 167);
+            resetButton.FlatAppearance.MouseOverBackColor = Color.FromArgb(255, 229, 240);
+            resetButton.FlatStyle = FlatStyle.Flat;
+            resetButton.Font = new Font("Calibri", 11.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            resetButton.ForeColor = Color.Black;
+            resetButton.Location = new Point(306, 4);
+            resetButton.Margin = new Padding(4);
+            resetButton.Name = "resetButton";
+            resetButton.Size = new Size(54, 24);
+            resetButton.TabIndex = 5;
+            toolTip.SetToolTip(resetButton, "Reset tags to online original.");
+            resetButton.UseVisualStyleBackColor = false;
+            resetButton.Click += resetButton_Click;
             // 
             // tagsList
             // 
@@ -216,5 +241,7 @@
         private Button newTagButton;
         private CheckedListBox tagsList;
         private Button doneButton;
+        private Button resetButton;
+        private ToolTip toolTip;
     }
 }

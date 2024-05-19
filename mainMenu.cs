@@ -40,7 +40,7 @@ namespace Manga_Library_Manager
         public static List<string> uniqueTags = new List<string>(), includedTags = new List<string>(), excludedTags = new List<string>(), includedRatings = new List<string>() { "Safe", "Suggestive", "Erotica", "Pornographic" };
         public static Dictionary<string, int> tagsUsage = new Dictionary<string, int>();
         public static eBook currentlySelectedBook;
-        public static bool inclusionMode = true, exclusionMode = false; //true = and, false = or
+        public static bool inclusionMode = true, exclusionMode = false, resetTags = false; //true = and, false = or
 
         public mainMenu()
         {
@@ -188,9 +188,7 @@ namespace Manga_Library_Manager
             ongoingCheckbox.Checked = ((eBook)mangaList.SelectedItem).Ongoing;
             lastChapterNumber.Value = ((eBook)mangaList.SelectedItem).LastChapter;
             linkTextBox.Text = ((eBook)mangaList.SelectedItem).Link;
-            if (((eBook)mangaList.SelectedItem).CotentRating == String.Empty)
-                ratingLabel.Text = "Rating: Unknown";
-            else
+            if (((eBook)mangaList.SelectedItem).CotentRating != String.Empty)
                 ratingLabel.Text = "Rating: " + ((eBook)mangaList.SelectedItem).CotentRating;
             if (((eBook)mangaList.SelectedItem).Tags.Count > 0)
                 tagsTextBox.Text = "Tags: " + String.Join(", ", ((eBook)mangaList.SelectedItem).Tags);
@@ -528,11 +526,98 @@ namespace Manga_Library_Manager
             editTags tagsForm = new editTags();
             tagsForm.ShowDialog();
             tagsForm.Dispose();
+            if (resetTags == true)
+            {
+                resetTags = false;
+                resyncTags();
+                return;
+            }
             ratingLabel.Text = "Rating: " + ((eBook)mangaList.SelectedItem).CotentRating;
             if (((eBook)mangaList.SelectedItem).Tags.Count > 0)
                 tagsTextBox.Text = "Tags: " + String.Join(", ", ((eBook)mangaList.SelectedItem).Tags);
             else
                 tagsTextBox.Text = String.Empty;
+        }
+
+        private void resyncTags()
+        {
+            try
+            {
+                if (((eBook)mangaList.SelectedItem).Link == String.Empty)
+                    throw new Exception("no link");
+                if (((eBook)mangaList.SelectedItem).Link.Split('/')[2] != "mangadex.org")
+                    throw new Exception("domain");
+                if (((eBook)mangaList.SelectedItem).Link.Split('/')[3] != "title")
+                    throw new Exception("title");
+                if (((eBook)mangaList.SelectedItem).Link.Split('/')[4] == null || Uri.TryCreate(((eBook)mangaList.SelectedItem).Link, UriKind.Absolute, out Uri uriResult) == false || (uriResult.Scheme != Uri.UriSchemeHttp && uriResult.Scheme != Uri.UriSchemeHttps))
+                    throw new Exception();
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message == "no link")
+                    MessageBox.Show("There is no link set!\nPlease set a link.", "No link set", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                else if (ex.Message == "domain")
+                    MessageBox.Show("The link is not from MangaDex!\nPlease only use MangaDex links.", "Bad domain", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                else if (ex.Message == "title")
+                    MessageBox.Show("The link is not a manga!\nPlease link to the manga.", "Bad type", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                else
+                    MessageBox.Show("The link is incorrect or is not a link!", "Bad link", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            ratingLabel.Text = "Rating: Unknown";
+            tagsTextBox.Text = String.Empty;
+            List<string> tempTags = ((eBook)mangaList.SelectedItem).Tags.ToList();
+            foreach (string tag in tempTags)
+            {
+                ((eBook)mangaList.SelectedItem).Tags.Remove(tag);
+                tagsUsage[tag]--;
+                if (tagsUsage[tag] == 0)
+                {
+                    uniqueTags.Remove(tag);
+                    tagsUsage.Remove(tag);
+                }
+            }
+            string mangaID = ((eBook)mangaList.SelectedItem).Link.Split('/')[4], tempRating;
+            JObject apiResult;
+            tempTags.Clear();
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("Manga Library Manager for Windows by (github) ErisLoona");
+                try
+                {
+                    Task<string> task = client.GetStringAsync(new Uri("https://api.mangadex.org/manga/" + mangaID.SetQueryParam("contentRating[]", new[] { "safe", "suggestive", "erotica", "pornographic" })));
+                    apiResult = JObject.Parse(task.Result);
+                    foreach (JToken tag in apiResult.SelectToken("data").SelectToken("attributes").SelectToken("tags"))
+                    {
+                        string groupTemp = tag.SelectToken("attributes").SelectToken("group").Value<string>();
+                        if (groupTemp == "genre" || groupTemp == "theme")
+                            tempTags.Add(tag.SelectToken("attributes").SelectToken("name").SelectToken("en").Value<string>());
+                    }
+                    tempRating = apiResult.SelectToken("data").SelectToken("attributes").SelectToken("contentRating").Value<string>();
+                    tempRating = tempRating.Substring(0, 1).ToUpper() + tempRating.Substring(1);
+                    ((eBook)mangaList.SelectedItem).CotentRating = tempRating;
+                    ongoingCheckbox.Checked = apiResult.SelectToken("data").SelectToken("attributes").SelectToken("status").Value<string>() == "ongoing" || apiResult.SelectToken("data").SelectToken("attributes").SelectToken("status").Value<string>() == "hiatus";
+                }
+                catch
+                {
+                    MessageBox.Show("Could not retrieve tag list!", "API error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            foreach (string tag in tempTags)
+            {
+                ((eBook)mangaList.SelectedItem).Tags.Add(tag);
+                if (tagsUsage.ContainsKey(tag))
+                    tagsUsage[tag]++;
+                else
+                {
+                    tagsUsage[tag] = 1;
+                    uniqueTags.Add(tag);
+                }
+            }
+            ratingLabel.Text = "Rating: " + ((eBook)mangaList.SelectedItem).CotentRating;
+            if (((eBook)mangaList.SelectedItem).Tags.Count > 0)
+                tagsTextBox.Text = "Tags: " + String.Join(", ", ((eBook)mangaList.SelectedItem).Tags);
         }
 
         private void searchTextBox_Leave(object sender, EventArgs e)
@@ -692,30 +777,13 @@ namespace Manga_Library_Manager
             {
                 filterButton.Font = new Font(filterButton.Font, FontStyle.Bold | FontStyle.Italic);
                 filterButton.Text = "Showing Ongoing";
-                mangaList.BeginUpdate();
-                mangaList.Items.Clear();
-                searchTextBoxAutomcompleteStrings.Clear();
-                foreach (eBook book in books)
-                    if (book.Ongoing == true)
-                    {
-                        mangaList.Items.Add(book);
-                        searchTextBoxAutomcompleteStrings.Add(book.Title);
-                    }
-                mangaList.EndUpdate();
+                filterByTags();
             }
             else
             {
                 filterButton.Font = new Font(filterButton.Font, FontStyle.Bold);
                 filterButton.Text = "Showing All";
-                mangaList.BeginUpdate();
-                mangaList.Items.Clear();
-                searchTextBoxAutomcompleteStrings.Clear();
-                foreach (eBook book in books)
-                {
-                    mangaList.Items.Add(book);
-                    searchTextBoxAutomcompleteStrings.Add(book.Title);
-                }
-                mangaList.EndUpdate();
+                filterByTags();
             }
         }
 
@@ -738,6 +806,11 @@ namespace Manga_Library_Manager
             tagsFilter filterForm = new tagsFilter();
             filterForm.ShowDialog();
             filterForm.Dispose();
+            filterByTags();
+        }
+
+        private void filterByTags()
+        {
             if (includedRatings.Count == 4 && includedTags.Count == 0 && excludedTags.Count == 0)
             {
                 tagsButtons.Font = new Font(tagsButtons.Font, FontStyle.Bold);
@@ -764,7 +837,7 @@ namespace Manga_Library_Manager
             searchTextBoxAutomcompleteStrings.Clear();
             foreach (eBook book in books)
             {
-                if (includedRatings.Contains(book.CotentRating) == false && book.CotentRating != String.Empty)
+                if ((includedRatings.Contains(book.CotentRating) == false && book.CotentRating != String.Empty) || (filterToggled == true && book.Ongoing == false))
                     continue;
                 if (inclusionMode == true)
                 {
@@ -790,7 +863,7 @@ namespace Manga_Library_Manager
                     }
                     else
                         if (book.Tags.Intersect(excludedTags).Any() == true)
-                            continue;
+                        continue;
                 }
                 else
                 {
@@ -810,7 +883,7 @@ namespace Manga_Library_Manager
                     }
                     else
                         if (book.Tags.Intersect(excludedTags).Any() == true)
-                            continue;
+                        continue;
                 }
                 mangaList.Items.Add(book);
                 searchTextBoxAutomcompleteStrings.Add(book.Title);

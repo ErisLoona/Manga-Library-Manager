@@ -222,7 +222,6 @@
             mangaList.Font = new Font("Calibri", 15.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
             mangaList.ForeColor = Color.White;
             mangaList.FormattingEnabled = true;
-            mangaList.HorizontalScrollbar = true;
             mangaList.ItemHeight = 26;
             mangaList.Location = new Point(5, 79);
             mangaList.Margin = new Padding(5, 8, 5, 1);
@@ -406,7 +405,7 @@
             resetButton.Name = "resetButton";
             resetButton.Size = new Size(35, 64);
             resetButton.TabIndex = 3;
-            toolTip.SetToolTip(resetButton, "Reset Last Chapter from file.");
+            toolTip.SetToolTip(resetButton, "Reset last chapter from file");
             resetButton.UseVisualStyleBackColor = false;
             resetButton.Click += resetButton_Click;
             // 

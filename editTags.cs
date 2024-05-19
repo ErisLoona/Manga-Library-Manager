@@ -96,6 +96,7 @@ namespace Manga_Library_Manager
             tagsList.ItemCheck -= tagsList_ItemCheck;
             tagsList.Items.Add(newTag, true);
             tagsList.ItemCheck += tagsList_ItemCheck;
+            tagSearchAutocompleteStrings.Add(newTag);
             mainMenu.uniqueTags.Add(newTag);
             mainMenu.tagsUsage[newTag] = 1;
             mainMenu.currentlySelectedBook.Tags.Add(newTag);
@@ -127,6 +128,14 @@ namespace Manga_Library_Manager
         private void tagsList_MouseDown(object sender, MouseEventArgs e)
         {
             tagsList.SelectedIndex = tagsList.IndexFromPoint(e.Location);
+        }
+
+        private void resetButton_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("This will resync the tags from the API.\nAre you sure?", "Resync tags", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                return;
+            mainMenu.resetTags = true;
+            this.Close();
         }
     }
 }
