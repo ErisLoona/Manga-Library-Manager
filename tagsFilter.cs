@@ -62,11 +62,27 @@ namespace Manga_Library_Manager
             excludeList.ItemCheck += excludeList_ItemCheck;
             includeList.EndUpdate();
             excludeList.EndUpdate();
-            occurancesLabel.Text = "No. of mangas by label:\r\n";
+            occurancesLabel.Text = "Mangas: " + Convert.ToString(mainMenu.booksCopy.Count) + "\r\n\r\n";
+            int[] ratingCount = { 0, 0, 0, 0 };
+            foreach (mainMenu.eBook book in mainMenu.booksCopy)
+                if (book.CotentRating == "Safe")
+                    ratingCount[0]++;
+                else if (book.CotentRating == "Suggestive")
+                    ratingCount[1]++;
+                else if (book.CotentRating == "Erotica")
+                    ratingCount[2]++;
+                else if (book.CotentRating == "Pornographic")
+                    ratingCount[3]++;
+            occurancesLabel.Text += "Safe: " + Convert.ToString(ratingCount[0]) + "\r\n";
+            occurancesLabel.Text += "Suggestive: " + Convert.ToString(ratingCount[1]) + "\r\n";
+            occurancesLabel.Text += "Erotica: " + Convert.ToString(ratingCount[2]) + "\r\n";
+            occurancesLabel.Text += "Pornographic: " + Convert.ToString(ratingCount[3]) + "\r\n\r\n";
+            occurancesLabel.Text += "No. of mangas by label:\r\n";
             foreach (KeyValuePair<string, Int32> usage in mainMenu.tagsUsage.OrderByDescending(key => key.Value))
                 occurancesLabel.Text += usage.Key + ": " + Convert.ToString(usage.Value) + "\r\n";
-            occurancesLabel.SelectAll();
+            occurancesLabel.Select(0, 7);
             occurancesLabel.SelectionAlignment = HorizontalAlignment.Center;
+            occurancesLabel.SelectionFont = new Font(occurancesLabel.Font, FontStyle.Bold);
             occurancesLabel.DeselectAll();
         }
 

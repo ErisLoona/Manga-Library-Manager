@@ -41,6 +41,7 @@ namespace Manga_Library_Manager
         public static Dictionary<string, int> tagsUsage = new Dictionary<string, int>();
         public static eBook currentlySelectedBook;
         public static bool inclusionMode = true, exclusionMode = false, resetTags = false; //true = and, false = or
+        public static List<eBook> booksCopy = new List<eBook>();
 
         public mainMenu()
         {
@@ -803,9 +804,11 @@ namespace Manga_Library_Manager
                         tagsUsage[tag] = 1;
                     }
                 }
+            booksCopy = books.ToList();
             tagsFilter filterForm = new tagsFilter();
             filterForm.ShowDialog();
             filterForm.Dispose();
+            booksCopy.Clear();
             filterByTags();
         }
 

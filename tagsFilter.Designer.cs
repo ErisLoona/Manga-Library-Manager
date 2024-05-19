@@ -307,10 +307,10 @@
             occurancesLabel.Margin = new Padding(3, 0, 0, 0);
             occurancesLabel.Name = "occurancesLabel";
             occurancesLabel.ReadOnly = true;
-            occurancesLabel.ScrollBars = RichTextBoxScrollBars.Vertical;
             occurancesLabel.Size = new Size(205, 540);
             occurancesLabel.TabIndex = 9;
             occurancesLabel.Text = "text\ntext\ntext\ntext";
+            occurancesLabel.WordWrap = false;
             occurancesLabel.Enter += occurancesLabel_Enter;
             // 
             // tagsFilter

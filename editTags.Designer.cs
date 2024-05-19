@@ -196,6 +196,7 @@
             tagsList.Dock = DockStyle.Fill;
             tagsList.ForeColor = Color.White;
             tagsList.FormattingEnabled = true;
+            tagsList.HorizontalScrollbar = true;
             tagsList.Location = new Point(3, 67);
             tagsList.Name = "tagsList";
             tagsList.Size = new Size(358, 441);
