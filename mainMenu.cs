@@ -88,13 +88,13 @@ namespace Manga_Library_Manager
                 searchTextBoxAutomcompleteStrings.Add(book.Title);
                 foreach (string tag in book.Tags)
                 {
+                    if (tagsUsage.ContainsKey(tag))
+                        tagsUsage[tag]++;
                     if (uniqueTags.Contains(tag) == false)
                     {
                         uniqueTags.Add(tag);
                         tagsUsage[tag] = 1;
                     }
-                    if (tagsUsage.ContainsKey(tag))
-                        tagsUsage[tag]++;
                 }
             }
             mangaList.EndUpdate();
@@ -515,13 +515,13 @@ namespace Manga_Library_Manager
             foreach (eBook book in books)
                 foreach (string tag in book.Tags)
                 {
+                    if (tagsUsage.ContainsKey(tag))
+                        tagsUsage[tag]++;
                     if (uniqueTags.Contains(tag) == false)
                     {
                         uniqueTags.Add(tag);
                         tagsUsage[tag] = 1;
                     }
-                    if (tagsUsage.ContainsKey(tag))
-                        tagsUsage[tag]++;
                 }
             editTags tagsForm = new editTags();
             tagsForm.ShowDialog();
@@ -795,13 +795,13 @@ namespace Manga_Library_Manager
             foreach (eBook book in books)
                 foreach (string tag in book.Tags)
                 {
+                    if (tagsUsage.ContainsKey(tag))
+                        tagsUsage[tag]++;
                     if (uniqueTags.Contains(tag) == false)
                     {
                         uniqueTags.Add(tag);
                         tagsUsage[tag] = 1;
                     }
-                    if (tagsUsage.ContainsKey(tag))
-                        tagsUsage[tag]++;
                 }
             tagsFilter filterForm = new tagsFilter();
             filterForm.ShowDialog();
@@ -912,6 +912,11 @@ namespace Manga_Library_Manager
                     form.Dispose();
                 }
             }
+        }
+
+        private void tagsTextBox_Enter(object sender, EventArgs e)
+        {
+            this.ActiveControl = null;
         }
     }
 }

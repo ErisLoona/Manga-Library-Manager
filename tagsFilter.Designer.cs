@@ -43,11 +43,14 @@
             inclusionMode = new ComboBox();
             exclusionMode = new ComboBox();
             tagSearch = new TextBox();
+            tableLayoutPanel6 = new TableLayoutPanel();
+            occurancesLabel = new RichTextBox();
             tableLayoutPanel1.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             tableLayoutPanel3.SuspendLayout();
             tableLayoutPanel4.SuspendLayout();
             tableLayoutPanel5.SuspendLayout();
+            tableLayoutPanel6.SuspendLayout();
             SuspendLayout();
             // 
             // doneButton
@@ -63,7 +66,7 @@
             doneButton.Location = new Point(0, 540);
             doneButton.Margin = new Padding(0);
             doneButton.Name = "doneButton";
-            doneButton.Size = new Size(480, 30);
+            doneButton.Size = new Size(693, 30);
             doneButton.TabIndex = 7;
             doneButton.Text = "Done";
             doneButton.UseVisualStyleBackColor = false;
@@ -73,6 +76,7 @@
             // 
             tableLayoutPanel1.ColumnCount = 1;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 20F));
             tableLayoutPanel1.Controls.Add(tableLayoutPanel2, 0, 0);
             tableLayoutPanel1.Controls.Add(tableLayoutPanel3, 0, 1);
             tableLayoutPanel1.Controls.Add(tableLayoutPanel4, 0, 3);
@@ -88,7 +92,7 @@
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 6F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 58F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 6F));
-            tableLayoutPanel1.Size = new Size(480, 540);
+            tableLayoutPanel1.Size = new Size(485, 540);
             tableLayoutPanel1.TabIndex = 8;
             // 
             // tableLayoutPanel2
@@ -105,7 +109,7 @@
             tableLayoutPanel2.RowCount = 1;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel2.Size = new Size(480, 54);
+            tableLayoutPanel2.Size = new Size(485, 54);
             tableLayoutPanel2.TabIndex = 0;
             // 
             // uncheckAllButton
@@ -118,10 +122,10 @@
             uncheckAllButton.FlatStyle = FlatStyle.Flat;
             uncheckAllButton.Font = new Font("Calibri", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             uncheckAllButton.ForeColor = Color.Black;
-            uncheckAllButton.Location = new Point(247, 5);
+            uncheckAllButton.Location = new Point(249, 5);
             uncheckAllButton.Margin = new Padding(7, 5, 7, 5);
             uncheckAllButton.Name = "uncheckAllButton";
-            uncheckAllButton.Size = new Size(226, 44);
+            uncheckAllButton.Size = new Size(229, 44);
             uncheckAllButton.TabIndex = 3;
             uncheckAllButton.Text = "Exclude All";
             uncheckAllButton.UseVisualStyleBackColor = false;
@@ -140,7 +144,7 @@
             checkAllButton.Location = new Point(7, 5);
             checkAllButton.Margin = new Padding(7, 5, 7, 5);
             checkAllButton.Name = "checkAllButton";
-            checkAllButton.Size = new Size(226, 44);
+            checkAllButton.Size = new Size(228, 44);
             checkAllButton.TabIndex = 2;
             checkAllButton.Text = "Include All";
             checkAllButton.UseVisualStyleBackColor = false;
@@ -160,7 +164,7 @@
             tableLayoutPanel3.RowCount = 1;
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel3.Size = new Size(480, 108);
+            tableLayoutPanel3.Size = new Size(485, 108);
             tableLayoutPanel3.TabIndex = 1;
             // 
             // ratingList
@@ -172,7 +176,7 @@
             ratingList.ForeColor = Color.White;
             ratingList.FormattingEnabled = true;
             ratingList.Items.AddRange(new object[] { "Safe", "Suggestive", "Erotica", "Pornographic" });
-            ratingList.Location = new Point(180, 3);
+            ratingList.Location = new Point(182, 3);
             ratingList.Name = "ratingList";
             ratingList.Size = new Size(120, 102);
             ratingList.TabIndex = 0;
@@ -192,7 +196,7 @@
             tableLayoutPanel4.RowCount = 1;
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel4.Size = new Size(480, 313);
+            tableLayoutPanel4.Size = new Size(485, 313);
             tableLayoutPanel4.TabIndex = 2;
             // 
             // includeList
@@ -204,7 +208,7 @@
             includeList.FormattingEnabled = true;
             includeList.Location = new Point(3, 3);
             includeList.Name = "includeList";
-            includeList.Size = new Size(234, 307);
+            includeList.Size = new Size(236, 307);
             includeList.TabIndex = 0;
             includeList.ItemCheck += includeList_ItemCheck;
             includeList.MouseDown += includeList_MouseDown;
@@ -216,9 +220,9 @@
             excludeList.Dock = DockStyle.Fill;
             excludeList.ForeColor = Color.White;
             excludeList.FormattingEnabled = true;
-            excludeList.Location = new Point(243, 3);
+            excludeList.Location = new Point(245, 3);
             excludeList.Name = "excludeList";
-            excludeList.Size = new Size(234, 307);
+            excludeList.Size = new Size(237, 307);
             excludeList.TabIndex = 1;
             excludeList.ItemCheck += excludeList_ItemCheck;
             excludeList.MouseDown += excludeList_MouseDown;
@@ -237,7 +241,7 @@
             tableLayoutPanel5.RowCount = 1;
             tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel5.Size = new Size(480, 33);
+            tableLayoutPanel5.Size = new Size(485, 33);
             tableLayoutPanel5.TabIndex = 3;
             // 
             // inclusionMode
@@ -248,7 +252,7 @@
             inclusionMode.Items.AddRange(new object[] { "and", "or" });
             inclusionMode.Location = new Point(3, 3);
             inclusionMode.Name = "inclusionMode";
-            inclusionMode.Size = new Size(234, 27);
+            inclusionMode.Size = new Size(236, 27);
             inclusionMode.TabIndex = 0;
             // 
             // exclusionMode
@@ -257,9 +261,9 @@
             exclusionMode.DropDownStyle = ComboBoxStyle.DropDownList;
             exclusionMode.FormattingEnabled = true;
             exclusionMode.Items.AddRange(new object[] { "and", "or" });
-            exclusionMode.Location = new Point(243, 3);
+            exclusionMode.Location = new Point(245, 3);
             exclusionMode.Name = "exclusionMode";
-            exclusionMode.Size = new Size(234, 27);
+            exclusionMode.Size = new Size(237, 27);
             exclusionMode.TabIndex = 1;
             // 
             // tagSearch
@@ -269,19 +273,53 @@
             tagSearch.Location = new Point(3, 165);
             tagSearch.Name = "tagSearch";
             tagSearch.PlaceholderText = "Search for a tag";
-            tagSearch.Size = new Size(474, 27);
+            tagSearch.Size = new Size(479, 27);
             tagSearch.TabIndex = 4;
             tagSearch.WordWrap = false;
             tagSearch.KeyDown += tagSearch_KeyDown;
             tagSearch.Leave += tagSearch_Leave;
+            // 
+            // tableLayoutPanel6
+            // 
+            tableLayoutPanel6.ColumnCount = 2;
+            tableLayoutPanel6.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 70F));
+            tableLayoutPanel6.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30F));
+            tableLayoutPanel6.Controls.Add(tableLayoutPanel1, 0, 0);
+            tableLayoutPanel6.Controls.Add(occurancesLabel, 1, 0);
+            tableLayoutPanel6.Dock = DockStyle.Fill;
+            tableLayoutPanel6.Location = new Point(0, 0);
+            tableLayoutPanel6.Margin = new Padding(0);
+            tableLayoutPanel6.Name = "tableLayoutPanel6";
+            tableLayoutPanel6.RowCount = 1;
+            tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            tableLayoutPanel6.Size = new Size(693, 540);
+            tableLayoutPanel6.TabIndex = 9;
+            // 
+            // occurancesLabel
+            // 
+            occurancesLabel.BackColor = Color.DimGray;
+            occurancesLabel.BorderStyle = BorderStyle.None;
+            occurancesLabel.DetectUrls = false;
+            occurancesLabel.Dock = DockStyle.Fill;
+            occurancesLabel.ForeColor = Color.White;
+            occurancesLabel.Location = new Point(488, 0);
+            occurancesLabel.Margin = new Padding(3, 0, 0, 0);
+            occurancesLabel.Name = "occurancesLabel";
+            occurancesLabel.ReadOnly = true;
+            occurancesLabel.ScrollBars = RichTextBoxScrollBars.Vertical;
+            occurancesLabel.Size = new Size(205, 540);
+            occurancesLabel.TabIndex = 9;
+            occurancesLabel.Text = "text\ntext\ntext\ntext";
+            occurancesLabel.Enter += occurancesLabel_Enter;
             // 
             // tagsFilter
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.DimGray;
-            ClientSize = new Size(480, 570);
-            Controls.Add(tableLayoutPanel1);
+            ClientSize = new Size(693, 570);
+            Controls.Add(tableLayoutPanel6);
             Controls.Add(doneButton);
             Font = new Font("Calibri", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             ForeColor = Color.White;
@@ -302,6 +340,7 @@
             tableLayoutPanel3.ResumeLayout(false);
             tableLayoutPanel4.ResumeLayout(false);
             tableLayoutPanel5.ResumeLayout(false);
+            tableLayoutPanel6.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -321,5 +360,7 @@
         private CheckedListBox excludeList;
         private ComboBox inclusionMode;
         private ComboBox exclusionMode;
+        private TableLayoutPanel tableLayoutPanel6;
+        private RichTextBox occurancesLabel;
     }
 }

@@ -61,8 +61,8 @@
             lastChapterOnlineLabel = new Label();
             tableLayoutPanel9 = new TableLayoutPanel();
             editTagsButton = new Button();
-            tagsTextBox = new TextBox();
             ratingLabel = new Label();
+            tagsTextBox = new RichTextBox();
             openFileDialog = new OpenFileDialog();
             toolTip = new ToolTip(components);
             checkOnlineTimer = new System.Windows.Forms.Timer(components);
@@ -312,8 +312,8 @@
             tableLayoutPanel3.Controls.Add(tableLayoutPanel5, 0, 3);
             tableLayoutPanel3.Controls.Add(lastChapterOnlineLabel, 0, 4);
             tableLayoutPanel3.Controls.Add(tableLayoutPanel9, 0, 6);
-            tableLayoutPanel3.Controls.Add(tagsTextBox, 0, 8);
             tableLayoutPanel3.Controls.Add(ratingLabel, 0, 7);
+            tableLayoutPanel3.Controls.Add(tagsTextBox, 0, 8);
             tableLayoutPanel3.Dock = DockStyle.Fill;
             tableLayoutPanel3.Location = new Point(0, 118);
             tableLayoutPanel3.Margin = new Padding(0);
@@ -609,21 +609,6 @@
             editTagsButton.UseVisualStyleBackColor = false;
             editTagsButton.Click += editTagsButton_Click;
             // 
-            // tagsTextBox
-            // 
-            tagsTextBox.BackColor = Color.DimGray;
-            tagsTextBox.BorderStyle = BorderStyle.None;
-            tagsTextBox.Dock = DockStyle.Fill;
-            tagsTextBox.ForeColor = Color.White;
-            tagsTextBox.Location = new Point(0, 363);
-            tagsTextBox.Margin = new Padding(0);
-            tagsTextBox.Multiline = true;
-            tagsTextBox.Name = "tagsTextBox";
-            tagsTextBox.ReadOnly = true;
-            tagsTextBox.ScrollBars = ScrollBars.Vertical;
-            tagsTextBox.Size = new Size(338, 175);
-            tagsTextBox.TabIndex = 7;
-            // 
             // ratingLabel
             // 
             ratingLabel.AutoSize = true;
@@ -634,6 +619,22 @@
             ratingLabel.TabIndex = 8;
             ratingLabel.Text = "Rating: Unknown";
             ratingLabel.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // tagsTextBox
+            // 
+            tagsTextBox.BackColor = Color.DimGray;
+            tagsTextBox.BorderStyle = BorderStyle.None;
+            tagsTextBox.Dock = DockStyle.Fill;
+            tagsTextBox.ForeColor = Color.White;
+            tagsTextBox.Location = new Point(0, 363);
+            tagsTextBox.Margin = new Padding(0);
+            tagsTextBox.Name = "tagsTextBox";
+            tagsTextBox.ReadOnly = true;
+            tagsTextBox.ScrollBars = RichTextBoxScrollBars.Vertical;
+            tagsTextBox.Size = new Size(338, 175);
+            tagsTextBox.TabIndex = 9;
+            tagsTextBox.Text = "";
+            tagsTextBox.Enter += tagsTextBox_Enter;
             // 
             // openFileDialog
             // 
@@ -734,7 +735,7 @@
         private Button tagsButtons;
         private TableLayoutPanel tableLayoutPanel9;
         private Button editTagsButton;
-        private TextBox tagsTextBox;
         private Label ratingLabel;
+        private RichTextBox tagsTextBox;
     }
 }

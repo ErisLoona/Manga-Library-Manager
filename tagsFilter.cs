@@ -62,6 +62,12 @@ namespace Manga_Library_Manager
             excludeList.ItemCheck += excludeList_ItemCheck;
             includeList.EndUpdate();
             excludeList.EndUpdate();
+            occurancesLabel.Text = "No. of mangas by label:\r\n";
+            foreach (KeyValuePair<string, Int32> usage in mainMenu.tagsUsage.OrderByDescending(key => key.Value))
+                occurancesLabel.Text += usage.Key + ": " + Convert.ToString(usage.Value) + "\r\n";
+            occurancesLabel.SelectAll();
+            occurancesLabel.SelectionAlignment = HorizontalAlignment.Center;
+            occurancesLabel.DeselectAll();
         }
 
         private void checkAllButton_Click(object sender, EventArgs e)
@@ -172,6 +178,11 @@ namespace Manga_Library_Manager
         private void excludeList_MouseDown(object sender, MouseEventArgs e)
         {
             excludeList.SelectedIndex = excludeList.IndexFromPoint(e.Location);
+        }
+
+        private void occurancesLabel_Enter(object sender, EventArgs e)
+        {
+            this.ActiveControl = null;
         }
     }
 }

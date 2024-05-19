@@ -9,6 +9,14 @@
     {
       "AbsoluteMoniker": "D:0:0:{8F5E112A-6EEC-46F1-A5F0-845D93AE1BCE}|Manga Library Manager.csproj|C:\\Users\\rares\\Documents\\Misc Programs\\Programming\\Manga Library Manager\\mainmenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{8F5E112A-6EEC-46F1-A5F0-845D93AE1BCE}|Manga Library Manager.csproj|solutionrelative:mainmenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8F5E112A-6EEC-46F1-A5F0-845D93AE1BCE}|Manga Library Manager.csproj|c:\\users\\rares\\documents\\misc programs\\programming\\manga library manager\\tagsfilter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8F5E112A-6EEC-46F1-A5F0-845D93AE1BCE}|Manga Library Manager.csproj|solutionrelative:tagsfilter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8F5E112A-6EEC-46F1-A5F0-845D93AE1BCE}|Manga Library Manager.csproj|c:\\users\\rares\\documents\\misc programs\\programming\\manga library manager\\tagsfilter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{8F5E112A-6EEC-46F1-A5F0-845D93AE1BCE}|Manga Library Manager.csproj|solutionrelative:tagsfilter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,8 +26,33 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 2,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "tagsFilter.cs",
+              "DocumentMoniker": "C:\\Users\\rares\\Documents\\Misc Programs\\Programming\\Manga Library Manager\\tagsFilter.cs",
+              "RelativeDocumentMoniker": "tagsFilter.cs",
+              "ToolTip": "C:\\Users\\rares\\Documents\\Misc Programs\\Programming\\Manga Library Manager\\tagsFilter.cs",
+              "RelativeToolTip": "tagsFilter.cs",
+              "ViewState": "AQIAACkAAAAAAAAAAAAlwEUAAAAMAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-19T11:46:54.532Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "tagsFilter.cs [Design]",
+              "DocumentMoniker": "C:\\Users\\rares\\Documents\\Misc Programs\\Programming\\Manga Library Manager\\tagsFilter.cs",
+              "RelativeDocumentMoniker": "tagsFilter.cs",
+              "ToolTip": "C:\\Users\\rares\\Documents\\Misc Programs\\Programming\\Manga Library Manager\\tagsFilter.cs [Design]",
+              "RelativeToolTip": "tagsFilter.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-19T11:39:18.146Z",
+              "EditorCaption": " [Design]"
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
@@ -28,7 +61,7 @@
               "RelativeDocumentMoniker": "mainMenu.cs",
               "ToolTip": "C:\\Users\\rares\\Documents\\Misc Programs\\Programming\\Manga Library Manager\\mainMenu.cs",
               "RelativeToolTip": "mainMenu.cs",
-              "ViewState": "AQIAAEMAAAAAAAAAAAAnwFcAAABCAAAA",
+              "ViewState": "AQIAAB8DAAAAAAAAAIAwwJYDAAAmAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-05-12T16:16:26.664Z",
               "EditorCaption": ""
