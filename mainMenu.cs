@@ -468,8 +468,13 @@ namespace Manga_Library_Manager
                         ongoingOnlineLabel.Text = "Up to date!";
                     else
                     {
+                        if (tempChapters.Max() - ((eBook)mangaList.SelectedItem).LastChapter < 0)
+                        {
+                            ongoingOnlineLabel.Text = "Please check book link! Online is behind!";
+                            return;
+                        }
                         if (tempChapters.Max() - ((eBook)mangaList.SelectedItem).LastChapter == 1)
-                            ongoingOnlineLabel.Text = Convert.ToString(Convert.ToInt32(Math.Ceiling(tempChapters.Max() - ((eBook)mangaList.SelectedItem).LastChapter))) + " chapter ahead.";
+                            ongoingOnlineLabel.Text = "1 chapter ahead.";
                         else
                             ongoingOnlineLabel.Text = Convert.ToString(Convert.ToInt32(Math.Ceiling(tempChapters.Max() - ((eBook)mangaList.SelectedItem).LastChapter))) + " chapters ahead.";
                     }
@@ -804,6 +809,7 @@ namespace Manga_Library_Manager
                         tagsUsage[tag] = 1;
                     }
                 }
+            booksCopy.Clear();
             booksCopy = books.ToList();
             tagsFilter filterForm = new tagsFilter();
             filterForm.ShowDialog();
@@ -920,6 +926,19 @@ namespace Manga_Library_Manager
         private void tagsTextBox_Enter(object sender, EventArgs e)
         {
             this.ActiveControl = null;
+        }
+
+        private void checkAllOnlineButton_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("This will check all the Ongoing mangas for new chapters online.\nAre you sure you want to start the check?", "Update all chapters", MessageBoxButtons.YesNo) == DialogResult.No)
+                return;
+            booksCopy.Clear();
+            foreach (eBook book in books)
+                if (book.Ongoing == true)
+                    booksCopy.Add(book);
+            allOnlineChapters allOnlineChapters = new allOnlineChapters();
+            allOnlineChapters.ShowDialog();
+            allOnlineChapters.Dispose();
         }
     }
 }

@@ -1,5 +1,5 @@
 # Manga Library Manager
-### [Download .exe](https://github.com/ErisLoona/Manga-Library-Manager/releases/tag/v1.5)
+### [Download .exe](https://github.com/ErisLoona/Manga-Library-Manager/releases/tag/v1.6)
 This is a manager for personal use that allows me to organize and keep track of ongoing releases of Mangas. It checks the `content.opf` file inside a `.epub` archive to get the title and last chapter listed in the description of the "book". It also attempts to get the `cover.*` image from the root of the epub archive.<br />
 
 The program enables better organization of an offline digital manga (/book) library. The intended use (and actions of the program) goes as follows:<br />
@@ -7,7 +7,7 @@ The user adds a manga, either through the Add Manga button which, while it allow
 
 Upon selecting a new entry for the first time (triggered by the link of the entry not being set, so one could re-trigger this intentionally) the program will search the MangaDex API for the title of the manga (obtained from `content.opf`, the file name is irrelevant) and returns all the results in order of relevance in the link ComboBox. The program will select the first result automatically, and the user can double-check whether this is the correct result by the title of the entry or by double-clicking the ComboBox which will open the generated link in the default browser. The program composes the link from the API response. From the same API call the program will also make use of and store:<br />
 
-- The Status of the manga - `ongoing` and `hiatus` are considered as ongoing and the checkbox is checked, `completed` and `cancelled` are considered as not ongoing and the checkBox is left unchecked<br />
+- The Status of the manga - `ongoing` and `hiatus` are considered as ongoing and the checkBox is checked, `completed` and `cancelled` are considered as not ongoing and the checkBox is left unchecked<br />
 - The Content Rating of the manga - displayed in the Description panel<br />
 - The Tags of the manga - displayed in the Description panel
 
@@ -22,5 +22,7 @@ The three buttons in the Description panel:<br />
 The Edit Tags button allows the user to customize the automatically obtained list of tags, as well as add their own custom tags. The program keeps a list of all the unique tags which is listed in the form, and how many times each appears. As such, if a tag is removed and it was its only (/last) apparition, it will be removed from the list altogether on subsequent openings of the form. Custom user tags must be different from existing tags (quality of life in my opinion, don't want multiple versions of the same tag). The reset button allows the user to reset the tags and content rating (*and Ongoing status*) of the manga from the MangaDex API, intended in case the user messes up the tags or any other reason. No tags will be preserved, including custom ones, and all tags will be removed from the list on subsequent viewings of the form if it was their only / last apparition.<br />
 
 There are two filtering systems in the program, which work together. The first one (third top button) will toggle between showing all mangas, and only showing Ongoing mangas. This is useful to know which ones should be "checked online" for a new chapter. The other one allows the user to Filter by Tags. The user can select which Content Ratings to include, and which tags to include / exclude and how. Inclusion and exclusion modes work as follows: `and` will only *include* mangas that contain **all** the selected tags, and will only *exclude* mangas that contain **all** the selected tags. `any` will *include* mangas that contain **any** of the selected tags, and will *exclude* mangas that contain **any** of the selected tags. These modes can be mixed and matched however the user wants. Unselected tags will be ignored (i.e. it doesn't matter whether a manga has them or not). The form includes the total number of entries, number of entries for each Content Rating (unknown / not set are not included), a sorted list of all the present tags with their respective number of entries, and buttons to allow for quickly resetting the filters.<br />
+
+The Check All Online button will go through each Ongoing manga and retrieve its latest chapter, then display a sorted list of every manga and whether or not there are new chapters available, and if yes how many. It gives the same information as if the user were to click on the Check Online button, but it's done in bulk for convenience.<br />
 
 The program will only save the entries database upon exiting. Should it fail to write the `.json` for any reason, the user will be given the option to get the json string themselves to do with as they please.

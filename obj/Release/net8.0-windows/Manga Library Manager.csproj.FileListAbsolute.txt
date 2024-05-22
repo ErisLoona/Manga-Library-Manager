@@ -24,3 +24,4 @@ C:\Users\rares\Documents\Misc Programs\Programming\Manga Library Manager\bin\Rel
 C:\Users\rares\Documents\Misc Programs\Programming\Manga Library Manager\obj\Release\net8.0-windows\Manga Library Manager.sourcelink.json
 C:\Users\rares\Documents\Misc Programs\Programming\Manga Library Manager\obj\Release\net8.0-windows\Manga_Library_Manager.editTags.resources
 C:\Users\rares\Documents\Misc Programs\Programming\Manga Library Manager\obj\Release\net8.0-windows\Manga_Library_Manager.tagsFilter.resources
+C:\Users\rares\Documents\Misc Programs\Programming\Manga Library Manager\obj\Release\net8.0-windows\Manga_Library_Manager.allOnlineChapters.resources

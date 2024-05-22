@@ -33,10 +33,12 @@
             layoutTable = new TableLayoutPanel();
             tableLayoutPanel1 = new TableLayoutPanel();
             tableLayoutPanel2 = new TableLayoutPanel();
+            checkAllOnlineButton = new Button();
             tagsButtons = new Button();
             filterButton = new Button();
-            scanButton = new Button();
+            tableLayoutPanel10 = new TableLayoutPanel();
             addMangaButton = new Button();
+            scanButton = new Button();
             mangaList = new ListBox();
             searchTextBox = new TextBox();
             mangaDescLayoutPanel = new TableLayoutPanel();
@@ -71,6 +73,7 @@
             layoutTable.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
+            tableLayoutPanel10.SuspendLayout();
             mangaDescLayoutPanel.SuspendLayout();
             tableLayoutPanel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mangaDescCover).BeginInit();
@@ -126,10 +129,10 @@
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+            tableLayoutPanel2.Controls.Add(checkAllOnlineButton, 1, 0);
             tableLayoutPanel2.Controls.Add(tagsButtons, 3, 0);
             tableLayoutPanel2.Controls.Add(filterButton, 2, 0);
-            tableLayoutPanel2.Controls.Add(scanButton, 1, 0);
-            tableLayoutPanel2.Controls.Add(addMangaButton, 0, 0);
+            tableLayoutPanel2.Controls.Add(tableLayoutPanel10, 0, 0);
             tableLayoutPanel2.Dock = DockStyle.Fill;
             tableLayoutPanel2.Location = new Point(0, 0);
             tableLayoutPanel2.Margin = new Padding(0);
@@ -138,6 +141,25 @@
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel2.Size = new Size(786, 45);
             tableLayoutPanel2.TabIndex = 0;
+            // 
+            // checkAllOnlineButton
+            // 
+            checkAllOnlineButton.BackColor = Color.FromArgb(248, 200, 220);
+            checkAllOnlineButton.Dock = DockStyle.Fill;
+            checkAllOnlineButton.FlatAppearance.BorderSize = 0;
+            checkAllOnlineButton.FlatAppearance.MouseDownBackColor = Color.FromArgb(188, 152, 167);
+            checkAllOnlineButton.FlatAppearance.MouseOverBackColor = Color.FromArgb(255, 229, 240);
+            checkAllOnlineButton.FlatStyle = FlatStyle.Flat;
+            checkAllOnlineButton.Font = new Font("Calibri", 11.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            checkAllOnlineButton.ForeColor = Color.Black;
+            checkAllOnlineButton.Location = new Point(203, 5);
+            checkAllOnlineButton.Margin = new Padding(7, 5, 7, 5);
+            checkAllOnlineButton.Name = "checkAllOnlineButton";
+            checkAllOnlineButton.Size = new Size(182, 35);
+            checkAllOnlineButton.TabIndex = 8;
+            checkAllOnlineButton.Text = "Check All Online Chapters";
+            checkAllOnlineButton.UseVisualStyleBackColor = false;
+            checkAllOnlineButton.Click += checkAllOnlineButton_Click;
             // 
             // tagsButtons
             // 
@@ -177,24 +199,22 @@
             filterButton.UseVisualStyleBackColor = false;
             filterButton.Click += filterButton_Click;
             // 
-            // scanButton
+            // tableLayoutPanel10
             // 
-            scanButton.BackColor = Color.FromArgb(248, 200, 220);
-            scanButton.Dock = DockStyle.Fill;
-            scanButton.FlatAppearance.BorderSize = 0;
-            scanButton.FlatAppearance.MouseDownBackColor = Color.FromArgb(188, 152, 167);
-            scanButton.FlatAppearance.MouseOverBackColor = Color.FromArgb(255, 229, 240);
-            scanButton.FlatStyle = FlatStyle.Flat;
-            scanButton.Font = new Font("Calibri", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            scanButton.ForeColor = Color.Black;
-            scanButton.Location = new Point(203, 5);
-            scanButton.Margin = new Padding(7, 5, 7, 5);
-            scanButton.Name = "scanButton";
-            scanButton.Size = new Size(182, 35);
-            scanButton.TabIndex = 1;
-            scanButton.Text = "Scan Directory";
-            scanButton.UseVisualStyleBackColor = false;
-            scanButton.Click += scanButton_Click;
+            tableLayoutPanel10.ColumnCount = 2;
+            tableLayoutPanel10.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel10.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel10.Controls.Add(addMangaButton, 0, 0);
+            tableLayoutPanel10.Controls.Add(scanButton, 1, 0);
+            tableLayoutPanel10.Dock = DockStyle.Fill;
+            tableLayoutPanel10.Location = new Point(0, 0);
+            tableLayoutPanel10.Margin = new Padding(0);
+            tableLayoutPanel10.Name = "tableLayoutPanel10";
+            tableLayoutPanel10.RowCount = 1;
+            tableLayoutPanel10.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel10.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            tableLayoutPanel10.Size = new Size(196, 45);
+            tableLayoutPanel10.TabIndex = 7;
             // 
             // addMangaButton
             // 
@@ -204,16 +224,35 @@
             addMangaButton.FlatAppearance.MouseDownBackColor = Color.FromArgb(188, 152, 167);
             addMangaButton.FlatAppearance.MouseOverBackColor = Color.FromArgb(255, 229, 240);
             addMangaButton.FlatStyle = FlatStyle.Flat;
-            addMangaButton.Font = new Font("Calibri", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            addMangaButton.Font = new Font("Calibri", 9.75F, FontStyle.Bold);
             addMangaButton.ForeColor = Color.Black;
             addMangaButton.Location = new Point(7, 5);
             addMangaButton.Margin = new Padding(7, 5, 7, 5);
             addMangaButton.Name = "addMangaButton";
-            addMangaButton.Size = new Size(182, 35);
+            addMangaButton.Size = new Size(84, 35);
             addMangaButton.TabIndex = 0;
             addMangaButton.Text = "Add Manga";
             addMangaButton.UseVisualStyleBackColor = false;
             addMangaButton.Click += addMangaButton_Click;
+            // 
+            // scanButton
+            // 
+            scanButton.BackColor = Color.FromArgb(248, 200, 220);
+            scanButton.Dock = DockStyle.Fill;
+            scanButton.FlatAppearance.BorderSize = 0;
+            scanButton.FlatAppearance.MouseDownBackColor = Color.FromArgb(188, 152, 167);
+            scanButton.FlatAppearance.MouseOverBackColor = Color.FromArgb(255, 229, 240);
+            scanButton.FlatStyle = FlatStyle.Flat;
+            scanButton.Font = new Font("Calibri", 9.75F, FontStyle.Bold);
+            scanButton.ForeColor = Color.Black;
+            scanButton.Location = new Point(105, 5);
+            scanButton.Margin = new Padding(7, 5, 7, 5);
+            scanButton.Name = "scanButton";
+            scanButton.Size = new Size(84, 35);
+            scanButton.TabIndex = 1;
+            scanButton.Text = "Scan Folder";
+            scanButton.UseVisualStyleBackColor = false;
+            scanButton.Click += scanButton_Click;
             // 
             // mangaList
             // 
@@ -680,6 +719,7 @@
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
             tableLayoutPanel2.ResumeLayout(false);
+            tableLayoutPanel10.ResumeLayout(false);
             mangaDescLayoutPanel.ResumeLayout(false);
             tableLayoutPanel4.ResumeLayout(false);
             tableLayoutPanel4.PerformLayout();
@@ -737,5 +777,7 @@
         private Button editTagsButton;
         private Label ratingLabel;
         private RichTextBox tagsTextBox;
+        private Button checkAllOnlineButton;
+        private TableLayoutPanel tableLayoutPanel10;
     }
 }
