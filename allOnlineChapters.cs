@@ -126,7 +126,7 @@ namespace Manga_Library_Manager
                     }
                     catch
                     {
-                        MessageBox.Show("Could not retrieve chapter list for " + book.Key + "!", "API error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        chapters[book.Key] = Int32.MinValue;
                     }
                     ((BackgroundWorker)sender).ReportProgress(1);
                     counter++;
@@ -164,6 +164,8 @@ namespace Manga_Library_Manager
                     statusList.Items.Add("-> Up to date!");
                 else if (chapter.Value == 1)
                     statusList.Items.Add("-> 1 chapter ahead.");
+                else if (chapter.Value == Int32.MinValue)
+                    statusList.Items.Add("-> Error!");
                 else if (chapter.Value < 0)
                     statusList.Items.Add("-> Please check book link!");
                 else
