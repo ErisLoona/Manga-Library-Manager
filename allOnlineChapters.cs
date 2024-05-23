@@ -127,7 +127,6 @@ namespace Manga_Library_Manager
                     catch
                     {
                         MessageBox.Show("Could not retrieve chapter list for " + book.Key + "!", "API error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        continue;
                     }
                     ((BackgroundWorker)sender).ReportProgress(1);
                     counter++;
