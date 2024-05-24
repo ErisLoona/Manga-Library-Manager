@@ -930,8 +930,6 @@ namespace Manga_Library_Manager
 
         private void checkAllOnlineButton_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("This will check all the Ongoing mangas for new chapters online.\nAre you sure you want to start the check?", "Update all chapters", MessageBoxButtons.YesNo) == DialogResult.No)
-                return;
             booksCopy.Clear();
             foreach (eBook book in books)
                 if (book.Ongoing == true)

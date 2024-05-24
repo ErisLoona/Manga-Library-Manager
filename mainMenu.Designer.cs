@@ -118,7 +118,6 @@
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 7F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 4F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 89F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel1.Size = new Size(786, 656);
             tableLayoutPanel1.TabIndex = 0;
             // 
@@ -158,6 +157,7 @@
             checkAllOnlineButton.Size = new Size(182, 35);
             checkAllOnlineButton.TabIndex = 8;
             checkAllOnlineButton.Text = "Check All Online Chapters";
+            toolTip.SetToolTip(checkAllOnlineButton, "Check all the Ongoing mangas for new chapters online.");
             checkAllOnlineButton.UseVisualStyleBackColor = false;
             checkAllOnlineButton.Click += checkAllOnlineButton_Click;
             // 
@@ -683,7 +683,7 @@
             // 
             // checkOnlineTimer
             // 
-            checkOnlineTimer.Interval = 3000;
+            checkOnlineTimer.Interval = 250;
             checkOnlineTimer.Tick += checkOnlineTimer_Tick;
             // 
             // folderBrowserDialog

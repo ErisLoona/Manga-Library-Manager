@@ -85,18 +85,38 @@ namespace Manga_Library_Manager
                             if (passes <= 4)
                                 while (passes > 0)
                                 {
+                                    if (counter == 5)
+                                    {
+                                        sw.Stop();
+                                        span = sw.Elapsed;
+                                        if (span.Milliseconds < 1000)
+                                            Thread.Sleep(1000 - span.Milliseconds);
+                                        counter = 0;
+                                        sw.Reset();
+                                        sw.Start();
+                                    }
                                     task = client.GetStringAsync(new Uri("https://api.mangadex.org/manga/" + mangaID + "/feed?translatedLanguage[]=en&limit=500".AppendQueryParam("offset", Convert.ToString(passes * 500)).AppendQueryParam("contentRating[]", new[] { "safe", "suggestive", "erotica", "pornographic" })));
                                     extraPages.Add(task.Result);
                                     passes--;
+                                    counter++;
                                 }
                             else
                             {
                                 for (int i = 1; i <= passes; i++)
                                 {
-                                    if (i % 5 == 0)
-                                        Thread.Sleep(1000);
+                                    if (counter == 5)
+                                    {
+                                        sw.Stop();
+                                        span = sw.Elapsed;
+                                        if (span.Milliseconds < 1000)
+                                            Thread.Sleep(1000 - span.Milliseconds);
+                                        counter = 0;
+                                        sw.Reset();
+                                        sw.Start();
+                                    }
                                     task = client.GetStringAsync(new Uri("https://api.mangadex.org/manga/" + mangaID + "/feed?translatedLanguage[]=en&limit=500".AppendQueryParam("offset", Convert.ToString(passes * 500)).AppendQueryParam("contentRating[]", new[] { "safe", "suggestive", "erotica", "pornographic" })));
                                     extraPages.Add(task.Result);
+                                    counter++;
                                 }
                             }
                         }
@@ -143,7 +163,7 @@ namespace Manga_Library_Manager
         private void thread_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             doneButton.Text = "Close";
-            loadingBar.Visible = false;
+            //loadingBar.Visible = false;
             Dictionary<string, int> result = new Dictionary<string, int>();
             try
             {

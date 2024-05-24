@@ -1,5 +1,5 @@
 # Manga Library Manager
-### [Download .exe](https://github.com/ErisLoona/Manga-Library-Manager/releases/tag/v1.6)
+### [Download .exe](https://github.com/ErisLoona/Manga-Library-Manager/releases/tag/v1.7)
 This is a manager for personal use that allows me to organize and keep track of ongoing releases of Mangas. It checks the `content.opf` file inside a `.epub` archive to get the title and last chapter listed in the description of the "book". It also attempts to get the `cover.*` image from the root of the epub archive.<br />
 
 The program enables better organization of an offline digital manga (/book) library. The intended use (and actions of the program) goes as follows:<br />
