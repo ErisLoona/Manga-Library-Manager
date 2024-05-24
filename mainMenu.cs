@@ -171,13 +171,24 @@ namespace Manga_Library_Manager
                 {
                     using (ZipFile epub = ZipFile.Read(((eBook)mangaList.SelectedItem).Path))
                     {
+                        bool found = false;
                         foreach (ZipEntry entry in epub.Entries)
                             if (entry.FileName == "cover.jpg" || entry.FileName == "cover.jpeg" || entry.FileName == "cover.png" || entry.FileName == "cover.webp")
                             {
+                                found = true;
                                 entry.Extract(stream);
                                 stream.Position = 0;
                                 break;
                             }
+                        if (found == false)
+                            foreach (ZipEntry entry in epub.SelectEntries("name = cover.*", "OEBPS/OEBPS/"))
+                                if (entry.FileName == "OEBPS/OEBPS/cover.jpg" || entry.FileName == "OEBPS/OEBPS/cover.jpeg" || entry.FileName == "OEBPS/OEBPS/cover.png" || entry.FileName == "OEBPS/OEBPS/cover.webp")
+                                {
+                                    found = true;
+                                    entry.Extract(stream);
+                                    stream.Position = 0;
+                                    break;
+                                }
                     }
                     mangaDescCover.BackgroundImage = Image.FromStream(stream);
                 }
