@@ -9,7 +9,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationIcon>ytpfp.ico</ApplicationIcon>
     <NeutralLanguage>en</NeutralLanguage>
-    <FileVersion>1.8.0</FileVersion>
+    <FileVersion>1.9.0</FileVersion>
     <PackageProjectUrl>https://github.com/ErisLoona/Manga-Library-Manager</PackageProjectUrl>
     <Copyright>Eris Loona, pseudonym</Copyright>
     <Description>A manager for an offline library of mangas.</Description>

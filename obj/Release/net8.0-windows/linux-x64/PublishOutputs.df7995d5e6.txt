@@ -1,2 +1,0 @@
-C:\Users\rares\Documents\Misc Programs\Programming\Manga Library Manager\bin\Release\net8.0-windows\publish\linux-x64\Manga Library Manager.pdb
-C:\Users\rares\Documents\Misc Programs\Programming\Manga Library Manager\bin\Release\net8.0-windows\publish\linux-x64\Manga Library Manager

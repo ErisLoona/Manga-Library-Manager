@@ -6,7 +6,6 @@ using System.Globalization;
 using Newtonsoft.Json.Linq;
 using System.Diagnostics;
 using Flurl;
-using System.Runtime.InteropServices;
 
 namespace Manga_Library_Manager
 {
@@ -383,17 +382,10 @@ namespace Manga_Library_Manager
         {
             try
             {
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                    if (File.Exists(((eBook)mangaList.SelectedItem).Path) == true)
-                        Process.Start("explorer.exe", "/select," + ((eBook)mangaList.SelectedItem).Path);
-                    else
-                        return;
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                    Process.Start("xdg-open", Path.GetDirectoryName(((eBook)mangaList.SelectedItem).Path));
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                    Process.Start("open", Path.GetDirectoryName(((eBook)mangaList.SelectedItem).Path));
+                if (File.Exists(((eBook)mangaList.SelectedItem).Path) == true)
+                    Process.Start("explorer.exe", "/select," + ((eBook)mangaList.SelectedItem).Path);
                 else
-                    MessageBox.Show("Unknown OS:\n" + RuntimeInformation.OSDescription, "How did we get here", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
             }
             catch
             {
@@ -772,7 +764,7 @@ namespace Manga_Library_Manager
                     temp.Path = path.Substring(Path.GetDirectoryName(Environment.ProcessPath).Length);
                 else
                     temp.Path = path;
-                if (temp.Path[0] == Path.DirectorySeparatorChar && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                if (temp.Path[0] == Path.DirectorySeparatorChar)
                     temp.Path = temp.Path.Substring(1);
                 temp.Ongoing = false;
                 temp.Link = String.Empty;
