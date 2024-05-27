@@ -4,6 +4,8 @@ namespace Manga_Library_Manager
 {
     public partial class tagsFilter : Form
     {
+        private Dictionary<string, int> tagIndex = new Dictionary<string, int>();
+
         public tagsFilter()
         {
             InitializeComponent();
@@ -37,8 +39,11 @@ namespace Manga_Library_Manager
             excludeList.ItemCheck -= excludeList_ItemCheck;
             includeList.Items.AddRange(mainMenu.uniqueTags.ToArray());
             excludeList.Items.AddRange(mainMenu.uniqueTags.ToArray());
+            int tagIndexCounter = 0;
             foreach (string tag in mainMenu.uniqueTags)
             {
+                tagIndex[tag] = tagIndexCounter;
+                tagIndexCounter++;
                 if (mainMenu.includedTags.Contains(tag))
                 {
                     includeList.SetItemChecked(includeList.Items.IndexOf(tag), true);
@@ -144,18 +149,67 @@ namespace Manga_Library_Manager
 
         private void includeList_ItemCheck(object sender, ItemCheckEventArgs e)
         {
+            excludeList.SelectedIndex = -1;
             if (e.NewValue == CheckState.Checked)
                 excludeList.Items.Remove(includeList.SelectedItem.ToString());
             else
-                excludeList.Items.Add(includeList.SelectedItem.ToString());
+            {
+                if (excludeList.Items.Count == 0)
+                    excludeList.Items.Add(includeList.SelectedItem.ToString());
+                else if (tagIndex[includeList.SelectedItem.ToString()] < tagIndex[excludeList.Items[0].ToString()])
+                    excludeList.Items.Insert(0, includeList.SelectedItem.ToString());
+                else if (tagIndex[includeList.SelectedItem.ToString()] > tagIndex[excludeList.Items[excludeList.Items.Count - 1].ToString()])
+                    excludeList.Items.Add(includeList.SelectedItem.ToString());
+                else
+                {
+                    bool inserted = false;
+                    for (int i = 0; i < excludeList.Items.Count - 1; i++)
+                    {
+                        if (tagIndex[includeList.SelectedItem.ToString()] > tagIndex[excludeList.Items[i].ToString()] && tagIndex[includeList.SelectedItem.ToString()] < tagIndex[excludeList.Items[i + 1].ToString()])
+                        {
+
+                            excludeList.Items.Insert(i + 1, includeList.SelectedItem.ToString());
+                            inserted = true;
+                            break;
+                        }
+                    }
+                    if (inserted == false)
+                        excludeList.Items.Add(includeList.SelectedItem.ToString());
+                }
+                excludeList.SelectedIndex = excludeList.SelectedIndex = excludeList.Items.IndexOf(includeList.SelectedItem.ToString());
+            }
         }
 
         private void excludeList_ItemCheck(object sender, ItemCheckEventArgs e)
         {
+            includeList.SelectedIndex = -1;
             if (e.NewValue == CheckState.Checked)
                 includeList.Items.Remove(excludeList.SelectedItem.ToString());
             else
-                includeList.Items.Add(excludeList.SelectedItem.ToString());
+            {
+                if (includeList.Items.Count == 0)
+                    includeList.Items.Add(excludeList.SelectedItem.ToString());
+                else if (tagIndex[excludeList.SelectedItem.ToString()] < tagIndex[includeList.Items[0].ToString()])
+                    includeList.Items.Insert(0, excludeList.SelectedItem.ToString());
+                else if (tagIndex[excludeList.SelectedItem.ToString()] > tagIndex[includeList.Items[includeList.Items.Count - 1].ToString()])
+                    includeList.Items.Add(excludeList.SelectedItem.ToString());
+                else
+                {
+                    bool inserted = false;
+                    for (int i = 0; i < includeList.Items.Count - 1; i++)
+                    {
+                        if (tagIndex[excludeList.SelectedItem.ToString()] > tagIndex[includeList.Items[i].ToString()] && tagIndex[excludeList.SelectedItem.ToString()] < tagIndex[includeList.Items[i + 1].ToString()])
+                        {
+                            includeList.Items.Insert(i + 1, excludeList.SelectedItem.ToString());
+                            inserted = true;
+                            break;
+                        }
+                    }
+                    if (inserted == false)
+                        includeList.Items.Add(excludeList.SelectedItem.ToString());
+                }
+                includeList.SelectedIndex = includeList.Items.IndexOf(excludeList.SelectedItem.ToString());
+            }
         }
 
         private void doneButton_Click(object sender, EventArgs e)

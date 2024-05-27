@@ -54,6 +54,7 @@ namespace Manga_Library_Manager
         private void mainMenu_Load(object sender, EventArgs e)
         {
             lastChapterNumber.Maximum = Decimal.MaxValue;
+        CreateJSON:
             if (File.Exists("Manga Library Manager.json") == false)
             {
                 try
@@ -79,8 +80,17 @@ namespace Manga_Library_Manager
             }
             catch
             {
-                MessageBox.Show("Could not read library json!", "Read error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                System.Environment.Exit(1);
+                if (MessageBox.Show("Could not read library json!\nWould you like to delete it and recreate it?", "Read error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.No)
+                    System.Environment.Exit(1);
+                else
+                {
+                    try
+                    {
+                        File.Delete("Manga Library Manager.json");
+                    }
+                    catch { }
+                    goto CreateJSON;
+                }
             }
             mangaList.BeginUpdate();
             foreach (eBook book in books)
@@ -837,6 +847,7 @@ namespace Manga_Library_Manager
                 tagsButtons.Text = "Filter by Tags";
                 mangaList.BeginUpdate();
                 mangaList.Items.Clear();
+                searchTextBox.AutoCompleteCustomSource = null;
                 searchTextBoxAutomcompleteStrings.Clear();
                 foreach (eBook book in books)
                 {
@@ -846,6 +857,7 @@ namespace Manga_Library_Manager
                     searchTextBoxAutomcompleteStrings.Add(book.Title);
                 }
                 mangaList.EndUpdate();
+                searchTextBox.AutoCompleteCustomSource = searchTextBoxAutomcompleteStrings;
                 filterTags = false;
                 return;
             }
@@ -854,6 +866,7 @@ namespace Manga_Library_Manager
             tagsButtons.Text = "Filtering by Tags";
             mangaList.BeginUpdate();
             mangaList.Items.Clear();
+            searchTextBox.AutoCompleteCustomSource = null;
             searchTextBoxAutomcompleteStrings.Clear();
             foreach (eBook book in books)
             {
@@ -909,6 +922,7 @@ namespace Manga_Library_Manager
                 searchTextBoxAutomcompleteStrings.Add(book.Title);
             }
             mangaList.EndUpdate();
+            searchTextBox.AutoCompleteCustomSource = searchTextBoxAutomcompleteStrings;
         }
 
         private void mainMenu_FormClosing(object sender, FormClosingEventArgs e)

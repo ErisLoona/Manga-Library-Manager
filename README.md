@@ -1,5 +1,5 @@
 # Manga Library Manager
-### [Download .exe](https://github.com/ErisLoona/Manga-Library-Manager/releases/tag/v1.7)
+### [Download .exe](https://github.com/ErisLoona/Manga-Library-Manager/releases/tag/v1.8)
 This program enables better organization of an offline digital manga (/book) library. The intended use (and actions of the program) goes as follows:<br />
 The user adds a manga, either through the Add Manga button which, while it allows multiple selections it will warn the user of any duplicate entries, or through the Scan Directory button, which will scan the selected directory and all its subdirectories for `.epub` files and add all the new entries without warning the user about duplicates (I added this because I don't want to find the new additions manually, so I just Scan Directory and it adds everything new without extra interaction). The program will add the entries, the paths to the files are stored relative to the executable if possible (this enables the storage of one's library on a removable drive, alongside the executable, thus preventing the paths from breaking if upon plugging the drive in it is given a different drive letter).<br />
 
