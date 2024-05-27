@@ -6,6 +6,7 @@ using System.Globalization;
 using Newtonsoft.Json.Linq;
 using System.Diagnostics;
 using Flurl;
+using System.Runtime.InteropServices;
 
 namespace Manga_Library_Manager
 {
@@ -130,11 +131,7 @@ namespace Manga_Library_Manager
             tagsTextBox.Visible = show;
             ratingLabel.Visible = show;
             if (show == false)
-            {
                 mangaDescTitle.Text = string.Empty;
-                if (mangaDescCover.BackgroundImage != null)
-                    mangaDescCover.BackgroundImage.Dispose();
-            }
         }
 
         private void mangaList_SelectedIndexChanged(object sender, EventArgs e)
@@ -147,8 +144,7 @@ namespace Manga_Library_Manager
             ratingLabel.Text = "Rating: Unknown";
             tagsTextBox.Text = String.Empty;
             linkTextBox.Items.Clear();
-            if (mangaDescCover.BackgroundImage != null)
-                mangaDescCover.BackgroundImage.Dispose();
+            mangaDescCover.BackgroundImage = Properties.Resources.coverError;
             if (mangaList.SelectedIndex == -1)
             {
                 mangaDescControls(false);
@@ -202,10 +198,7 @@ namespace Manga_Library_Manager
                     }
                     mangaDescCover.BackgroundImage = Image.FromStream(stream);
                 }
-                catch
-                {
-                    mangaDescCover.BackgroundImage = Properties.Resources.coverError;
-                }
+                catch { }
             }
             ongoingCheckbox.Checked = ((eBook)mangaList.SelectedItem).Ongoing;
             lastChapterNumber.Value = ((eBook)mangaList.SelectedItem).LastChapter;
@@ -390,11 +383,21 @@ namespace Manga_Library_Manager
         {
             try
             {
-                System.Diagnostics.Process.Start("explorer.exe", "/select," + ((eBook)mangaList.SelectedItem).Path);
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    if (File.Exists(((eBook)mangaList.SelectedItem).Path) == true)
+                        Process.Start("explorer.exe", "/select," + ((eBook)mangaList.SelectedItem).Path);
+                    else
+                        return;
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    Process.Start("xdg-open", Path.GetDirectoryName(((eBook)mangaList.SelectedItem).Path));
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                    Process.Start("open", Path.GetDirectoryName(((eBook)mangaList.SelectedItem).Path));
+                else
+                    MessageBox.Show("Unknown OS:\n" + RuntimeInformation.OSDescription, "How did we get here", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch
             {
-                MessageBox.Show("Could not launch explorer.exe at the file path:\n" + ((eBook)mangaList.SelectedItem).Path, "Launch error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Could not launch the default file manager at the path:\n" + ((eBook)mangaList.SelectedItem).Path, "Launch error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -769,7 +772,7 @@ namespace Manga_Library_Manager
                     temp.Path = path.Substring(Path.GetDirectoryName(Environment.ProcessPath).Length);
                 else
                     temp.Path = path;
-                if (temp.Path[0] == Path.DirectorySeparatorChar)
+                if (temp.Path[0] == Path.DirectorySeparatorChar && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                     temp.Path = temp.Path.Substring(1);
                 temp.Ongoing = false;
                 temp.Link = String.Empty;

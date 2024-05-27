@@ -16,7 +16,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCopyrightAttribute("Eris Loona, pseudonym")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("A manager for an offline library of mangas.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.8.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7d66b2f777493117a67c09dd1558451f5be04d18")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2fbad8339b60667ad0f569585f02b8c14c71c04c")]
 [assembly: System.Reflection.AssemblyProductAttribute("Manga Library Manager")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Manga Library Manager")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
