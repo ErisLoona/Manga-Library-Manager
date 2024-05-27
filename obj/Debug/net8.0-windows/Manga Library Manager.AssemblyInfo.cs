@@ -13,11 +13,14 @@ using System.Reflection;
 
 [assembly: System.Reflection.AssemblyCompanyAttribute("Manga Library Manager")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
-[assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4983878bdbb0ce42d193a8ba42b2926c1aa599bb")]
+[assembly: System.Reflection.AssemblyCopyrightAttribute("Eris Loona, pseudonym")]
+[assembly: System.Reflection.AssemblyDescriptionAttribute("A manager for an offline library of mangas.")]
+[assembly: System.Reflection.AssemblyFileVersionAttribute("1.7.1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2c5e80ddc913a6f46dc5a7a94bafc0bc40081eb7")]
 [assembly: System.Reflection.AssemblyProductAttribute("Manga Library Manager")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Manga Library Manager")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
+[assembly: System.Resources.NeutralResourcesLanguageAttribute("en")]
 [assembly: System.Runtime.Versioning.TargetPlatformAttribute("Windows7.0")]
 [assembly: System.Runtime.Versioning.SupportedOSPlatformAttribute("Windows7.0")]
 
