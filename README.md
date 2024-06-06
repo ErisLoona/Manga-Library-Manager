@@ -40,7 +40,7 @@ For any bugs, questions or.. issues, please [check or open an issue](https://git
 
 The program is written entirely in WinForms, C# .NET 8.0 and is intended for use on Windows. In my (admittedly not very extensive) testing on Linux it seems to work fine through Wine with no additional configuration, but ymmv. Happy to try and help, but definitely no guarantees.  
 
-This is a passion project, but it still took *a lot** of work, so if you could please consider a donation of any amount, everything is appreciated!  
+This is a passion project, but it still took *a lot* of work, so if you could please consider a donation of any amount, everything is appreciated!  
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/N4N0OTIEV)  
 
-## [Credits]()
+## [Credits](https://github.com/ErisLoona/Manga-Library-Manager/wiki/Credits)
