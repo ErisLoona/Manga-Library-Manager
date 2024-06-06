@@ -74,7 +74,7 @@ namespace Manga_Library_Manager
             occurancesLabel.Text += "Suggestive: " + Convert.ToString(ratingCount[1]) + "\r\n";
             occurancesLabel.Text += "Erotica: " + Convert.ToString(ratingCount[2]) + "\r\n";
             occurancesLabel.Text += "Pornographic: " + Convert.ToString(ratingCount[3]) + "\r\n\r\n";
-            occurancesLabel.Text += "No. of mangas by label:\r\n";
+            occurancesLabel.Text += "Nr. of mangas by tag:\r\n";
             foreach (KeyValuePair<string, Int32> usage in mainMenu.tagsUsage.OrderByDescending(key => key.Value))
                 occurancesLabel.Text += usage.Key + ": " + Convert.ToString(usage.Value) + "\r\n";
             occurancesLabel.Select(0, 7);

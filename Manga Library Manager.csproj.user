@@ -3,30 +3,4 @@
   <PropertyGroup>
     <_LastSelectedProfileId>C:\Users\rares\Documents\Misc Programs\Programming\Manga Library Manager\Properties\PublishProfiles\FolderProfile.pubxml</_LastSelectedProfileId>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Update="allOnlineChapters.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="dumpJSON.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="editTags.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="importLibrary.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="mainMenu.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="mangaDownloader.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="tagsFilter.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="userSettings.cs">
-      <SubType>Form</SubType>
-    </Compile>
-  </ItemGroup>
 </Project>

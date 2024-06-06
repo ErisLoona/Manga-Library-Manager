@@ -48,30 +48,15 @@ namespace Manga_Library_Manager
         {
             Dictionary<string, string> booksCopy = e.Argument as Dictionary<string, string>;
             Dictionary<string, int> chapters = new Dictionary<string, int>();
-            Stopwatch sw = new Stopwatch();
-            TimeSpan span;
             using (HttpClient client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
                 client.DefaultRequestHeaders.UserAgent.ParseAdd("Manga Library Manager for Windows by (github) ErisLoona");
-                int counter = 0;
-                sw.Start();
                 foreach (KeyValuePair<string, string> book in booksCopy)
                 {
-                    if (counter == 5)
-                    {
-                        sw.Stop();
-                        span = sw.Elapsed;
-                        if (span.Milliseconds < 1000)
-                            Thread.Sleep(1000 - span.Milliseconds);
-                        counter = 0;
-                        sw.Reset();
-                        sw.Start();
-                    }
                     if (((BackgroundWorker)sender).CancellationPending == true)
                     {
                         e.Cancel = true;
-                        sw.Reset();
                         break;
                     }
                     List<string> extraPages = new List<string>();
@@ -92,7 +77,6 @@ namespace Manga_Library_Manager
                                 extraPages.Add(task.Result);
                                 calledAPI();
                                 passes--;
-                                counter++;
                             }
                         }
                         List<decimal> tempChapters = new List<decimal>();
@@ -124,7 +108,6 @@ namespace Manga_Library_Manager
                         chapters[book.Key] = Int32.MinValue;
                     }
                     ((BackgroundWorker)sender).ReportProgress(1);
-                    counter++;
                 }
             }
             e.Result = chapters;
