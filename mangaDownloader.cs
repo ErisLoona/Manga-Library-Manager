@@ -788,6 +788,7 @@ namespace Manga_Library_Manager
                             }
                         }
                         catch { }
+                        sw.Reset();
                     }
                     catch { }
                     try
