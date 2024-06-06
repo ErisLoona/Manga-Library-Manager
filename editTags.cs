@@ -15,8 +15,8 @@ namespace Manga_Library_Manager
 
         private void editTags_Load(object sender, EventArgs e)
         {
-            if (mainMenu.currentlySelectedBook.CotentRating != String.Empty)
-                ratingsDropdown.SelectedItem = mainMenu.currentlySelectedBook.CotentRating;
+            if (mainMenu.currentlySelectedBook.ContentRating != String.Empty)
+                ratingsDropdown.SelectedItem = mainMenu.currentlySelectedBook.ContentRating;
             else
                 ratingsDropdown.SelectedIndex = 0;
             tagsList.BeginUpdate();
@@ -95,7 +95,7 @@ namespace Manga_Library_Manager
 
         private void ratingsDropdown_SelectedIndexChanged(object sender, EventArgs e)
         {
-            mainMenu.currentlySelectedBook.CotentRating = ratingsDropdown.SelectedItem.ToString();
+            mainMenu.currentlySelectedBook.ContentRating = ratingsDropdown.SelectedItem.ToString();
         }
 
         private void doneButton_Click(object sender, EventArgs e)

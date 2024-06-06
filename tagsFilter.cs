@@ -62,13 +62,13 @@ namespace Manga_Library_Manager
             occurancesLabel.Text = "Mangas: " + Convert.ToString(mainMenu.booksCopy.Count) + "\r\n\r\n";
             int[] ratingCount = { 0, 0, 0, 0 };
             foreach (mainMenu.eBook book in mainMenu.booksCopy)
-                if (book.CotentRating == "Safe")
+                if (book.ContentRating == "Safe")
                     ratingCount[0]++;
-                else if (book.CotentRating == "Suggestive")
+                else if (book.ContentRating == "Suggestive")
                     ratingCount[1]++;
-                else if (book.CotentRating == "Erotica")
+                else if (book.ContentRating == "Erotica")
                     ratingCount[2]++;
-                else if (book.CotentRating == "Pornographic")
+                else if (book.ContentRating == "Pornographic")
                     ratingCount[3]++;
             occurancesLabel.Text += "Safe: " + Convert.ToString(ratingCount[0]) + "\r\n";
             occurancesLabel.Text += "Suggestive: " + Convert.ToString(ratingCount[1]) + "\r\n";

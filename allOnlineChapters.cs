@@ -9,6 +9,9 @@ namespace Manga_Library_Manager
     public partial class allOnlineChapters : Form
     {
         private Dictionary<string, string> books = new Dictionary<string, string>();
+        public static Stopwatch generalApi = new Stopwatch();
+        public static TimeSpan apiSpan;
+        public static int generalApiCalls = 0;
 
         public allOnlineChapters()
         {
@@ -76,48 +79,20 @@ namespace Manga_Library_Manager
                     try
                     {
                         string mangaID = book.Value.Split('/')[4];
-                        Task<string> task = client.GetStringAsync(new Uri("https://api.mangadex.org/manga/" + mangaID + "/feed?translatedLanguage[]=en&limit=500".AppendQueryParam("contentRating[]", new[] { "safe", "suggestive", "erotica", "pornographic" })));
+                        Task<string> task = client.GetStringAsync(new Uri("https://api.mangadex.org/manga/" + mangaID + "/feed".SetQueryParam("translatedLanguage[]", mainMenu.selectedLanguage).AppendQueryParam("limit", 100).AppendQueryParam("contentRating[]", new[] { "safe", "suggestive", "erotica", "pornographic" })));
                         apiResult = JObject.Parse(task.Result);
+                        calledAPI();
                         int apiTotal = apiResult.SelectToken("total").Value<int>();
-                        if (apiTotal > 500)
+                        if (apiTotal > 100)
                         {
-                            int passes = apiTotal / 500;
-                            if (passes <= 4)
-                                while (passes > 0)
-                                {
-                                    if (counter == 5)
-                                    {
-                                        sw.Stop();
-                                        span = sw.Elapsed;
-                                        if (span.Milliseconds < 1000)
-                                            Thread.Sleep(1000 - span.Milliseconds);
-                                        counter = 0;
-                                        sw.Reset();
-                                        sw.Start();
-                                    }
-                                    task = client.GetStringAsync(new Uri("https://api.mangadex.org/manga/" + mangaID + "/feed?translatedLanguage[]=en&limit=500".AppendQueryParam("offset", Convert.ToString(passes * 500)).AppendQueryParam("contentRating[]", new[] { "safe", "suggestive", "erotica", "pornographic" })));
-                                    extraPages.Add(task.Result);
-                                    passes--;
-                                    counter++;
-                                }
-                            else
+                            int passes = apiTotal / 100;
+                            while (passes > 0)
                             {
-                                for (int i = 1; i <= passes; i++)
-                                {
-                                    if (counter == 5)
-                                    {
-                                        sw.Stop();
-                                        span = sw.Elapsed;
-                                        if (span.Milliseconds < 1000)
-                                            Thread.Sleep(1000 - span.Milliseconds);
-                                        counter = 0;
-                                        sw.Reset();
-                                        sw.Start();
-                                    }
-                                    task = client.GetStringAsync(new Uri("https://api.mangadex.org/manga/" + mangaID + "/feed?translatedLanguage[]=en&limit=500".AppendQueryParam("offset", Convert.ToString(passes * 500)).AppendQueryParam("contentRating[]", new[] { "safe", "suggestive", "erotica", "pornographic" })));
-                                    extraPages.Add(task.Result);
-                                    counter++;
-                                }
+                                task = client.GetStringAsync(new Uri("https://api.mangadex.org/manga/" + mangaID + "/feed".SetQueryParam("translatedLanguage[]", mainMenu.selectedLanguage).AppendQueryParam("limit", 100).AppendQueryParam("offset", Convert.ToString(passes * 100)).AppendQueryParam("contentRating[]", new[] { "safe", "suggestive", "erotica", "pornographic" })));
+                                extraPages.Add(task.Result);
+                                calledAPI();
+                                passes--;
+                                counter++;
                             }
                         }
                         List<decimal> tempChapters = new List<decimal>();
@@ -189,7 +164,7 @@ namespace Manga_Library_Manager
                 else if (chapter.Value < 0)
                     statusList.Items.Add("-> Please check book link!");
                 else
-                    statusList.Items.Add("->" + Convert.ToString(chapter.Value) + " chapters ahead.");
+                    statusList.Items.Add("-> " + Convert.ToString(chapter.Value) + " chapters ahead.");
             }
             nameList.EndUpdate();
             statusList.EndUpdate();
@@ -210,6 +185,26 @@ namespace Manga_Library_Manager
                 }
                 else
                     thread.CancelAsync();
+        }
+
+        public void calledAPI()
+        {
+            if (generalApi.IsRunning == true)
+            {
+                generalApi.Stop();
+                generalApiCalls++;
+                apiSpan = generalApi.Elapsed;
+                if (generalApiCalls >= 5)
+                {
+                    if (apiSpan.Milliseconds < 1000)
+                        Thread.Sleep(1000 - apiSpan.Milliseconds);
+                    generalApiCalls = 0;
+                    generalApi.Reset();
+                }
+                generalApi.Start();
+            }
+            else
+                generalApi.Start();
         }
     }
 }
