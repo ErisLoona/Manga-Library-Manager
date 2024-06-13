@@ -205,7 +205,6 @@ namespace Manga_Library_Manager
                                 catch { }
                             }
                         }
-                    becomingBook.LastChapter = tempChapterNumbers.Max();
                     if (mainMenu.updateManga == false)
                     {
                         task = client.GetStringAsync(new Uri("https://api.mangadex.org/manga/" + mangaID + "?includes[]=cover_art&includes[]=author&includes[]=artist"));
@@ -430,6 +429,7 @@ namespace Manga_Library_Manager
                         selectedChapterNumbers.Add(tempChapterNumbers[i]);
                         chapterPages.Add(chapterNrPages[i]);
                     }
+                becomingBook.LastChapter = selectedChapterNumbers.Max();
                 if (chapterDownloads.Count == 0)
                 {
                     MessageBox.Show("No chapters selected!\nPlease select at least one chapter.", "No chapters selected", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1132,8 +1132,8 @@ namespace Manga_Library_Manager
 
         public string padDecimal(decimal value, string padding)
         {
-            if (value - Convert.ToInt32(value) != 0)
-                return Convert.ToInt32(value).ToString(padding) + (value - Convert.ToInt32(value)).ToString().Substring(1);
+            if (value - Convert.ToInt32(Math.Floor(value)) != 0)
+                return Convert.ToInt32(Math.Floor(value)).ToString(padding) + (value - Convert.ToInt32(Math.Floor(value))).ToString().Substring(1);
             return Convert.ToInt32(value).ToString(padding);
         }
     }
