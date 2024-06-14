@@ -63,7 +63,7 @@
             doneButton.FlatStyle = FlatStyle.Flat;
             doneButton.Font = new Font("Calibri", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             doneButton.ForeColor = Color.Black;
-            doneButton.Location = new Point(0, 540);
+            doneButton.Location = new Point(0, 549);
             doneButton.Margin = new Padding(0);
             doneButton.Name = "doneButton";
             doneButton.Size = new Size(693, 30);
@@ -92,7 +92,7 @@
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 6F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 58F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 6F));
-            tableLayoutPanel1.Size = new Size(485, 540);
+            tableLayoutPanel1.Size = new Size(485, 549);
             tableLayoutPanel1.TabIndex = 8;
             // 
             // tableLayoutPanel2
@@ -164,7 +164,7 @@
             tableLayoutPanel3.RowCount = 1;
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel3.Size = new Size(485, 108);
+            tableLayoutPanel3.Size = new Size(485, 109);
             tableLayoutPanel3.TabIndex = 1;
             // 
             // ratingList
@@ -178,7 +178,7 @@
             ratingList.Items.AddRange(new object[] { "Safe", "Suggestive", "Erotica", "Pornographic" });
             ratingList.Location = new Point(182, 3);
             ratingList.Name = "ratingList";
-            ratingList.Size = new Size(120, 102);
+            ratingList.Size = new Size(120, 103);
             ratingList.TabIndex = 0;
             ratingList.SelectedIndexChanged += ratingList_SelectedIndexChanged;
             // 
@@ -190,13 +190,13 @@
             tableLayoutPanel4.Controls.Add(includeList, 0, 0);
             tableLayoutPanel4.Controls.Add(excludeList, 1, 0);
             tableLayoutPanel4.Dock = DockStyle.Fill;
-            tableLayoutPanel4.Location = new Point(0, 194);
+            tableLayoutPanel4.Location = new Point(0, 195);
             tableLayoutPanel4.Margin = new Padding(0);
             tableLayoutPanel4.Name = "tableLayoutPanel4";
             tableLayoutPanel4.RowCount = 1;
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel4.Size = new Size(485, 313);
+            tableLayoutPanel4.Size = new Size(485, 318);
             tableLayoutPanel4.TabIndex = 2;
             // 
             // includeList
@@ -208,7 +208,7 @@
             includeList.FormattingEnabled = true;
             includeList.Location = new Point(3, 3);
             includeList.Name = "includeList";
-            includeList.Size = new Size(236, 307);
+            includeList.Size = new Size(236, 312);
             includeList.TabIndex = 0;
             includeList.ItemCheck += includeList_ItemCheck;
             includeList.MouseDown += includeList_MouseDown;
@@ -222,7 +222,7 @@
             excludeList.FormattingEnabled = true;
             excludeList.Location = new Point(245, 3);
             excludeList.Name = "excludeList";
-            excludeList.Size = new Size(237, 307);
+            excludeList.Size = new Size(237, 312);
             excludeList.TabIndex = 1;
             excludeList.ItemCheck += excludeList_ItemCheck;
             excludeList.MouseDown += excludeList_MouseDown;
@@ -235,13 +235,13 @@
             tableLayoutPanel5.Controls.Add(inclusionMode, 0, 0);
             tableLayoutPanel5.Controls.Add(exclusionMode, 1, 0);
             tableLayoutPanel5.Dock = DockStyle.Fill;
-            tableLayoutPanel5.Location = new Point(0, 507);
+            tableLayoutPanel5.Location = new Point(0, 513);
             tableLayoutPanel5.Margin = new Padding(0);
             tableLayoutPanel5.Name = "tableLayoutPanel5";
             tableLayoutPanel5.RowCount = 1;
             tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel5.Size = new Size(485, 33);
+            tableLayoutPanel5.Size = new Size(485, 36);
             tableLayoutPanel5.TabIndex = 3;
             // 
             // inclusionMode
@@ -270,7 +270,7 @@
             // 
             tagSearch.AutoCompleteMode = AutoCompleteMode.Suggest;
             tagSearch.Dock = DockStyle.Fill;
-            tagSearch.Location = new Point(3, 165);
+            tagSearch.Location = new Point(3, 166);
             tagSearch.Name = "tagSearch";
             tagSearch.PlaceholderText = "Search for a tag";
             tagSearch.Size = new Size(479, 27);
@@ -293,7 +293,7 @@
             tableLayoutPanel6.RowCount = 1;
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel6.Size = new Size(693, 540);
+            tableLayoutPanel6.Size = new Size(693, 549);
             tableLayoutPanel6.TabIndex = 9;
             // 
             // occurancesLabel
@@ -307,7 +307,7 @@
             occurancesLabel.Margin = new Padding(3, 0, 0, 0);
             occurancesLabel.Name = "occurancesLabel";
             occurancesLabel.ReadOnly = true;
-            occurancesLabel.Size = new Size(205, 540);
+            occurancesLabel.Size = new Size(205, 549);
             occurancesLabel.TabIndex = 9;
             occurancesLabel.Text = "text\ntext\ntext\ntext";
             occurancesLabel.WordWrap = false;
@@ -318,7 +318,7 @@
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.DimGray;
-            ClientSize = new Size(693, 570);
+            ClientSize = new Size(693, 579);
             Controls.Add(tableLayoutPanel6);
             Controls.Add(doneButton);
             Font = new Font("Calibri", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);

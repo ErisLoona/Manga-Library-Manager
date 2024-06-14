@@ -107,7 +107,7 @@
             layoutTable.RowCount = 1;
             layoutTable.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             layoutTable.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            layoutTable.Size = new Size(1124, 656);
+            layoutTable.Size = new Size(1124, 660);
             layoutTable.TabIndex = 0;
             // 
             // tableLayoutPanel1
@@ -125,7 +125,7 @@
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 7F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 5.5F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 87.5F));
-            tableLayoutPanel1.Size = new Size(786, 656);
+            tableLayoutPanel1.Size = new Size(786, 660);
             tableLayoutPanel1.TabIndex = 0;
             // 
             // tableLayoutPanel2
@@ -145,7 +145,7 @@
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 1;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel2.Size = new Size(786, 45);
+            tableLayoutPanel2.Size = new Size(786, 46);
             tableLayoutPanel2.TabIndex = 0;
             // 
             // downloadMangaButton
@@ -161,7 +161,7 @@
             downloadMangaButton.Location = new Point(399, 5);
             downloadMangaButton.Margin = new Padding(7, 5, 7, 5);
             downloadMangaButton.Name = "downloadMangaButton";
-            downloadMangaButton.Size = new Size(182, 35);
+            downloadMangaButton.Size = new Size(182, 36);
             downloadMangaButton.TabIndex = 10;
             downloadMangaButton.Text = "Download a Manga";
             toolTip.SetToolTip(downloadMangaButton, "Check all the Ongoing mangas for new chapters online.");
@@ -181,7 +181,7 @@
             checkAllOnlineButton.Location = new Point(203, 5);
             checkAllOnlineButton.Margin = new Padding(7, 5, 7, 5);
             checkAllOnlineButton.Name = "checkAllOnlineButton";
-            checkAllOnlineButton.Size = new Size(182, 35);
+            checkAllOnlineButton.Size = new Size(182, 36);
             checkAllOnlineButton.TabIndex = 8;
             checkAllOnlineButton.Text = "Check All Online Chapters";
             toolTip.SetToolTip(checkAllOnlineButton, "Check all the Ongoing mangas for new chapters online.");
@@ -202,7 +202,7 @@
             tableLayoutPanel10.RowCount = 1;
             tableLayoutPanel10.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel10.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel10.Size = new Size(196, 45);
+            tableLayoutPanel10.Size = new Size(196, 46);
             tableLayoutPanel10.TabIndex = 7;
             // 
             // addMangaButton
@@ -218,7 +218,7 @@
             addMangaButton.Location = new Point(7, 5);
             addMangaButton.Margin = new Padding(7, 5, 7, 5);
             addMangaButton.Name = "addMangaButton";
-            addMangaButton.Size = new Size(84, 35);
+            addMangaButton.Size = new Size(84, 36);
             addMangaButton.TabIndex = 0;
             addMangaButton.Text = "Add Manga";
             addMangaButton.UseVisualStyleBackColor = false;
@@ -237,7 +237,7 @@
             scanButton.Location = new Point(105, 5);
             scanButton.Margin = new Padding(7, 5, 7, 5);
             scanButton.Name = "scanButton";
-            scanButton.Size = new Size(84, 35);
+            scanButton.Size = new Size(84, 36);
             scanButton.TabIndex = 1;
             scanButton.Text = "Scan Folder";
             scanButton.UseVisualStyleBackColor = false;
@@ -257,7 +257,7 @@
             tableLayoutPanel11.RowCount = 1;
             tableLayoutPanel11.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel11.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel11.Size = new Size(198, 45);
+            tableLayoutPanel11.Size = new Size(198, 46);
             tableLayoutPanel11.TabIndex = 9;
             // 
             // tagsButtons
@@ -272,7 +272,7 @@
             tagsButtons.ForeColor = Color.Black;
             tagsButtons.Location = new Point(102, 3);
             tagsButtons.Name = "tagsButtons";
-            tagsButtons.Size = new Size(93, 39);
+            tagsButtons.Size = new Size(93, 40);
             tagsButtons.TabIndex = 6;
             tagsButtons.Text = "Filter by\r\nTags";
             tagsButtons.UseVisualStyleBackColor = false;
@@ -290,7 +290,7 @@
             filterButton.ForeColor = Color.Black;
             filterButton.Location = new Point(3, 3);
             filterButton.Name = "filterButton";
-            filterButton.Size = new Size(93, 39);
+            filterButton.Size = new Size(93, 40);
             filterButton.TabIndex = 2;
             filterButton.Text = "Showing\r\nAll";
             filterButton.UseVisualStyleBackColor = false;
@@ -304,10 +304,10 @@
             mangaList.ForeColor = Color.White;
             mangaList.FormattingEnabled = true;
             mangaList.ItemHeight = 26;
-            mangaList.Location = new Point(5, 82);
+            mangaList.Location = new Point(5, 83);
             mangaList.Margin = new Padding(5, 1, 5, 1);
             mangaList.Name = "mangaList";
-            mangaList.Size = new Size(776, 573);
+            mangaList.Size = new Size(776, 576);
             mangaList.TabIndex = 1;
             mangaList.SelectedIndexChanged += mangaList_SelectedIndexChanged;
             mangaList.MouseDown += mangaList_MouseDown;
@@ -320,7 +320,7 @@
             tableLayoutPanel12.Controls.Add(searchTextBox, 0, 0);
             tableLayoutPanel12.Controls.Add(settingsButton, 1, 0);
             tableLayoutPanel12.Dock = DockStyle.Fill;
-            tableLayoutPanel12.Location = new Point(0, 45);
+            tableLayoutPanel12.Location = new Point(0, 46);
             tableLayoutPanel12.Margin = new Padding(0);
             tableLayoutPanel12.Name = "tableLayoutPanel12";
             tableLayoutPanel12.RowCount = 1;
@@ -375,7 +375,7 @@
             mangaDescLayoutPanel.RowCount = 2;
             mangaDescLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 18F));
             mangaDescLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 82F));
-            mangaDescLayoutPanel.Size = new Size(338, 656);
+            mangaDescLayoutPanel.Size = new Size(338, 660);
             mangaDescLayoutPanel.TabIndex = 1;
             // 
             // tableLayoutPanel4
@@ -446,7 +446,7 @@
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 8F));
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 6F));
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 26F));
-            tableLayoutPanel3.Size = new Size(338, 538);
+            tableLayoutPanel3.Size = new Size(338, 542);
             tableLayoutPanel3.TabIndex = 1;
             // 
             // updateMangaButton
@@ -460,7 +460,7 @@
             updateMangaButton.FlatStyle = FlatStyle.Flat;
             updateMangaButton.Font = new Font("Calibri", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             updateMangaButton.ForeColor = Color.Black;
-            updateMangaButton.Location = new Point(7, 292);
+            updateMangaButton.Location = new Point(7, 295);
             updateMangaButton.Margin = new Padding(7, 4, 7, 4);
             updateMangaButton.Name = "updateMangaButton";
             updateMangaButton.Size = new Size(324, 24);
@@ -474,7 +474,7 @@
             // 
             ongoingOnlineLabel.AutoSize = true;
             ongoingOnlineLabel.Dock = DockStyle.Fill;
-            ongoingOnlineLabel.Location = new Point(0, 256);
+            ongoingOnlineLabel.Location = new Point(0, 259);
             ongoingOnlineLabel.Margin = new Padding(0);
             ongoingOnlineLabel.Name = "ongoingOnlineLabel";
             ongoingOnlineLabel.Size = new Size(338, 32);
@@ -487,7 +487,7 @@
             linkTextBox.AutoCompleteMode = AutoCompleteMode.Suggest;
             linkTextBox.AutoCompleteSource = AutoCompleteSource.ListItems;
             linkTextBox.Dock = DockStyle.Fill;
-            linkTextBox.Location = new Point(5, 131);
+            linkTextBox.Location = new Point(5, 133);
             linkTextBox.Margin = new Padding(5, 3, 5, 5);
             linkTextBox.MaxLength = 800;
             linkTextBox.Name = "linkTextBox";
@@ -506,12 +506,12 @@
             tableLayoutPanel6.Controls.Add(resetButton, 2, 0);
             tableLayoutPanel6.Controls.Add(tableLayoutPanel8, 1, 0);
             tableLayoutPanel6.Dock = DockStyle.Fill;
-            tableLayoutPanel6.Location = new Point(0, 64);
+            tableLayoutPanel6.Location = new Point(0, 65);
             tableLayoutPanel6.Margin = new Padding(0);
             tableLayoutPanel6.Name = "tableLayoutPanel6";
             tableLayoutPanel6.RowCount = 1;
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel6.Size = new Size(338, 64);
+            tableLayoutPanel6.Size = new Size(338, 65);
             tableLayoutPanel6.TabIndex = 1;
             // 
             // label1
@@ -522,7 +522,7 @@
             label1.Location = new Point(4, 4);
             label1.Margin = new Padding(4);
             label1.Name = "label1";
-            label1.Size = new Size(194, 56);
+            label1.Size = new Size(194, 57);
             label1.TabIndex = 0;
             label1.Text = "Last chapter:";
             label1.TextAlign = ContentAlignment.MiddleCenter;
@@ -542,7 +542,7 @@
             resetButton.Location = new Point(303, 0);
             resetButton.Margin = new Padding(0);
             resetButton.Name = "resetButton";
-            resetButton.Size = new Size(35, 64);
+            resetButton.Size = new Size(35, 65);
             resetButton.TabIndex = 3;
             toolTip.SetToolTip(resetButton, "Reset last chapter from file");
             resetButton.UseVisualStyleBackColor = false;
@@ -562,7 +562,7 @@
             tableLayoutPanel8.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel8.RowStyles.Add(new RowStyle());
             tableLayoutPanel8.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel8.Size = new Size(101, 64);
+            tableLayoutPanel8.Size = new Size(101, 65);
             tableLayoutPanel8.TabIndex = 6;
             // 
             // lastChapterNumber
@@ -595,7 +595,7 @@
             tableLayoutPanel7.RowCount = 2;
             tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel7.Size = new Size(338, 64);
+            tableLayoutPanel7.Size = new Size(338, 65);
             tableLayoutPanel7.TabIndex = 2;
             // 
             // label2
@@ -618,7 +618,7 @@
             ongoingCheckbox.Font = new Font("Calibri", 20.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             ongoingCheckbox.Location = new Point(3, 35);
             ongoingCheckbox.Name = "ongoingCheckbox";
-            ongoingCheckbox.Size = new Size(332, 26);
+            ongoingCheckbox.Size = new Size(332, 27);
             ongoingCheckbox.TabIndex = 1;
             ongoingCheckbox.UseVisualStyleBackColor = true;
             ongoingCheckbox.CheckedChanged += ongoingCheckbox_CheckedChanged;
@@ -633,13 +633,13 @@
             tableLayoutPanel5.Controls.Add(checkOnlineButton, 0, 0);
             tableLayoutPanel5.Controls.Add(openInExplorerButton, 0, 0);
             tableLayoutPanel5.Dock = DockStyle.Fill;
-            tableLayoutPanel5.Location = new Point(0, 160);
+            tableLayoutPanel5.Location = new Point(0, 162);
             tableLayoutPanel5.Margin = new Padding(0);
             tableLayoutPanel5.Name = "tableLayoutPanel5";
             tableLayoutPanel5.RowCount = 1;
             tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel5.Size = new Size(338, 64);
+            tableLayoutPanel5.Size = new Size(338, 65);
             tableLayoutPanel5.TabIndex = 0;
             // 
             // deleteEntryButton
@@ -655,7 +655,7 @@
             deleteEntryButton.Location = new Point(231, 5);
             deleteEntryButton.Margin = new Padding(7, 5, 7, 5);
             deleteEntryButton.Name = "deleteEntryButton";
-            deleteEntryButton.Size = new Size(100, 54);
+            deleteEntryButton.Size = new Size(100, 55);
             deleteEntryButton.TabIndex = 4;
             deleteEntryButton.Text = "Delete\r\nEntry";
             deleteEntryButton.UseVisualStyleBackColor = false;
@@ -674,7 +674,7 @@
             checkOnlineButton.Location = new Point(119, 5);
             checkOnlineButton.Margin = new Padding(7, 5, 7, 5);
             checkOnlineButton.Name = "checkOnlineButton";
-            checkOnlineButton.Size = new Size(98, 54);
+            checkOnlineButton.Size = new Size(98, 55);
             checkOnlineButton.TabIndex = 3;
             checkOnlineButton.Text = "Check\r\nOnline";
             checkOnlineButton.UseVisualStyleBackColor = false;
@@ -693,7 +693,7 @@
             openInExplorerButton.Location = new Point(7, 5);
             openInExplorerButton.Margin = new Padding(7, 5, 7, 5);
             openInExplorerButton.Name = "openInExplorerButton";
-            openInExplorerButton.Size = new Size(98, 54);
+            openInExplorerButton.Size = new Size(98, 55);
             openInExplorerButton.TabIndex = 2;
             openInExplorerButton.Text = "Open in\r\nFile Explorer";
             openInExplorerButton.UseVisualStyleBackColor = false;
@@ -703,7 +703,7 @@
             // 
             lastChapterOnlineLabel.AutoSize = true;
             lastChapterOnlineLabel.Dock = DockStyle.Fill;
-            lastChapterOnlineLabel.Location = new Point(0, 224);
+            lastChapterOnlineLabel.Location = new Point(0, 227);
             lastChapterOnlineLabel.Margin = new Padding(0);
             lastChapterOnlineLabel.Name = "lastChapterOnlineLabel";
             lastChapterOnlineLabel.Size = new Size(338, 32);
@@ -720,7 +720,7 @@
             tableLayoutPanel9.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tableLayoutPanel9.Controls.Add(editTagsButton, 1, 0);
             tableLayoutPanel9.Dock = DockStyle.Fill;
-            tableLayoutPanel9.Location = new Point(0, 320);
+            tableLayoutPanel9.Location = new Point(0, 323);
             tableLayoutPanel9.Margin = new Padding(0);
             tableLayoutPanel9.Name = "tableLayoutPanel9";
             tableLayoutPanel9.RowCount = 1;
@@ -751,7 +751,7 @@
             // 
             ratingLabel.AutoSize = true;
             ratingLabel.Dock = DockStyle.Fill;
-            ratingLabel.Location = new Point(3, 363);
+            ratingLabel.Location = new Point(3, 366);
             ratingLabel.Name = "ratingLabel";
             ratingLabel.Size = new Size(332, 32);
             ratingLabel.TabIndex = 8;
@@ -764,12 +764,12 @@
             tagsTextBox.BorderStyle = BorderStyle.None;
             tagsTextBox.Dock = DockStyle.Fill;
             tagsTextBox.ForeColor = Color.White;
-            tagsTextBox.Location = new Point(0, 395);
+            tagsTextBox.Location = new Point(0, 398);
             tagsTextBox.Margin = new Padding(0);
             tagsTextBox.Name = "tagsTextBox";
             tagsTextBox.ReadOnly = true;
             tagsTextBox.ScrollBars = RichTextBoxScrollBars.Vertical;
-            tagsTextBox.Size = new Size(338, 143);
+            tagsTextBox.Size = new Size(338, 144);
             tagsTextBox.TabIndex = 9;
             tagsTextBox.Text = "";
             tagsTextBox.Enter += tagsTextBox_Enter;
@@ -801,7 +801,7 @@
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.DimGray;
-            ClientSize = new Size(1124, 656);
+            ClientSize = new Size(1124, 660);
             Controls.Add(layoutTable);
             DoubleBuffered = true;
             Font = new Font("Calibri", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);

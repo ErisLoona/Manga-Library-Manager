@@ -80,7 +80,7 @@
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 6F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 82F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 6F));
-            tableLayoutPanel1.Size = new Size(914, 570);
+            tableLayoutPanel1.Size = new Size(914, 576);
             tableLayoutPanel1.TabIndex = 0;
             // 
             // downloadButton
@@ -94,9 +94,9 @@
             downloadButton.FlatStyle = FlatStyle.Flat;
             downloadButton.Font = new Font("Calibri", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             downloadButton.ForeColor = Color.Black;
-            downloadButton.Location = new Point(3, 538);
+            downloadButton.Location = new Point(3, 543);
             downloadButton.Name = "downloadButton";
-            downloadButton.Size = new Size(908, 29);
+            downloadButton.Size = new Size(908, 30);
             downloadButton.TabIndex = 7;
             downloadButton.Text = "Start Downloading";
             toolTip.SetToolTip(downloadButton, "Defaults to wherever the executable is located");
@@ -344,7 +344,7 @@
             tableLayoutPanel5.RowCount = 1;
             tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel5.Size = new Size(914, 467);
+            tableLayoutPanel5.Size = new Size(914, 472);
             tableLayoutPanel5.TabIndex = 2;
             // 
             // selectedChaptersList
@@ -357,7 +357,7 @@
             selectedChaptersList.FormattingEnabled = true;
             selectedChaptersList.Location = new Point(3, 3);
             selectedChaptersList.Name = "selectedChaptersList";
-            selectedChaptersList.Size = new Size(451, 461);
+            selectedChaptersList.Size = new Size(451, 466);
             selectedChaptersList.TabIndex = 0;
             // 
             // flowLayout
@@ -366,7 +366,7 @@
             flowLayout.Dock = DockStyle.Fill;
             flowLayout.Location = new Point(460, 3);
             flowLayout.Name = "flowLayout";
-            flowLayout.Size = new Size(451, 461);
+            flowLayout.Size = new Size(451, 466);
             flowLayout.TabIndex = 1;
             // 
             // folderBrowserDialog
@@ -394,7 +394,7 @@
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.DimGray;
-            ClientSize = new Size(914, 570);
+            ClientSize = new Size(914, 576);
             Controls.Add(tableLayoutPanel1);
             Font = new Font("Calibri", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             ForeColor = Color.White;
