@@ -923,12 +923,21 @@ namespace Manga_Library_Manager
             XmlDocument doc = new XmlDocument();
             try
             {
-                doc.Load(Path.Join(savingPath, "content.opf"));
-                root = true;
+                try
+                {
+                    doc.Load(Path.Join(savingPath, "content.opf"));
+                    root = true;
+                }
+                catch
+                {
+                    doc.Load(Path.Join(savingPath, "OEBPS", "content.opf"));
+                }
             }
             catch
             {
-                doc.Load(Path.Join(savingPath, "OEBPS", "content.opf"));
+                MessageBox.Show("Could not find the content.opf!\nThe download has completed but the EPUB assembly has failed.", "Missing toc.ncx", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                e.Cancel = true;
+                return;
             }
             XmlNamespaceManager nsmgr = new XmlNamespaceManager(doc.NameTable);
             nsmgr.AddNamespace("dc", "http://purl.org/dc/elements/1.1/");
@@ -993,22 +1002,45 @@ namespace Manga_Library_Manager
             root = false;
             try
             {
-                toc.Load(Path.Join(savingPath, "toc.ncx"));
-                root = true;
+                try
+                {
+                    toc.Load(Path.Join(savingPath, "toc.ncx"));
+                    root = true;
+                }
+                catch
+                {
+                    toc.Load(Path.Join(savingPath, "OEBPS", "toc.ncx"));
+                }
             }
             catch
             {
-                toc.Load(Path.Join(savingPath, "OEBPS", "toc.ncx"));
+                MessageBox.Show("Could not find the toc.ncx!\nThe download has completed but the EPUB assembly has failed.", "Missing toc.ncx", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                e.Cancel = true;
+                return;
             }
+            bool foundUID = false, foundDepth = false;
             foreach (XmlNode node in toc.DocumentElement.ChildNodes)
+            {
                 if (node.Name == "head")
                     foreach (XmlNode child in node.ChildNodes)
-                        if (child.Attributes[0].Value == "dtb:uid")
+                    {
+                        if (child.Attributes["name"].Value == "dtb:uid")
                         {
-                            child.Attributes[1].Value = doc.DocumentElement.SelectSingleNode("//dc:identifier", nsmgr).InnerText;
-                            goto Found;
+                            child.Attributes["content"].Value = doc.DocumentElement.SelectSingleNode("//dc:identifier", nsmgr).InnerText;
+                            foundUID = true;
                         }
-                    Found:
+                        if (child.Attributes["name"].Value == "dtb:depth" && Convert.ToInt32(child.Attributes["content"].Value) < 2)
+                        {
+                            child.Attributes["content"].Value = "2";
+                            foundDepth = true;
+                        }
+                        if (foundUID == true && foundDepth == true)
+                            break;
+                    }
+                if (foundUID == true && foundDepth == true)
+                    break;
+
+            }
             XmlNamespaceManager ns = new XmlNamespaceManager(doc.NameTable);
             ns.AddNamespace("toc", toc.DocumentElement.GetAttribute("xmlns"));
             toc.DocumentElement.SelectSingleNode("toc:docTitle/toc:text", ns).InnerText = becomingBook.Title;
