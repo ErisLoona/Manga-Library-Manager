@@ -305,7 +305,7 @@ namespace Manga_Library_Manager
                 Dictionary<string, int> tempAuthors = new Dictionary<string, int>();
                 if (tempChapterNumbers[i] == tempChapterNumbers[i + 1])
                 {
-                    while (tempChapterNumbers[i] == tempChapterNumbers[i + 1])
+                    while (i < tempChapterNumbers.Count - 1 && tempChapterNumbers[i] == tempChapterNumbers[i + 1])
                     {
                         if (tempChapterGroups[i] != "Anonymous (No Group)")
                             tempAuthors[tempChapterGroups[i]] = i;
