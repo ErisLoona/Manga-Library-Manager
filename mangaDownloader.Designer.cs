@@ -99,7 +99,6 @@
             downloadButton.Size = new Size(908, 30);
             downloadButton.TabIndex = 7;
             downloadButton.Text = "Start Downloading";
-            toolTip.SetToolTip(downloadButton, "Defaults to wherever the executable is located");
             downloadButton.UseVisualStyleBackColor = false;
             downloadButton.Click += downloadButton_Click;
             // 
@@ -359,6 +358,7 @@
             selectedChaptersList.Name = "selectedChaptersList";
             selectedChaptersList.Size = new Size(451, 466);
             selectedChaptersList.TabIndex = 0;
+            selectedChaptersList.SelectedIndexChanged += selectedChaptersList_SelectedIndexChanged;
             // 
             // flowLayout
             // 

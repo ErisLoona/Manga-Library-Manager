@@ -173,6 +173,11 @@ namespace Manga_Library_Manager
             searchTextBox.AutoCompleteSource = AutoCompleteSource.CustomSource;
             searchTextBox.AutoCompleteCustomSource = searchTextBoxAutomcompleteStrings;
             mangaDescControls(false);
+            if (Properties.Settings.Default.Maximized == true)
+            {
+                this.Location = Properties.Settings.Default.Location;
+                this.WindowState = FormWindowState.Maximized;
+            }
         }
 
         private void mangaDescControls(bool show)
@@ -1040,6 +1045,12 @@ namespace Manga_Library_Manager
                     form.Dispose();
                 }
             }
+            if (this.WindowState == FormWindowState.Maximized)
+                Properties.Settings.Default.Maximized = true;
+            else
+                Properties.Settings.Default.Maximized = false;
+            Properties.Settings.Default.Location = this.RestoreBounds.Location;
+            Properties.Settings.Default.Save();
         }
 
         private void tagsTextBox_Enter(object sender, EventArgs e)

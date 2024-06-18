@@ -16,7 +16,7 @@ namespace Manga_Library_Manager
         private bool downloading = false, excludedExtras = false, linkChanged = false;
         private List<string> tempChapterIDs = new List<string>();
         private string savingPath;
-        private int startOffset = 2;
+        private int startOffset = 2, oldChapterIndex = -1;
         private List<decimal> tempChapterNumbers = new List<decimal>();
         private List<int> checkedIndexes = new List<int>(), duplicateIndexes = new List<int>(), chapterNrPages = new List<int>();
         private mainMenu.eBook becomingBook = new mainMenu.eBook();
@@ -446,6 +446,7 @@ namespace Manga_Library_Manager
                         return;
                 }
                 downloading = true;
+                selectedChaptersList.SelectedIndex = -1;
                 if (titleSelectionDropDown.SelectedIndex == 0)
                     titleSelectionDropDown.SelectedIndex = 1;
                 string fileName = becomingBook.Title;
@@ -464,6 +465,7 @@ namespace Manga_Library_Manager
                 pageFileNames.Clear();
                 SendMessage(this.Handle, 11, false, 0);
                 controlStatus(false);
+                selectedChaptersList.Enabled = true;
                 downloadButton.Text = "Cancel Download";
                 downloadButton.Font = new(downloadButton.Font, FontStyle.Bold | FontStyle.Italic);
                 downloadButton.Enabled = true;
@@ -881,6 +883,7 @@ namespace Manga_Library_Manager
             else
             {
                 downloadButton.Enabled = false;
+                downloadButton.Text = "Creating archive. Please wait!";
                 becomingBook.Path += ".cbz";
                 string fileName = becomingBook.Title;
                 foreach (char c in Path.GetInvalidFileNameChars())
@@ -1103,6 +1106,7 @@ namespace Manga_Library_Manager
             if (e.Cancelled == true)
                 return;
             downloadButton.Enabled = false;
+            downloadButton.Text = "Creating archive. Please wait!";
             becomingBook.Path += ".epub";
             string fileName = becomingBook.Title;
             foreach (char c in Path.GetInvalidFileNameChars())
@@ -1167,6 +1171,24 @@ namespace Manga_Library_Manager
             if (value - Convert.ToInt32(Math.Floor(value)) != 0)
                 return Convert.ToInt32(Math.Floor(value)).ToString(padding) + (value - Convert.ToInt32(Math.Floor(value))).ToString().Substring(1);
             return Convert.ToInt32(value).ToString(padding);
+        }
+
+        private void selectedChaptersList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (selectedChaptersList.SelectedIndex == -1)
+                return;
+            if (downloading == true)
+            {
+                selectedChaptersList.SetItemChecked(selectedChaptersList.SelectedIndex, !selectedChaptersList.GetItemChecked(selectedChaptersList.SelectedIndex));
+                selectedChaptersList.SelectedIndexChanged -= selectedChaptersList_SelectedIndexChanged;
+                selectedChaptersList.SelectedIndex = -1;
+                selectedChaptersList.SelectedIndexChanged += selectedChaptersList_SelectedIndexChanged;
+                return;
+            }
+            if (oldChapterIndex != -1 && (Control.ModifierKeys & Keys.Shift) == Keys.Shift)
+                for (int i = Int32.Min(selectedChaptersList.SelectedIndex, oldChapterIndex) + 1; i < Int32.Max(selectedChaptersList.SelectedIndex, oldChapterIndex); i++)
+                    selectedChaptersList.SetItemChecked(i, !selectedChaptersList.GetItemChecked(i));
+            oldChapterIndex = selectedChaptersList.SelectedIndex;
         }
     }
 }
