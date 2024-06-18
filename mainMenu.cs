@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using System.Diagnostics;
 using Flurl;
 using System.IO;
+using System.IO.Packaging;
 
 namespace Manga_Library_Manager
 {
@@ -29,7 +30,7 @@ namespace Manga_Library_Manager
         }
 
         public static string selectedLanguage;
-        public static bool noWarning;
+        public static bool noWarning, checkUpdates;
         private List<eBook> books = new List<eBook>();
         private AutoCompleteStringCollection searchTextBoxAutomcompleteStrings = new AutoCompleteStringCollection();
         private List<string> files = new List<string>(), ratingsList = new List<string>();
@@ -86,6 +87,15 @@ namespace Manga_Library_Manager
                     books = file.SelectToken("Library").ToObject<List<eBook>>();
                     selectedLanguage = file.SelectToken("Language").Value<string>();
                     noWarning = file.SelectToken("NoWarning").Value<bool>();
+                    if (file.SelectToken("FormatVersion").Value<int>() > 2)
+                        checkUpdates = file.SelectToken("CheckUpdates").Value<bool>();
+                    else
+                    {
+                        if (MessageBox.Show("Would you like the program to automatically check for updates?\nYou can always change this later in the settings.", "Check for updates", MessageBoxButtons.YesNo) == DialogResult.No)
+                            checkUpdates = false;
+                        else
+                            checkUpdates = true;
+                    }
                 }
             }
             catch
@@ -98,6 +108,10 @@ namespace Manga_Library_Manager
                         books = JsonConvert.DeserializeObject<List<eBook>>(line);
                         selectedLanguage = "en";
                         noWarning = false;
+                        if (MessageBox.Show("Would you like the program to automatically check for updates?\nYou can always change this later in the settings.", "Check for updates", MessageBoxButtons.YesNo) == DialogResult.No)
+                            checkUpdates = false;
+                        else
+                            checkUpdates = true;
                     }
                     goto ItJustWorks;
                 }
@@ -131,6 +145,7 @@ namespace Manga_Library_Manager
                         {
                             selectedLanguage = "en";
                             noWarning = false;
+                            checkUpdates = false;
                             books = JsonConvert.DeserializeObject<List<eBook>>(jsonDump);
                             MessageBox.Show("Import successful!\nYour settings have been reset.", "Import successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
@@ -153,6 +168,33 @@ namespace Manga_Library_Manager
                 }
             }
         ItJustWorks:
+            if (checkUpdates == true)
+                Task.Run(() =>
+                {
+                    using HttpClient client = new HttpClient();
+                    client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.UserAgent.ParseAdd("Manga Library Manager for Windows by (github) ErisLoona");
+                    try
+                    {
+                        JObject githubResponse = JObject.Parse(client.GetStringAsync("https://api.github.com/repos/erisloona/manga-library-manager/releases/latest").Result);
+                        List<string> versionNumbers = new List<string>();
+                        versionNumbers.AddRange(githubResponse.SelectToken("tag_name").Value<string>().Substring(1).Split("."));
+                        string[] currentVersion = FileVersionInfo.GetVersionInfo(Environment.ProcessPath).FileVersion.Split(".");
+                        bool update = false;
+                        for (int i = 0; i < versionNumbers.Count; i++)
+                            if (Convert.ToInt32(versionNumbers[i]) > Convert.ToInt32(currentVersion[i]))
+                            {
+                                update = true;
+                                break;
+                            }
+                        if (update == true)
+                        {
+                            if (MessageBox.Show("A new version is available!\nWould you like to go download it?", "Update found", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                                Process.Start(new ProcessStartInfo(githubResponse.SelectToken("html_url").Value<string>()) { UseShellExecute = true });
+                        }
+                    }
+                    catch { }
+                });
             mangaList.BeginUpdate();
             foreach (eBook book in books)
             {
@@ -1024,9 +1066,10 @@ namespace Manga_Library_Manager
             try
             {
                 JObject saveFile = new JObject();
-                saveFile["FormatVersion"] = 2;
+                saveFile["FormatVersion"] = 3;
                 saveFile["Language"] = selectedLanguage;
                 saveFile["NoWarning"] = noWarning;
+                saveFile["CheckUpdates"] = checkUpdates;
                 saveFile["Library"] = JToken.FromObject(books);
                 using (StreamWriter writer = new StreamWriter("Manga Library Manager.json"))
                 {

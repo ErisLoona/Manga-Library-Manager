@@ -18,6 +18,7 @@ namespace Manga_Library_Manager
         private void userSettings_Load(object sender, EventArgs e)
         {
             warnCheckBox.Checked = !mainMenu.noWarning;
+            checkUpdatesCheckbox.Checked = mainMenu.checkUpdates;
             foreach (CultureInfo culture in CultureInfo.GetCultures(CultureTypes.AllCultures))
                 if (languages.ContainsValue(culture.TwoLetterISOLanguageName) == false)
                     languages[culture.EnglishName] = culture.TwoLetterISOLanguageName;
@@ -41,6 +42,11 @@ namespace Manga_Library_Manager
         private void warnCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             mainMenu.noWarning = !warnCheckBox.Checked;
+        }
+
+        private void checkUpdatesCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            mainMenu.checkUpdates = checkUpdatesCheckbox.Checked;
         }
 
         private void importButton_Click(object sender, EventArgs e)

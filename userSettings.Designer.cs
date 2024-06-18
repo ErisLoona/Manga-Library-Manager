@@ -38,6 +38,7 @@
             label2 = new Label();
             importButton = new Button();
             toolTip = new ToolTip(components);
+            checkUpdatesCheckbox = new CheckBox();
             SuspendLayout();
             // 
             // donateButton
@@ -49,7 +50,7 @@
             donateButton.FlatStyle = FlatStyle.Flat;
             donateButton.Font = new Font("Calibri", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
             donateButton.ForeColor = Color.Black;
-            donateButton.Location = new Point(156, 150);
+            donateButton.Location = new Point(156, 175);
             donateButton.Margin = new Padding(7, 5, 7, 5);
             donateButton.Name = "donateButton";
             donateButton.Size = new Size(50, 22);
@@ -64,7 +65,7 @@
             creditsLabel.AutoSize = true;
             creditsLabel.Font = new Font("Calibri", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             creditsLabel.ForeColor = Color.FromArgb(248, 200, 220);
-            creditsLabel.Location = new Point(107, 173);
+            creditsLabel.Location = new Point(107, 198);
             creditsLabel.Name = "creditsLabel";
             creditsLabel.Size = new Size(103, 14);
             creditsLabel.TabIndex = 12;
@@ -108,7 +109,7 @@
             // 
             label2.AutoSize = true;
             label2.Font = new Font("Calibri", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label2.Location = new Point(-1, 162);
+            label2.Location = new Point(-1, 187);
             label2.Name = "label2";
             label2.Size = new Size(92, 26);
             label2.TabIndex = 16;
@@ -123,7 +124,7 @@
             importButton.FlatStyle = FlatStyle.Flat;
             importButton.Font = new Font("Calibri", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             importButton.ForeColor = Color.Black;
-            importButton.Location = new Point(61, 114);
+            importButton.Location = new Point(61, 139);
             importButton.Margin = new Padding(7, 5, 7, 5);
             importButton.Name = "importButton";
             importButton.Size = new Size(89, 24);
@@ -133,12 +134,25 @@
             importButton.UseVisualStyleBackColor = false;
             importButton.Click += importButton_Click;
             // 
+            // checkUpdatesCheckbox
+            // 
+            checkUpdatesCheckbox.AutoSize = true;
+            checkUpdatesCheckbox.Font = new Font("Calibri", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            checkUpdatesCheckbox.Location = new Point(43, 109);
+            checkUpdatesCheckbox.Name = "checkUpdatesCheckbox";
+            checkUpdatesCheckbox.Size = new Size(124, 19);
+            checkUpdatesCheckbox.TabIndex = 18;
+            checkUpdatesCheckbox.Text = "Check for updates";
+            checkUpdatesCheckbox.UseVisualStyleBackColor = true;
+            checkUpdatesCheckbox.CheckedChanged += checkUpdatesCheckbox_CheckedChanged;
+            // 
             // userSettings
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.DimGray;
-            ClientSize = new Size(210, 187);
+            ClientSize = new Size(210, 215);
+            Controls.Add(checkUpdatesCheckbox);
             Controls.Add(importButton);
             Controls.Add(label2);
             Controls.Add(warnCheckBox);
@@ -173,5 +187,6 @@
         private Label label2;
         private Button importButton;
         private ToolTip toolTip;
+        private CheckBox checkUpdatesCheckbox;
     }
 }
