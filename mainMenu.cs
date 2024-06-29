@@ -67,10 +67,12 @@ namespace Manga_Library_Manager
             {
                 try
                 {
-                    using (StreamWriter writer = new StreamWriter("Manga Library Manager.json"))
-                    {
-                        writer.Write("{\"FormatVersion\":2,\"Language\":\"en\",\"NoWarning\":false,\"Library\":[]}");
-                    }
+                    using StreamWriter writer = new StreamWriter("Manga Library Manager.json");
+                    writer.Write("{\"FormatVersion\":3,\"Language\":\"en\",\"NoWarning\":false,\"CheckUpdates\":false,\"Library\":[]}");
+                    if (MessageBox.Show("Would you like the program to automatically check for updates?\nYou can always change this later in the settings.", "Check for updates", MessageBoxButtons.YesNo) == DialogResult.No)
+                        checkUpdates = false;
+                    else
+                        checkUpdates = true;
                 }
                 catch
                 {
@@ -80,39 +82,35 @@ namespace Manga_Library_Manager
             }
             try
             {
-                using (StreamReader reader = new StreamReader("Manga Library Manager.json"))
+                using StreamReader reader = new StreamReader("Manga Library Manager.json");
+                string line = reader.ReadToEnd();
+                JObject file = JObject.Parse(line);
+                books = file.SelectToken("Library").ToObject<List<eBook>>();
+                selectedLanguage = file.SelectToken("Language").Value<string>();
+                noWarning = file.SelectToken("NoWarning").Value<bool>();
+                if (file.SelectToken("FormatVersion").Value<int>() > 2)
+                    checkUpdates = file.SelectToken("CheckUpdates").Value<bool>();
+                else
                 {
-                    string line = reader.ReadToEnd();
-                    JObject file = JObject.Parse(line);
-                    books = file.SelectToken("Library").ToObject<List<eBook>>();
-                    selectedLanguage = file.SelectToken("Language").Value<string>();
-                    noWarning = file.SelectToken("NoWarning").Value<bool>();
-                    if (file.SelectToken("FormatVersion").Value<int>() > 2)
-                        checkUpdates = file.SelectToken("CheckUpdates").Value<bool>();
+                    if (MessageBox.Show("Would you like the program to automatically check for updates?\nYou can always change this later in the settings.", "Check for updates", MessageBoxButtons.YesNo) == DialogResult.No)
+                        checkUpdates = false;
                     else
-                    {
-                        if (MessageBox.Show("Would you like the program to automatically check for updates?\nYou can always change this later in the settings.", "Check for updates", MessageBoxButtons.YesNo) == DialogResult.No)
-                            checkUpdates = false;
-                        else
-                            checkUpdates = true;
-                    }
+                        checkUpdates = true;
                 }
             }
             catch
             {
                 try
                 {
-                    using (StreamReader reader = new StreamReader("Manga Library Manager.json"))
-                    {
-                        string line = reader.ReadToEnd();
-                        books = JsonConvert.DeserializeObject<List<eBook>>(line);
-                        selectedLanguage = "en";
-                        noWarning = false;
-                        if (MessageBox.Show("Would you like the program to automatically check for updates?\nYou can always change this later in the settings.", "Check for updates", MessageBoxButtons.YesNo) == DialogResult.No)
-                            checkUpdates = false;
-                        else
-                            checkUpdates = true;
-                    }
+                    using StreamReader reader = new StreamReader("Manga Library Manager.json");
+                    string line = reader.ReadToEnd();
+                    books = JsonConvert.DeserializeObject<List<eBook>>(line);
+                    selectedLanguage = "en";
+                    noWarning = false;
+                    if (MessageBox.Show("Would you like the program to automatically check for updates?\nYou can always change this later in the settings.", "Check for updates", MessageBoxButtons.YesNo) == DialogResult.No)
+                        checkUpdates = false;
+                    else
+                        checkUpdates = true;
                     goto ItJustWorks;
                 }
                 catch { }
@@ -286,27 +284,25 @@ namespace Manga_Library_Manager
                 if (Path.GetExtension(((eBook)mangaList.SelectedItem).Path) == ".epub")
                     try
                     {
-                        using (ZipFile epub = ZipFile.Read(((eBook)mangaList.SelectedItem).Path))
-                        {
-                            bool found = false;
-                            foreach (ZipEntry entry in epub.Entries)
-                                if (entry.FileName == "cover.jpg" || entry.FileName == "cover.jpeg" || entry.FileName == "cover.png" || entry.FileName == "cover.webp")
+                        using ZipFile epub = ZipFile.Read(((eBook)mangaList.SelectedItem).Path);
+                        bool found = false;
+                        foreach (ZipEntry entry in epub.Entries)
+                            if (entry.FileName == "cover.jpg" || entry.FileName == "cover.jpeg" || entry.FileName == "cover.png" || entry.FileName == "cover.webp")
+                            {
+                                found = true;
+                                entry.Extract(stream);
+                                stream.Position = 0;
+                                break;
+                            }
+                        if (found == false)
+                            foreach (ZipEntry entry in epub.SelectEntries("name = cover.*", "OEBPS/OEBPS/"))
+                                if (entry.FileName == "OEBPS/OEBPS/cover.jpg" || entry.FileName == "OEBPS/OEBPS/cover.jpeg" || entry.FileName == "OEBPS/OEBPS/cover.png" || entry.FileName == "OEBPS/OEBPS/cover.webp")
                                 {
                                     found = true;
                                     entry.Extract(stream);
                                     stream.Position = 0;
                                     break;
                                 }
-                            if (found == false)
-                                foreach (ZipEntry entry in epub.SelectEntries("name = cover.*", "OEBPS/OEBPS/"))
-                                    if (entry.FileName == "OEBPS/OEBPS/cover.jpg" || entry.FileName == "OEBPS/OEBPS/cover.jpeg" || entry.FileName == "OEBPS/OEBPS/cover.png" || entry.FileName == "OEBPS/OEBPS/cover.webp")
-                                    {
-                                        found = true;
-                                        entry.Extract(stream);
-                                        stream.Position = 0;
-                                        break;
-                                    }
-                        }
                         mangaDescCover.BackgroundImage = Image.FromStream(stream);
                     }
                     catch { }
@@ -563,73 +559,71 @@ namespace Manga_Library_Manager
             string mangaID = ((eBook)mangaList.SelectedItem).Link.Split('/')[4];
             List<string> extraPages = new List<string>();
             JObject apiResult;
-            using (HttpClient client = new HttpClient())
+            using HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("Manga Library Manager for Windows by (github) ErisLoona");
+            try
             {
-                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-                client.DefaultRequestHeaders.UserAgent.ParseAdd("Manga Library Manager for Windows by (github) ErisLoona");
-                try
+                Task<string> task = client.GetStringAsync(new Uri("https://api.mangadex.org/manga/" + mangaID + "/feed".SetQueryParam("translatedLanguage[]", selectedLanguage).AppendQueryParam("limit", 100).AppendQueryParam("contentRating[]", new[] { "safe", "suggestive", "erotica", "pornographic" })));
+                apiResult = JObject.Parse(task.Result);
+                calledAPI();
+                int apiTotal = apiResult.SelectToken("total").Value<int>();
+                if (apiTotal > 100)
                 {
-                    Task<string> task = client.GetStringAsync(new Uri("https://api.mangadex.org/manga/" + mangaID + "/feed".SetQueryParam("translatedLanguage[]", selectedLanguage).AppendQueryParam("limit", 100).AppendQueryParam("contentRating[]", new[] { "safe", "suggestive", "erotica", "pornographic" })));
-                    apiResult = JObject.Parse(task.Result);
-                    calledAPI();
-                    int apiTotal = apiResult.SelectToken("total").Value<int>();
-                    if (apiTotal > 100)
+                    int passes = apiTotal / 100;
+                    while (passes > 0)
                     {
-                        int passes = apiTotal / 100;
-                        while (passes > 0)
-                        {
-                            task = client.GetStringAsync(new Uri("https://api.mangadex.org/manga/" + mangaID + "/feed".SetQueryParam("translatedLanguage[]", selectedLanguage).AppendQueryParam("limit", 100).AppendQueryParam("offset", Convert.ToString(passes * 100)).AppendQueryParam("contentRating[]", new[] { "safe", "suggestive", "erotica", "pornographic" })));
-                            extraPages.Add(task.Result);
-                            calledAPI();
-                            passes--;
-                        }
+                        task = client.GetStringAsync(new Uri("https://api.mangadex.org/manga/" + mangaID + "/feed".SetQueryParam("translatedLanguage[]", selectedLanguage).AppendQueryParam("limit", 100).AppendQueryParam("offset", Convert.ToString(passes * 100)).AppendQueryParam("contentRating[]", new[] { "safe", "suggestive", "erotica", "pornographic" })));
+                        extraPages.Add(task.Result);
+                        calledAPI();
+                        passes--;
                     }
-                    List<decimal> tempChapters = new List<decimal>();
-                    foreach (JToken entry in apiResult.SelectToken("data"))
+                }
+                List<decimal> tempChapters = new List<decimal>();
+                foreach (JToken entry in apiResult.SelectToken("data"))
+                {
+                    try
                     {
-                        try
-                        {
-                            tempChapters.Add(Convert.ToDecimal(entry.SelectToken("attributes").SelectToken("chapter").Value<string>(), new CultureInfo("en-US")));
-                        }
-                        catch { }
+                        tempChapters.Add(Convert.ToDecimal(entry.SelectToken("attributes").SelectToken("chapter").Value<string>(), new CultureInfo("en-US")));
                     }
-                    if (extraPages.Count > 0)
-                        foreach (string page in extraPages)
+                    catch { }
+                }
+                if (extraPages.Count > 0)
+                    foreach (string page in extraPages)
+                    {
+                        apiResult = apiResult = JObject.Parse(page);
+                        foreach (JToken entry in apiResult.SelectToken("data"))
                         {
-                            apiResult = apiResult = JObject.Parse(page);
-                            foreach (JToken entry in apiResult.SelectToken("data"))
+                            try
                             {
-                                try
-                                {
-                                    tempChapters.Add(Convert.ToDecimal(entry.SelectToken("attributes").SelectToken("chapter").Value<string>(), new CultureInfo("en-US")));
-                                }
-                                catch { }
+                                tempChapters.Add(Convert.ToDecimal(entry.SelectToken("attributes").SelectToken("chapter").Value<string>(), new CultureInfo("en-US")));
                             }
+                            catch { }
                         }
-                    lastChapterOnlineLabel.Text = "Last chapter online: " + Convert.ToString(tempChapters.Max());
-                    if (tempChapters.Max() - ((eBook)mangaList.SelectedItem).LastChapter == 0)
-                        ongoingOnlineLabel.Text = "Up to date!";
-                    else
-                    {
-                        if (tempChapters.Max() - ((eBook)mangaList.SelectedItem).LastChapter < 0)
-                        {
-                            ongoingOnlineLabel.Text = "Please check book link! Online is behind!";
-                            return;
-                        }
-                        if (tempChapters.Max() - ((eBook)mangaList.SelectedItem).LastChapter == 1)
-                            ongoingOnlineLabel.Text = "1 chapter ahead.";
-                        else
-                            ongoingOnlineLabel.Text = Convert.ToString(Convert.ToInt32(Math.Ceiling(tempChapters.Max() - ((eBook)mangaList.SelectedItem).LastChapter))) + " chapters ahead.";
-                        updateMangaButton.Enabled = true;
                     }
-                }
-                catch
+                lastChapterOnlineLabel.Text = "Last chapter online: " + Convert.ToString(tempChapters.Max());
+                if (tempChapters.Max() - ((eBook)mangaList.SelectedItem).LastChapter == 0)
+                    ongoingOnlineLabel.Text = "Up to date!";
+                else
                 {
-                    MessageBox.Show("Could not retrieve chapter list!", "API error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    lastChapterOnlineLabel.Visible = false;
-                    ongoingOnlineLabel.Visible = false;
-                    return;
+                    if (tempChapters.Max() - ((eBook)mangaList.SelectedItem).LastChapter < 0)
+                    {
+                        ongoingOnlineLabel.Text = "Please check book link! Online is behind!";
+                        return;
+                    }
+                    if (tempChapters.Max() - ((eBook)mangaList.SelectedItem).LastChapter == 1)
+                        ongoingOnlineLabel.Text = "1 chapter ahead.";
+                    else
+                        ongoingOnlineLabel.Text = Convert.ToString(Convert.ToInt32(Math.Ceiling(tempChapters.Max() - ((eBook)mangaList.SelectedItem).LastChapter))) + " chapters ahead.";
+                    updateMangaButton.Enabled = true;
                 }
+            }
+            catch
+            {
+                MessageBox.Show("Could not retrieve chapter list!", "API error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                lastChapterOnlineLabel.Visible = false;
+                ongoingOnlineLabel.Visible = false;
+                return;
             }
         }
 
@@ -1071,10 +1065,8 @@ namespace Manga_Library_Manager
                 saveFile["NoWarning"] = noWarning;
                 saveFile["CheckUpdates"] = checkUpdates;
                 saveFile["Library"] = JToken.FromObject(books);
-                using (StreamWriter writer = new StreamWriter("Manga Library Manager.json"))
-                {
-                    writer.Write(saveFile.ToString());
-                }
+                using StreamWriter writer = new StreamWriter("Manga Library Manager.json");
+                writer.Write(saveFile.ToString());
             }
             catch
             {

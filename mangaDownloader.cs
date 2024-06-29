@@ -135,143 +135,141 @@ namespace Manga_Library_Manager
             List<string> extraPages = new List<string>();
             JObject apiResult, mangaInfo;
             List<string> tempChapterGroups = new List<string>();
-            using (HttpClient client = new HttpClient())
+            using HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("Manga Library Manager for Windows by (github) ErisLoona");
+            try
             {
-                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-                client.DefaultRequestHeaders.UserAgent.ParseAdd("Manga Library Manager for Windows by (github) ErisLoona");
-                try
+                Task<string> task = client.GetStringAsync(new Uri("https://api.mangadex.org/manga/" + mangaID + "/feed".SetQueryParam("translatedLanguage[]", mainMenu.selectedLanguage).AppendQueryParam("limit", 100).AppendQueryParam("contentRating[]", new[] { "safe", "suggestive", "erotica", "pornographic" }).AppendQueryParam("includes[]=scanlation_group")));
+                apiResult = JObject.Parse(task.Result);
+                calledAPI(false);
+                int apiTotal = apiResult.SelectToken("total").Value<int>();
+                if (apiTotal > 100)
                 {
-                    Task<string> task = client.GetStringAsync(new Uri("https://api.mangadex.org/manga/" + mangaID + "/feed".SetQueryParam("translatedLanguage[]", mainMenu.selectedLanguage).AppendQueryParam("limit", 100).AppendQueryParam("contentRating[]", new[] { "safe", "suggestive", "erotica", "pornographic" }).AppendQueryParam("includes[]=scanlation_group")));
-                    apiResult = JObject.Parse(task.Result);
-                    calledAPI(false);
-                    int apiTotal = apiResult.SelectToken("total").Value<int>();
-                    if (apiTotal > 100)
+                    int passes = apiTotal / 100;
+                    while (passes > 0)
                     {
-                        int passes = apiTotal / 100;
-                        while (passes > 0)
+                        task = client.GetStringAsync(new Uri("https://api.mangadex.org/manga/" + mangaID + "/feed".SetQueryParam("translatedLanguage[]", mainMenu.selectedLanguage).AppendQueryParam("limit", 100).AppendQueryParam("offset", Convert.ToString(passes * 100)).AppendQueryParam("contentRating[]", new[] { "safe", "suggestive", "erotica", "pornographic" }).AppendQueryParam("includes[]=scanlation_group")));
+                        extraPages.Add(task.Result);
+                        calledAPI(false);
+                        passes--;
+                    }
+                }
+                foreach (JToken entry in apiResult.SelectToken("data"))
+                {
+                    try
+                    {
+                        if (mainMenu.updateManga == true && Convert.ToDecimal(entry.SelectToken("attributes").SelectToken("chapter").Value<string>(), new CultureInfo("en-US")) <= mainMenu.currentlySelectedBook.LastChapter)
+                            continue;
+                        bool groupFound = false;
+                        tempChapterNumbers.Add(Convert.ToDecimal(entry.SelectToken("attributes").SelectToken("chapter").Value<string>(), new CultureInfo("en-US")));
+                        chapterNrPages.Add(entry.SelectToken("attributes").SelectToken("pages").Value<int>());
+                        foreach (JToken group in entry.SelectToken("relationships"))
+                            if (group.SelectToken("type").Value<string>() == "scanlation_group")
+                            {
+                                groupFound = true;
+                                tempChapterGroups.Add(group.SelectToken("attributes").SelectToken("name").Value<string>());
+                                break;
+                            }
+                        if (groupFound == false)
+                            tempChapterGroups.Add("Anonymous (No Group)");
+                        tempChapterIDs.Add(entry.SelectToken("id").Value<string>());
+                    }
+                    catch { }
+                }
+                if (extraPages.Count > 0)
+                    foreach (string page in extraPages)
+                    {
+                        apiResult = apiResult = JObject.Parse(page);
+                        foreach (JToken entry in apiResult.SelectToken("data"))
                         {
-                            task = client.GetStringAsync(new Uri("https://api.mangadex.org/manga/" + mangaID + "/feed".SetQueryParam("translatedLanguage[]", mainMenu.selectedLanguage).AppendQueryParam("limit", 100).AppendQueryParam("offset", Convert.ToString(passes * 100)).AppendQueryParam("contentRating[]", new[] { "safe", "suggestive", "erotica", "pornographic" }).AppendQueryParam("includes[]=scanlation_group")));
-                            extraPages.Add(task.Result);
-                            calledAPI(false);
-                            passes--;
+                            try
+                            {
+                                if (mainMenu.updateManga == true && Convert.ToDecimal(entry.SelectToken("attributes").SelectToken("chapter").Value<string>(), new CultureInfo("en-US")) <= mainMenu.currentlySelectedBook.LastChapter)
+                                    continue;
+                                bool groupFound = false;
+                                tempChapterNumbers.Add(Convert.ToDecimal(entry.SelectToken("attributes").SelectToken("chapter").Value<string>(), new CultureInfo("en-US")));
+                                chapterNrPages.Add(entry.SelectToken("attributes").SelectToken("pages").Value<int>());
+                                foreach (JToken group in entry.SelectToken("relationships"))
+                                    if (group.SelectToken("type").Value<string>() == "scanlation_group")
+                                    {
+                                        groupFound = true;
+                                        tempChapterGroups.Add(group.SelectToken("attributes").SelectToken("name").Value<string>());
+                                        break;
+                                    }
+                                if (groupFound == false)
+                                    tempChapterGroups.Add("Anonymous (No Group)");
+                                tempChapterIDs.Add(entry.SelectToken("id").Value<string>());
+                            }
+                            catch { }
                         }
                     }
-                    foreach (JToken entry in apiResult.SelectToken("data"))
-                    {
+                if (mainMenu.updateManga == false)
+                {
+                    task = client.GetStringAsync(new Uri("https://api.mangadex.org/manga/" + mangaID + "?includes[]=cover_art&includes[]=author&includes[]=artist"));
+                    mangaInfo = JObject.Parse(task.Result);
+                    calledAPI(false);
+                    foreach (JToken title in mangaInfo.SelectToken("data").SelectToken("attributes").SelectToken("title"))
+                        titleSelectionDropDown.Items.Add(((JProperty)title).Value);
+                    bool gotSubtitle = false;
+                    foreach (JToken subTitle in mangaInfo.SelectToken("data").SelectToken("attributes").SelectToken("altTitles"))
                         try
                         {
-                            if (mainMenu.updateManga == true && Convert.ToDecimal(entry.SelectToken("attributes").SelectToken("chapter").Value<string>(), new CultureInfo("en-US")) <= mainMenu.currentlySelectedBook.LastChapter)
-                                continue;
-                            bool groupFound = false;
-                            tempChapterNumbers.Add(Convert.ToDecimal(entry.SelectToken("attributes").SelectToken("chapter").Value<string>(), new CultureInfo("en-US")));
-                            chapterNrPages.Add(entry.SelectToken("attributes").SelectToken("pages").Value<int>());
-                            foreach (JToken group in entry.SelectToken("relationships"))
-                                if (group.SelectToken("type").Value<string>() == "scanlation_group")
-                                {
-                                    groupFound = true;
-                                    tempChapterGroups.Add(group.SelectToken("attributes").SelectToken("name").Value<string>());
-                                    break;
-                                }
-                            if (groupFound == false)
-                                tempChapterGroups.Add("Anonymous (No Group)");
-                            tempChapterIDs.Add(entry.SelectToken("id").Value<string>());
+                            titleSelectionDropDown.Items.Add(subTitle.SelectToken(mainMenu.selectedLanguage).Value<string>());
+                            gotSubtitle = true;
                         }
                         catch { }
-                    }
-                    if (extraPages.Count > 0)
-                        foreach (string page in extraPages)
-                        {
-                            apiResult = apiResult = JObject.Parse(page);
-                            foreach (JToken entry in apiResult.SelectToken("data"))
-                            {
-                                try
-                                {
-                                    if (mainMenu.updateManga == true && Convert.ToDecimal(entry.SelectToken("attributes").SelectToken("chapter").Value<string>(), new CultureInfo("en-US")) <= mainMenu.currentlySelectedBook.LastChapter)
-                                        continue;
-                                    bool groupFound = false;
-                                    tempChapterNumbers.Add(Convert.ToDecimal(entry.SelectToken("attributes").SelectToken("chapter").Value<string>(), new CultureInfo("en-US")));
-                                    chapterNrPages.Add(entry.SelectToken("attributes").SelectToken("pages").Value<int>());
-                                    foreach (JToken group in entry.SelectToken("relationships"))
-                                        if (group.SelectToken("type").Value<string>() == "scanlation_group")
-                                        {
-                                            groupFound = true;
-                                            tempChapterGroups.Add(group.SelectToken("attributes").SelectToken("name").Value<string>());
-                                            break;
-                                        }
-                                    if (groupFound == false)
-                                        tempChapterGroups.Add("Anonymous (No Group)");
-                                    tempChapterIDs.Add(entry.SelectToken("id").Value<string>());
-                                }
-                                catch { }
-                            }
-                        }
-                    if (mainMenu.updateManga == false)
-                    {
-                        task = client.GetStringAsync(new Uri("https://api.mangadex.org/manga/" + mangaID + "?includes[]=cover_art&includes[]=author&includes[]=artist"));
-                        mangaInfo = JObject.Parse(task.Result);
-                        calledAPI(false);
-                        foreach (JToken title in mangaInfo.SelectToken("data").SelectToken("attributes").SelectToken("title"))
-                            titleSelectionDropDown.Items.Add(((JProperty)title).Value);
-                        bool gotSubtitle = false;
+                    if (gotSubtitle == false)
                         foreach (JToken subTitle in mangaInfo.SelectToken("data").SelectToken("attributes").SelectToken("altTitles"))
                             try
                             {
-                                titleSelectionDropDown.Items.Add(subTitle.SelectToken(mainMenu.selectedLanguage).Value<string>());
-                                gotSubtitle = true;
+                                titleSelectionDropDown.Items.Add(subTitle.SelectToken("en").Value<string>());
                             }
                             catch { }
-                        if (gotSubtitle == false)
-                            foreach (JToken subTitle in mangaInfo.SelectToken("data").SelectToken("attributes").SelectToken("altTitles"))
-                                try
-                                {
-                                    titleSelectionDropDown.Items.Add(subTitle.SelectToken("en").Value<string>());
-                                }
-                                catch { }
-                        foreach (JToken rel in mangaInfo.SelectToken("data").SelectToken("relationships"))
-                        {
-                            string type = rel.SelectToken("type").Value<string>();
-                            if (type == "cover_art")
-                                coverFileName = rel.SelectToken("attributes").SelectToken("fileName").Value<string>();
-                            else if (type == "author")
-                                bookAuthor = rel.SelectToken("attributes").SelectToken("name").Value<string>();
-                            else if (type == "artist")
-                                bookArtist = rel.SelectToken("attributes").SelectToken("name").Value<string>();
-                        }
-                        bookCreatedDate = mangaInfo.SelectToken("data").SelectToken("attributes").SelectToken("createdAt").Value<string>();
-
-                        #region Creating temporary eBook with what I have so far (title will only be set by changing the dropdown, will force change if no selection is made)
-
-                        becomingBook.Ongoing = mangaInfo.SelectToken("data").SelectToken("attributes").SelectToken("status").Value<string>() == "ongoing" || mangaInfo.SelectToken("data").SelectToken("attributes").SelectToken("status").Value<string>() == "hiatus";
-                        becomingBook.Link = linkTextBox.Text;
-                        string tempRating = mangaInfo.SelectToken("data").SelectToken("attributes").SelectToken("contentRating").Value<string>();
-                        tempRating = tempRating.Substring(0, 1).ToUpper() + tempRating.Substring(1);
-                        becomingBook.ContentRating = tempRating;
-                        becomingBook.Tags = new List<string>();
-                        foreach (JToken tag in mangaInfo.SelectToken("data").SelectToken("attributes").SelectToken("tags"))
-                        {
-                            string groupTemp = tag.SelectToken("attributes").SelectToken("group").Value<string>();
-                            if (groupTemp == "genre" || groupTemp == "theme")
-                                try
-                                {
-                                    becomingBook.Tags.Add(tag.SelectToken("attributes").SelectToken("name").SelectToken(mainMenu.selectedLanguage).Value<string>());
-                                }
-                                catch
-                                {
-                                    becomingBook.Tags.Add(tag.SelectToken("attributes").SelectToken("name").SelectToken("en").Value<string>());
-                                }
-                        }
-
-                        #endregion
+                    foreach (JToken rel in mangaInfo.SelectToken("data").SelectToken("relationships"))
+                    {
+                        string type = rel.SelectToken("type").Value<string>();
+                        if (type == "cover_art")
+                            coverFileName = rel.SelectToken("attributes").SelectToken("fileName").Value<string>();
+                        else if (type == "author")
+                            bookAuthor = rel.SelectToken("attributes").SelectToken("name").Value<string>();
+                        else if (type == "artist")
+                            bookArtist = rel.SelectToken("attributes").SelectToken("name").Value<string>();
                     }
+                    bookCreatedDate = mangaInfo.SelectToken("data").SelectToken("attributes").SelectToken("createdAt").Value<string>();
+
+                    #region Creating temporary eBook with what I have so far (title will only be set by changing the dropdown, will force change if no selection is made)
+
+                    becomingBook.Ongoing = mangaInfo.SelectToken("data").SelectToken("attributes").SelectToken("status").Value<string>() == "ongoing" || mangaInfo.SelectToken("data").SelectToken("attributes").SelectToken("status").Value<string>() == "hiatus";
+                    becomingBook.Link = linkTextBox.Text;
+                    string tempRating = mangaInfo.SelectToken("data").SelectToken("attributes").SelectToken("contentRating").Value<string>();
+                    tempRating = tempRating.Substring(0, 1).ToUpper() + tempRating.Substring(1);
+                    becomingBook.ContentRating = tempRating;
+                    becomingBook.Tags = new List<string>();
+                    foreach (JToken tag in mangaInfo.SelectToken("data").SelectToken("attributes").SelectToken("tags"))
+                    {
+                        string groupTemp = tag.SelectToken("attributes").SelectToken("group").Value<string>();
+                        if (groupTemp == "genre" || groupTemp == "theme")
+                            try
+                            {
+                                becomingBook.Tags.Add(tag.SelectToken("attributes").SelectToken("name").SelectToken(mainMenu.selectedLanguage).Value<string>());
+                            }
+                            catch
+                            {
+                                becomingBook.Tags.Add(tag.SelectToken("attributes").SelectToken("name").SelectToken("en").Value<string>());
+                            }
+                    }
+
+                    #endregion
                 }
-                catch
-                {
-                    MessageBox.Show("Could not retrieve chapter list!", "API error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    if (mainMenu.updateManga == false)
-                        linkTextBox.Enabled = true;
-                    searchButton.Enabled = true;
-                    return;
-                }
+            }
+            catch
+            {
+                MessageBox.Show("Could not retrieve chapter list!", "API error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (mainMenu.updateManga == false)
+                    linkTextBox.Enabled = true;
+                searchButton.Enabled = true;
+                return;
             }
             bool doneGoneDidThisOne = true;
             for (int j = 1; (j <= tempChapterNumbers.Count - 1) && (doneGoneDidThisOne == true); j++)
