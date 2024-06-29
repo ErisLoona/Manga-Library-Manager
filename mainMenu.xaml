@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Manga_Library_Manager.MainPage"
+             Background="DimGray"
+             Title="Manga Library Manager"
+             Shell.NavBarIsVisible="False"
+             Loaded="mainMenu_Loaded"
+             Unloaded="mainMenu_Closing">
+
+    <Grid ColumnDefinitions="0.7*, 0.3*" ColumnSpacing="10">
+        <Grid Grid.Column="0" RowDefinitions="0.07*, 0.055*, 0.875*" RowSpacing="7">
+            <Grid Grid.Row="0" ColumnDefinitions="*, *, *, *" ColumnSpacing="10">
+                <Grid Grid.Column="0" ColumnDefinitions="*, *" ColumnSpacing="10">
+                    <Button Grid.Column="0" MinimumHeightRequest="1" MinimumWidthRequest="1" Clicked="addMangaButton_Click" Pressed="ButtonPressed" Released="ButtonReleased" Background="#F8C8DC" FontFamily="Calibri" FontAttributes="Bold" Padding="1" LineBreakMode="NoWrap" Text="Add Manga"/>
+                    <Button Grid.Column="1" MinimumHeightRequest="1" MinimumWidthRequest="1" Clicked="scanButton_Click" Pressed="ButtonPressed" Released="ButtonReleased" Background="#F8C8DC" FontFamily="Calibri" FontAttributes="Bold" Padding="1" LineBreakMode="NoWrap" Text="Scan Folder"/>
+                </Grid>
+                <Button Grid.Column="1" MinimumHeightRequest="1" MinimumWidthRequest="1" Clicked="checkAllOnlineButton_Click" Pressed="ButtonPressed" Released="ButtonReleased" Background="#F8C8DC" FontFamily="Calibri" FontAttributes="Bold" Padding="1" LineBreakMode="NoWrap" Text="Check All Online Chapters"/>
+                <Button Grid.Column="2" MinimumHeightRequest="1" MinimumWidthRequest="1" Clicked="downloadMangaButton_Click" Pressed="ButtonPressed" Released="ButtonReleased" Background="#F8C8DC" FontFamily="Calibri" FontAttributes="Bold" Padding="1" LineBreakMode="NoWrap" Text="Download a Manga"/>
+                <Grid Grid.Column="3" ColumnDefinitions="*, *" ColumnSpacing="6">
+                    <Button Grid.Column="0" MinimumHeightRequest="1" MinimumWidthRequest="1" Clicked="filterButton_Click" Pressed="ButtonPressed" Released="ButtonReleased" Background="#F8C8DC" FontFamily="Calibri" FontAttributes="Bold" Padding="1" LineBreakMode="NoWrap" Text="Showing All"/>
+                    <Button Grid.Column="1" MinimumHeightRequest="1" MinimumWidthRequest="1" Clicked="tagsButtons_Click" Pressed="ButtonPressed" Released="ButtonReleased" Background="#F8C8DC" FontFamily="Calibri" FontAttributes="Bold" Padding="1" LineBreakMode="NoWrap" Text="Filter by Tags"/>
+                </Grid>
+            </Grid>
+            <Grid Grid.Row="1" ColumnDefinitions="*, Auto" ColumnSpacing="3">
+                <Entry x:Name="searchTextBox" Grid.Column="0" HorizontalTextAlignment="Start" Placeholder="Search Manga..." Background="White" FontFamily="Calibri" TextColor="Black" IsSpellCheckEnabled="False" FontSize="12" MinimumHeightRequest="1" MaxLength="500"/>
+                <ImageButton Grid.Column="1" Clicked="settingsButton_Click" Pressed="ButtonPressed" Released="ButtonReleased" Background="#F8C8DC" Padding="0" Aspect="AspectFit" WidthRequest="30" HeightRequest="30" MinimumWidthRequest="1" MinimumHeightRequest="1" Source="settings.png"/>
+            </Grid>
+            <ListView x:Name="mangaList" Grid.Row="2" MinimumHeightRequest="1" MinimumWidthRequest="1" ItemSelected="mangaList_SelectedIndexChanged" HorizontalScrollBarVisibility="Never" VerticalScrollBarVisibility="Default"/>
+        </Grid>
+        <Grid Grid.Column="1" RowDefinitions="0.18*, 0.82*" RowSpacing="7">
+            <Grid Grid.Row="0" ColumnDefinitions="0.76*, 0.24*" ColumnSpacing="10">
+                <Label x:Name="mangaDescTitle" Grid.Column="0" MinimumHeightRequest="1" MinimumWidthRequest="1" FontFamily="Calibri" FontSize="12" FontAttributes="Bold" TextColor="White" Background="DimGray" VerticalTextAlignment="Center" HorizontalTextAlignment="Start"/>
+                <Image x:Name="mangaDescCover" Grid.Column="1" MinimumHeightRequest="1" MinimumWidthRequest="1" Aspect="AspectFill"/>
+            </Grid>
+            <Grid Grid.Row="1" RowDefinitions="0.12*, 0.12*, 0.06*, 0.12*, 0.06*, 0.06*, 0.06*, 0.08*, 0.06*, 0.26*" RowSpacing="7">
+                <Grid Grid.Row="0" RowDefinitions="*, *" RowSpacing="2">
+                    <Label x:Name="label2" Grid.Row="0" MinimumHeightRequest="1" MinimumWidthRequest="1" FontFamily="Calibri" FontSize="12" TextColor="White" Background="DimGray" VerticalTextAlignment="End" HorizontalTextAlignment="Center" Text="Ongoing?"/>
+                    <Grid Grid.Row="1" ColumnDefinitions="*, Auto, *">
+                        <CheckBox x:Name="ongoingCheckbox" Grid.Column="1" CheckedChanged="ongoingCheckbox_CheckedChanged"/>
+                    </Grid>
+                </Grid>
+                <Grid Grid.Row="1" ColumnDefinitions="0.6*, 0.3*, 0.1*" ColumnSpacing="3">
+                    <Label x:Name="label1" Grid.Column="0" MinimumHeightRequest="1" MinimumWidthRequest="1" FontFamily="Calibri" FontSize="15.75" TextColor="White" Background="DimGray" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Text="Last chapter:"/>
+                    <Grid Grid.Column="1" RowDefinitions="*, Auto, *">
+                        <Entry x:Name="lastChapterNumber" Grid.Row="1" TextChanged="lastChapterNumber_TextChanged" HorizontalTextAlignment="Center" Placeholder="Last Chapter" Background="White" FontFamily="Calibri" TextColor="Black" IsSpellCheckEnabled="False" FontSize="12" MinimumHeightRequest="1" MaxLength="50"/>
+                    </Grid>
+                    <ImageButton x:Name="resetButton" Grid.Column="2" Clicked="resetButton_Click" Pressed="ButtonPressed" Released="ButtonReleased" MinimumHeightRequest="1" MinimumWidthRequest="1" Background="#F8C8DC" Padding="0" Aspect="AspectFit" Source="reset.png"/>
+                </Grid>
+                <Picker x:Name="linkTextBox" Grid.Row="2" SelectedIndexChanged="linkTextBox_TextChanged" Background="White" FontFamily="Calibri" TextColor="Black" FontSize="12" MinimumHeightRequest="1" MinimumWidthRequest="1" VerticalTextAlignment="Center"/>
+                <Grid Grid.Row="3" ColumnDefinitions="*, *, *" ColumnSpacing="10">
+                    <Button x:Name="openInExplorerButton" Grid.Column="0" MinimumHeightRequest="1" MinimumWidthRequest="1" Clicked="openInExplorerButton_Click" Pressed="ButtonPressed" Released="ButtonReleased" Background="#F8C8DC" FontFamily="Calibri" FontAttributes="Bold" Padding="1" LineBreakMode="NoWrap" Text="Open in File Explorer"/>
+                    <Button x:Name="checkOnlineButton" Grid.Column="1" MinimumHeightRequest="1" MinimumWidthRequest="1" Clicked="checkOnlineButton_Click" Pressed="ButtonPressed" Released="ButtonReleased" Background="#F8C8DC" FontFamily="Calibri" FontAttributes="Bold" Padding="1" LineBreakMode="NoWrap" Text="Check Online"/>
+                    <Button x:Name="deleteEntryButton" Grid.Column="2" MinimumHeightRequest="1" MinimumWidthRequest="1" Clicked="deleteEntryButton_Click" Pressed="ButtonPressed" Released="ButtonReleased" Background="#F8C8DC" FontFamily="Calibri" FontAttributes="Bold" Padding="1" LineBreakMode="NoWrap" Text="Delete Entry"/>
+                </Grid>
+                <Label x:Name="lastChapterOnlineLabel" Grid.Row="4" MinimumHeightRequest="1" MinimumWidthRequest="1" FontFamily="Calibri" FontSize="12" TextColor="White" Background="DimGray" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Text="Last chapter online: ..."/>
+                <Label x:Name="ongoingOnlineLabel" Grid.Row="5" MinimumHeightRequest="1" MinimumWidthRequest="1" FontFamily="Calibri" FontSize="12" TextColor="White" Background="DimGray" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+                <Button x:Name="updateMangaButton" Grid.Row="6" MinimumHeightRequest="1" MinimumWidthRequest="1" Clicked="updateMangaButton_Click" Pressed="ButtonPressed" Released="ButtonReleased" Background="#F8C8DC" FontFamily="Calibri" FontAttributes="Bold" Padding="1" LineBreakMode="NoWrap" Text="Download New Chapters"/>
+                <Grid Grid.Row="7" ColumnDefinitions="*, Auto, *">
+                    <Button x:Name="editTagsButton" Grid.Column="1" MinimumHeightRequest="1" MinimumWidthRequest="1" Clicked="editTagsButton_Click" Pressed="ButtonPressed" Released="ButtonReleased" Background="#F8C8DC" FontFamily="Calibri" FontAttributes="Bold" Padding="1" LineBreakMode="NoWrap" Text="Edit Tags"/>
+                </Grid>
+                <Label x:Name="ratingLabel" Grid.Row="8" MinimumHeightRequest="1" MinimumWidthRequest="1" FontFamily="Calibri" FontSize="12" TextColor="White" Background="DimGray" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Text="Rating: Unknown"/>
+                <Label x:Name="tagsTextBox" Grid.Row="9" MinimumHeightRequest="1" MinimumWidthRequest="1" FontFamily="Calibri" FontSize="12" TextColor="White" Background="DimGray"/>
+            </Grid>
+        </Grid>
+    </Grid>
+
+</ContentPage>
