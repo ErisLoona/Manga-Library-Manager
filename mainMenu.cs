@@ -68,11 +68,10 @@ namespace Manga_Library_Manager
                 try
                 {
                     using StreamWriter writer = new StreamWriter("Manga Library Manager.json");
-                    writer.Write("{\"FormatVersion\":3,\"Language\":\"en\",\"NoWarning\":false,\"CheckUpdates\":false,\"Library\":[]}");
                     if (MessageBox.Show("Would you like the program to automatically check for updates?\nYou can always change this later in the settings.", "Check for updates", MessageBoxButtons.YesNo) == DialogResult.No)
-                        checkUpdates = false;
+                        writer.Write("{\"FormatVersion\":3,\"Language\":\"en\",\"NoWarning\":false,\"CheckUpdates\":false,\"Library\":[]}");
                     else
-                        checkUpdates = true;
+                        writer.Write("{\"FormatVersion\":3,\"Language\":\"en\",\"NoWarning\":false,\"CheckUpdates\":true,\"Library\":[]}");
                 }
                 catch
                 {
