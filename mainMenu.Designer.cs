@@ -164,7 +164,6 @@
             downloadMangaButton.Size = new Size(182, 36);
             downloadMangaButton.TabIndex = 10;
             downloadMangaButton.Text = "Download a Manga";
-            toolTip.SetToolTip(downloadMangaButton, "Check all the Ongoing mangas for new chapters online.");
             downloadMangaButton.UseVisualStyleBackColor = false;
             downloadMangaButton.Click += downloadMangaButton_Click;
             // 
@@ -585,7 +584,6 @@
             // 
             tableLayoutPanel7.ColumnCount = 1;
             tableLayoutPanel7.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tableLayoutPanel7.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 20F));
             tableLayoutPanel7.Controls.Add(label2, 0, 0);
             tableLayoutPanel7.Controls.Add(ongoingCheckbox, 0, 1);
             tableLayoutPanel7.Dock = DockStyle.Fill;

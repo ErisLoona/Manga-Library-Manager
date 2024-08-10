@@ -1178,6 +1178,7 @@ namespace Manga_Library_Manager
             }
             else
                 updateMangaButton.Enabled = true;
+            updateManga = false;
             mangaDownloader.Dispose();
             this.Show();
         }

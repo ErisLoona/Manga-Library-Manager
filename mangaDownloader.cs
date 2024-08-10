@@ -758,7 +758,7 @@ namespace Manga_Library_Manager
                         if (pageResponse.Headers.TryGetValues("X-Cache", out IEnumerable<string> headers) == true)
                             if (headers.First().StartsWith("HIT") == true)
                                 cached = true;
-                        HttpContent payload = report(pageLink + pageName, true, cached, pageResponse.Content.ReadAsStream().Length, span.Milliseconds);
+                        HttpContent payload = report(pageLink + pageName, false, cached, pageResponse.Content.ReadAsStream().Length, span.Milliseconds);
                         try
                         {
                             if (doReports == true)
