@@ -41,9 +41,10 @@
             tableLayoutPanel4 = new TableLayoutPanel();
             addToManagerCheckBox = new CheckBox();
             tableLayoutPanel6 = new TableLayoutPanel();
-            removeExtrasButton = new Button();
+            preferenceComboBox = new ComboBox();
             locationButton = new Button();
             tableLayoutPanel8 = new TableLayoutPanel();
+            removeExtrasButton = new Button();
             formatDropDown = new ComboBox();
             qualityDropDown = new ComboBox();
             tableLayoutPanel5 = new TableLayoutPanel();
@@ -115,7 +116,6 @@
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 1;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel2.Size = new Size(914, 34);
             tableLayoutPanel2.TabIndex = 0;
             // 
@@ -144,7 +144,6 @@
             tableLayoutPanel7.Name = "tableLayoutPanel7";
             tableLayoutPanel7.RowCount = 1;
             tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel7.Size = new Size(595, 34);
             tableLayoutPanel7.TabIndex = 1;
             // 
@@ -236,7 +235,7 @@
             tableLayoutPanel6.ColumnCount = 2;
             tableLayoutPanel6.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tableLayoutPanel6.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tableLayoutPanel6.Controls.Add(removeExtrasButton, 0, 0);
+            tableLayoutPanel6.Controls.Add(preferenceComboBox, 1, 0);
             tableLayoutPanel6.Controls.Add(locationButton, 0, 0);
             tableLayoutPanel6.Dock = DockStyle.Fill;
             tableLayoutPanel6.Location = new Point(365, 0);
@@ -248,25 +247,19 @@
             tableLayoutPanel6.Size = new Size(365, 34);
             tableLayoutPanel6.TabIndex = 7;
             // 
-            // removeExtrasButton
+            // preferenceComboBox
             // 
-            removeExtrasButton.BackColor = Color.FromArgb(248, 200, 220);
-            removeExtrasButton.Dock = DockStyle.Fill;
-            removeExtrasButton.Enabled = false;
-            removeExtrasButton.FlatAppearance.BorderSize = 0;
-            removeExtrasButton.FlatAppearance.MouseDownBackColor = Color.FromArgb(188, 152, 167);
-            removeExtrasButton.FlatAppearance.MouseOverBackColor = Color.FromArgb(255, 229, 240);
-            removeExtrasButton.FlatStyle = FlatStyle.Flat;
-            removeExtrasButton.Font = new Font("Calibri", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            removeExtrasButton.ForeColor = Color.Black;
-            removeExtrasButton.Location = new Point(185, 3);
-            removeExtrasButton.Name = "removeExtrasButton";
-            removeExtrasButton.Size = new Size(177, 28);
-            removeExtrasButton.TabIndex = 6;
-            removeExtrasButton.Text = "Exclude Extras";
-            toolTip.SetToolTip(removeExtrasButton, "Deselects all the chapters with decimals.");
-            removeExtrasButton.UseVisualStyleBackColor = false;
-            removeExtrasButton.Click += removeExtrasButton_Click;
+            preferenceComboBox.Dock = DockStyle.Fill;
+            preferenceComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            preferenceComboBox.Enabled = false;
+            preferenceComboBox.FormattingEnabled = true;
+            preferenceComboBox.Items.AddRange(new object[] { "Most in manga", "Most up to chapter" });
+            preferenceComboBox.Location = new Point(185, 3);
+            preferenceComboBox.Name = "preferenceComboBox";
+            preferenceComboBox.Size = new Size(177, 27);
+            preferenceComboBox.TabIndex = 2;
+            toolTip.SetToolTip(preferenceComboBox, "Choose whether to auto-select chapters based on\r\nwhich scanlator did most of the manga, or most up\r\nto each chapter.");
+            preferenceComboBox.SelectedIndexChanged += preferenceComboBox_SelectedIndexChanged;
             // 
             // locationButton
             // 
@@ -290,9 +283,11 @@
             // 
             // tableLayoutPanel8
             // 
-            tableLayoutPanel8.ColumnCount = 2;
-            tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel8.ColumnCount = 3;
+            tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 34F));
+            tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33F));
+            tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33F));
+            tableLayoutPanel8.Controls.Add(removeExtrasButton, 2, 0);
             tableLayoutPanel8.Controls.Add(formatDropDown, 1, 0);
             tableLayoutPanel8.Controls.Add(qualityDropDown, 0, 0);
             tableLayoutPanel8.Dock = DockStyle.Fill;
@@ -301,9 +296,28 @@
             tableLayoutPanel8.Name = "tableLayoutPanel8";
             tableLayoutPanel8.RowCount = 1;
             tableLayoutPanel8.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel8.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel8.Size = new Size(365, 34);
             tableLayoutPanel8.TabIndex = 8;
+            // 
+            // removeExtrasButton
+            // 
+            removeExtrasButton.BackColor = Color.FromArgb(248, 200, 220);
+            removeExtrasButton.Dock = DockStyle.Fill;
+            removeExtrasButton.Enabled = false;
+            removeExtrasButton.FlatAppearance.BorderSize = 0;
+            removeExtrasButton.FlatAppearance.MouseDownBackColor = Color.FromArgb(188, 152, 167);
+            removeExtrasButton.FlatAppearance.MouseOverBackColor = Color.FromArgb(255, 229, 240);
+            removeExtrasButton.FlatStyle = FlatStyle.Flat;
+            removeExtrasButton.Font = new Font("Calibri", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            removeExtrasButton.ForeColor = Color.Black;
+            removeExtrasButton.Location = new Point(247, 3);
+            removeExtrasButton.Name = "removeExtrasButton";
+            removeExtrasButton.Size = new Size(115, 28);
+            removeExtrasButton.TabIndex = 6;
+            removeExtrasButton.Text = "Exclude Extras";
+            toolTip.SetToolTip(removeExtrasButton, "Deselects all the chapters with decimals.");
+            removeExtrasButton.UseVisualStyleBackColor = false;
+            removeExtrasButton.Click += removeExtrasButton_Click;
             // 
             // formatDropDown
             // 
@@ -312,9 +326,9 @@
             formatDropDown.Enabled = false;
             formatDropDown.FormattingEnabled = true;
             formatDropDown.Items.AddRange(new object[] { "EPUB", "CBZ" });
-            formatDropDown.Location = new Point(185, 3);
+            formatDropDown.Location = new Point(127, 3);
             formatDropDown.Name = "formatDropDown";
-            formatDropDown.Size = new Size(177, 27);
+            formatDropDown.Size = new Size(114, 27);
             formatDropDown.TabIndex = 1;
             // 
             // qualityDropDown
@@ -326,7 +340,7 @@
             qualityDropDown.Items.AddRange(new object[] { "Original Quality", "Data-Saver" });
             qualityDropDown.Location = new Point(3, 3);
             qualityDropDown.Name = "qualityDropDown";
-            qualityDropDown.Size = new Size(176, 27);
+            qualityDropDown.Size = new Size(118, 27);
             qualityDropDown.TabIndex = 0;
             // 
             // tableLayoutPanel5
@@ -444,5 +458,6 @@
         private Button removeExtrasButton;
         private TableLayoutPanel tableLayoutPanel8;
         private ComboBox formatDropDown;
+        private ComboBox preferenceComboBox;
     }
 }

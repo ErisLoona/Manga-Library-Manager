@@ -18,7 +18,7 @@ namespace Manga_Library_Manager
         private string savingPath;
         private int startOffset = 2, oldChapterIndex = -1;
         private List<decimal> tempChapterNumbers = new List<decimal>();
-        private List<int> checkedIndexes = new List<int>(), duplicateIndexes = new List<int>(), chapterNrPages = new List<int>();
+        private List<int> checkedIndexes = new List<int>(), altCheckedIndexes = new List<int>(), duplicateIndexes = new List<int>(), chapterNrPages = new List<int>();
         private mainMenu.eBook becomingBook = new mainMenu.eBook();
 
         private List<Label> progressLabels = new List<Label>();
@@ -46,6 +46,7 @@ namespace Manga_Library_Manager
         {
             qualityDropDown.SelectedIndex = 0;
             formatDropDown.SelectedIndex = 0;
+            preferenceComboBox.SelectedIndex = 0;
             if (mainMenu.updateManga == false)
             {
                 titleSelectionDropDown.SelectedIndex = 0;
@@ -82,6 +83,7 @@ namespace Manga_Library_Manager
                 formatDropDown.Enabled = enabled;
             }
             qualityDropDown.Enabled = enabled;
+            preferenceComboBox.Enabled = enabled;
             selectedChaptersList.Enabled = enabled;
             removeExtrasButton.Enabled = enabled;
             downloadButton.Enabled = enabled;
@@ -293,58 +295,78 @@ namespace Manga_Library_Manager
                         doneGoneDidThisOne = true;
                     }
             }
-            Dictionary<string, int> groupAppearances = new Dictionary<string, int>();
-            for (int i = 0; i < tempChapterNumbers.Count - 1; i++)
+            Dictionary<string, int> groupAppearances = new Dictionary<string, int>(), groupIndexes = new Dictionary<string, int>();
+            for (int i = 0; i < tempChapterNumbers.Count; i++)
             {
                 if (groupAppearances.ContainsKey(tempChapterGroups[i]) == true)
                     groupAppearances[tempChapterGroups[i]]++;
                 else
                     groupAppearances[tempChapterGroups[i]] = 1;
-                Dictionary<string, int> tempAuthors = new Dictionary<string, int>();
-                if (tempChapterNumbers[i] == tempChapterNumbers[i + 1])
+                groupIndexes[tempChapterGroups[i]] = i;
+                if (i != tempChapterNumbers.Count - 1 && tempChapterNumbers[i] == tempChapterNumbers[i + 1])
                 {
-                    while (i < tempChapterNumbers.Count - 1 && tempChapterNumbers[i] == tempChapterNumbers[i + 1])
-                    {
-                        if (tempChapterGroups[i] != "Anonymous (No Group)")
-                            tempAuthors[tempChapterGroups[i]] = i;
-                        duplicateIndexes.Add(i);
-                        i++;
-                        if (groupAppearances.ContainsKey(tempChapterGroups[i]) == true)
-                            groupAppearances[tempChapterGroups[i]]++;
-                        else
-                            groupAppearances[tempChapterGroups[i]] = 1;
-                    }
-                    if (tempChapterGroups[i] != "Anonymous (No Group)")
-                        tempAuthors[tempChapterGroups[i]] = i;
                     duplicateIndexes.Add(i);
-                    if (groupAppearances.ContainsKey(tempChapterGroups[i]) == true)
-                        groupAppearances[tempChapterGroups[i]]++;
-                    else
-                        groupAppearances[tempChapterGroups[i]] = 1;
-                    Dictionary<string, int> tempAuthorCount = new Dictionary<string, int>();
-                    foreach (KeyValuePair<string, int> author in tempAuthors)
-                        tempAuthorCount[author.Key] = groupAppearances[author.Key];
-                    tempAuthorCount = tempAuthorCount.OrderByDescending(key => key.Value).ToDictionary();
-                    bool found = false;
-                    foreach (KeyValuePair<string, int> author in tempAuthorCount)
-                    {
-                        if (tempAuthors.ContainsKey(author.Key) == false)
-                            continue;
-                        checkedIndexes.Add(tempAuthors[author.Key]);
-                        found = true;
-                        break;
-                    }
-                    if (found == false)
-                        checkedIndexes.Add(i);
+                    duplicateIndexes.Add(i + 1);
                     continue;
                 }
-                checkedIndexes.Add(i);
+                if (groupIndexes.Count == 1)
+                {
+                    checkedIndexes.Add(i);
+                    groupIndexes.Clear();
+                    continue;
+                }
+                groupAppearances = groupAppearances.OrderByDescending(keyValuePair => keyValuePair.Value).ToDictionary();
+                bool found = false;
+                foreach (KeyValuePair<string, int> group in groupAppearances)
+                    if (groupIndexes.ContainsKey(group.Key) && group.Key != "Anonymous (No Group)")
+                    {
+                        found = true;
+                        checkedIndexes.Add(groupIndexes[group.Key]);
+                        break;
+                    }
+                if (found == false)
+                    if (groupIndexes.ContainsKey("Anonymous (No Group)"))
+                        checkedIndexes.Add(groupIndexes["Anonymous (No Group)"]);
+                    else
+                        checkedIndexes.Add(groupIndexes.First().Value);
+                groupIndexes.Clear();
+            }
+            groupAppearances = groupAppearances.OrderByDescending(keyValuePair => keyValuePair.Value).ToDictionary();
+            groupIndexes.Clear();
+            for (int i = 0; i < tempChapterNumbers.Count; i++)
+            {
+                groupIndexes[tempChapterGroups[i]] = i;
+                if (i != tempChapterNumbers.Count - 1 && tempChapterNumbers[i] == tempChapterNumbers[i + 1])
+                    continue;
+                if (groupIndexes.Count == 1)
+                {
+                    altCheckedIndexes.Add(i);
+                    groupIndexes.Clear();
+                    continue;
+                }
+                bool found = false;
+                foreach (KeyValuePair<string, int> group in groupAppearances)
+                    if (groupIndexes.ContainsKey(group.Key) && group.Key != "Anonymous (No Group)")
+                    {
+                        found = true;
+                        altCheckedIndexes.Add(groupIndexes[group.Key]);
+                        break;
+                    }
+                if (found == false)
+                    if (groupIndexes.ContainsKey("Anonymous (No Group)"))
+                        altCheckedIndexes.Add(groupIndexes["Anonymous (No Group)"]);
+                    else
+                        altCheckedIndexes.Add(groupIndexes.First().Value);
+                groupIndexes.Clear();
             }
             selectedChaptersList.BeginUpdate();
             for (int i = 0; i < tempChapterNumbers.Count; i++)
             {
                 if (duplicateIndexes.Contains(i) == true)
-                    selectedChaptersList.Items.Add("Chapter " + Convert.ToString(tempChapterNumbers[i], new CultureInfo("en-US")) + " by " + tempChapterGroups[i], checkedIndexes.Contains(i));
+                    if (preferenceComboBox.SelectedIndex == 0)
+                        selectedChaptersList.Items.Add("Chapter " + Convert.ToString(tempChapterNumbers[i], new CultureInfo("en-US")) + " by " + tempChapterGroups[i], altCheckedIndexes.Contains(i));
+                    else
+                        selectedChaptersList.Items.Add("Chapter " + Convert.ToString(tempChapterNumbers[i], new CultureInfo("en-US")) + " by " + tempChapterGroups[i], checkedIndexes.Contains(i));
                 else
                     selectedChaptersList.Items.Add("Chapter " + Convert.ToString(tempChapterNumbers[i], new CultureInfo("en-US")), true);
             }
@@ -882,6 +904,7 @@ namespace Manga_Library_Manager
             {
                 downloadButton.Enabled = false;
                 downloadButton.Text = "Creating archive. Please wait!";
+                downloadButton.Refresh();
                 becomingBook.Path += ".cbz";
                 string fileName = becomingBook.Title;
                 foreach (char c in Path.GetInvalidFileNameChars())
@@ -1105,6 +1128,7 @@ namespace Manga_Library_Manager
                 return;
             downloadButton.Enabled = false;
             downloadButton.Text = "Creating archive. Please wait!";
+            downloadButton.Refresh();
             becomingBook.Path += ".epub";
             string fileName = becomingBook.Title;
             foreach (char c in Path.GetInvalidFileNameChars())
@@ -1187,6 +1211,24 @@ namespace Manga_Library_Manager
                 for (int i = Int32.Min(selectedChaptersList.SelectedIndex, oldChapterIndex) + 1; i < Int32.Max(selectedChaptersList.SelectedIndex, oldChapterIndex); i++)
                     selectedChaptersList.SetItemChecked(i, !selectedChaptersList.GetItemChecked(i));
             oldChapterIndex = selectedChaptersList.SelectedIndex;
+        }
+
+        private void preferenceComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            selectedChaptersList.BeginUpdate();
+            if (preferenceComboBox.SelectedIndex == 0)
+                for (int i = 0; i < selectedChaptersList.Items.Count; i++)
+                    if (altCheckedIndexes.Contains(i))
+                        selectedChaptersList.SetItemChecked(i, true);
+                    else
+                        selectedChaptersList.SetItemChecked(i, false);
+            else
+                for (int i = 0; i < selectedChaptersList.Items.Count; i++)
+                    if (checkedIndexes.Contains(i))
+                        selectedChaptersList.SetItemChecked(i, true);
+                    else
+                        selectedChaptersList.SetItemChecked(i, false);
+            selectedChaptersList.EndUpdate();
         }
     }
 }

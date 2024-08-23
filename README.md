@@ -6,7 +6,8 @@ The downloads and sync features rely on the [MangaDex.org](https://mangadex.org/
 Features:  
 
 - Easily download mangas from MangaDex, however you want to  
-	- Choose which chapters to download - the program automatically selects each chapter; if a chapter was scanlated by more than one group, the program will try and select the scanlator who covered *most* of the chapters up to that point to maintain consistency  
+	- Choose which chapters to download - the program automatically selects each chapter; if a chapter was scanlated by more than one group, the program will try and select the scanlator who covered most of the chapters in the manga to maintain consistency  
+		- There is an option to instead prefer the group who covered most chapters *up to each chapter*, to allow consistency in chunks for mangas with spotty coverage  
 		- The program also offers a button to quickly unselect / reselect interlude chapters / extras, but be warned this is a "dumb" feature, it (un)selects the chapters with decimals, it has no way of knowing the actual content of the chapter  
 	- Choose which title to use - the program lets you choose between the main title and any alt-titles listed on MangaDex; the program tries to get the alt-titles in your preferred language  
 	- Downloaded mangas are ready to be read - after downloading, the program creates a single `.epub` file with all the chapters, the cover image, author and artist; alternatively, it can create a single `.cbz`, however this will have no metadata (the cover image is still included, as the first entry)  
