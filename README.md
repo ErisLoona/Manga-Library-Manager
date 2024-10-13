@@ -6,15 +6,15 @@ I've decided to re-write the entire program in AvaloniaUI instead of WinForms to
 	- ~~Main menu~~  
 	- Downloader  
 	- Filtering  
-	- All online chapters  
+	- ~~All online chapters~~  
 	- Edit metadata  
 	- ~~Settings~~  
-	- Dump JSON and Import library will not be brought over  
+	- ~~Dump JSON and Import library~~ will not be brought over, but the functionality has been brought over (mostly)  
 - (Re)Create their functionality  
 	- Main menu  
 		- Download button  
 		- Add manga from file button  
-		- Check for new chapters button  
+		- ~~Check for new chapters button~~  
 		- Sorting and filtering button  
 		- ~~Settings button~~  
 		- ~~Search bar~~  
@@ -25,17 +25,16 @@ I've decided to re-write the entire program in AvaloniaUI instead of WinForms to
 			- ~~Labels~~  
 			- ~~Open in explorer button~~  
 			- ~~Check online button~~  
-			- Delete entry button  
+			- ~~Delete entry button~~  
 			- Download new chapters button  
-			- Include in bulk checks button  
+			- ~~Include in bulk checks checkbox~~  
 	- Downloader  
 		- **TODO** I have not yet settled on a UI or what I want in it  
 	- Filtering  
 		- **TODO** I have not yet settled on a UI or what I want in it, but I have a good idea  
-	- All online chapters  
-		- Ordered list of mangas (similar UI to old)  
+	- ~~All online chapters~~  
 	- Edit metadata  
-		- **TODO** I have not yet settled on a UI, but I know what I want, all fields will be editable and re-freshable  
+		- **TODO** I have not yet settled on a UI, but I know what I want, all fields will be editable and refreshable  
 	- ~~Settings~~  
 - Look into how, if possible, to make this a portable file; I suspect this will pose some issues, but that's a bridge I'll cross when I get there  
 - Prettify!  

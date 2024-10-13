@@ -10,7 +10,6 @@ using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Collections.Generic;
 using System;
-using System.Globalization;
 using System.Threading.Tasks;
 using MsBox.Avalonia.Dto;
 using MsBox.Avalonia.Models;
@@ -22,6 +21,7 @@ using MangaDex_Library;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Avalonia.Input;
+using System.Linq;
 
 namespace Manga_Manager
 {
@@ -181,15 +181,16 @@ namespace Manga_Manager
                 DisplayAdd(manga.Title, manga.FileLastChapter, manga.FileLastChapter < manga.OnlineLastChapter);
             }
             SearchBox.ItemsSource = searchAutocomplete;
+            tagsUsage = tagsUsage.OrderByDescending(pair => pair.Value).ToDictionary();
         }
 
-        private async void MainDisplayList_SelectionChanged(object sender, Avalonia.Controls.SelectionChangedEventArgs e)
+        private async void MainDisplayList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ResetDescriptionPanel();
             int index = MainDisplayList.SelectedIndex;
-            Manga currentManga = mangaList[index];
             if (index == -1)
                 return;
+            Manga currentManga = mangaList[index];
             bool notFound = false;
             if (File.Exists(currentManga.Path) == false)
             {
@@ -248,31 +249,60 @@ namespace Manga_Manager
             MangaDescPanel.IsVisible = true;
         }
 
-        public void DownloadMangaButton_Clicked(object sender, RoutedEventArgs args)
+        private void DownloadMangaButton_Clicked(object sender, RoutedEventArgs args)
         {
 
         }
 
-        public void AddMangaFileButton_Clicked(object sender, RoutedEventArgs args)
+        private void AddMangaFileButton_Clicked(object sender, RoutedEventArgs args)
         {
 
         }
 
-        public void CheckUpdatesButton_Clicked(object sender, RoutedEventArgs args)
+        private async void CheckUpdatesButton_Clicked(object sender, RoutedEventArgs args)
+        {
+            MainDisplayList.SelectedIndex = -1;
+            BulkUpdateCheck bulkUpdateCheck = new BulkUpdateCheck();
+            await bulkUpdateCheck.ShowDialog(this);
+            for (int i = 0; i < mangaList.Count; i++)
+                DisplaySetNewChaptersAvailable(i, mangaList[i].OnlineLastChapter - mangaList[i].FileLastChapter > 0);
+        }
+
+        private void SortAndFilterButton_Clicked(object sender, RoutedEventArgs args)
         {
 
         }
 
-        public void SortAndFilterButton_Clicked(object sender, RoutedEventArgs args)
-        {
-
-        }
-
-        public void SettingsButton_Clicked(object sender, RoutedEventArgs args)
+        private void SettingsButton_Clicked(object sender, RoutedEventArgs args)
         {
             Settings settings = new Settings();
             settings.ShowDialog(this);
         }
+
+        #region SearchBox Logic
+        private void SearchBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (SearchBox.Text == string.Empty)
+                return;
+            for (int i = 0; i < mangaList.Count; i++)
+                if (mangaList[i].Title.ToLower().Contains(SearchBox.Text.ToLower()))
+                {
+                    MainDisplayList.SelectedIndex = i;
+                    break;
+                }
+        }
+
+        private void SearchBox_DropDownClosed(object sender, EventArgs e)
+        {
+            SearchBox_LostFocus(sender, null);
+        }
+
+        private void SearchBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+                SearchBox_LostFocus(sender, null);
+        }
+        #endregion
 
         private void TitleLabel_Tapped(object sender, TappedEventArgs e)
         {
@@ -280,7 +310,7 @@ namespace Manga_Manager
                 OpenLink("https://mangadex.org/title/" + mangaList[MainDisplayList.SelectedIndex].ID);
         }
 
-        public void OpenInExplorerButton_Clicked(object sender, RoutedEventArgs args)
+        private void OpenInExplorerButton_Clicked(object sender, RoutedEventArgs args)
         {
             string path = mangaList[MainDisplayList.SelectedIndex].Path;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -294,17 +324,18 @@ namespace Manga_Manager
             }
         }
 
-        public async void CheckOnlineButton_Clicked(object sender, RoutedEventArgs args)
+        private async void CheckOnlineButton_Clicked(object sender, RoutedEventArgs args)
         {
             Manga currentManga = mangaList[MainDisplayList.SelectedIndex];
 
             MDLParameters.MangaID = currentManga.ID;
-            decimal onlineChapter = MDLGetData.GetLastChapter();
+            MDLGetData.GetLastChapter();
             if (apiError == true)
             {
                 apiError = false;
                 return;
             }
+            decimal onlineChapter = MDLGetData.GetLastChapter();
             currentManga.OnlineLastChapter = onlineChapter;
             currentManga.LastChecked = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
             LastChapterOnlineLabel.Text = $"Last chapter online: {onlineChapter.ToString()}";
@@ -325,12 +356,36 @@ namespace Manga_Manager
             }
         }
 
-        public void DeleteEntryButton_Clicked(object sender, RoutedEventArgs args)
+        private async void DeleteEntryButton_Clicked(object sender, RoutedEventArgs args)
         {
-
+            int index = MainDisplayList.SelectedIndex;
+            if (sender == DeleteEntryButton && File.Exists(mangaList[index].Path))
+            {
+                ButtonResult result = await MessageBoxManager.GetMessageBoxStandard("Deletion confirmation", "Would you like to also delete the file?\nThe file would be deleted, not moved to the Recycle Bin!", ButtonEnum.YesNoCancel).ShowAsync();
+                if (result == ButtonResult.Cancel)
+                    return;
+                else if (result == ButtonResult.Yes)
+                {
+                    try
+                    {
+                        File.Delete(mangaList[index].Path);
+                    }
+                    catch
+                    {
+                        await MessageBoxManager.GetMessageBoxStandard("Write error", "Could not delete the file!", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error).ShowAsync();
+                    }
+                }
+                searchAutocomplete.Remove(mangaList[index].Title);
+                SearchBox.ItemsSource = searchAutocomplete;
+                displayChapters.RemoveAt(index);
+                displayTitles.RemoveAt(index);
+                displayPanels.RemoveAt(index);
+                mangaList.RemoveAt(index);
+                MainDisplayList.Items.RemoveAt(index);
+            }
         }
 
-        public void UpdateMangaButton_Clicked(object sender, RoutedEventArgs args)
+        private void UpdateMangaButton_Clicked(object sender, RoutedEventArgs args)
         {
 
         }
@@ -340,7 +395,7 @@ namespace Manga_Manager
             mangaList[MainDisplayList.SelectedIndex].CheckInBulk = (bool)CheckForUpdatesCheckBox.IsChecked;
         }
 
-        public void EditMetadataButton_Clicked(object sender, RoutedEventArgs args)
+        private void EditMetadataButton_Clicked(object sender, RoutedEventArgs args)
         {
 
         }
@@ -400,7 +455,8 @@ namespace Manga_Manager
                 catch { }
         }
 
-        protected override void OnClosing(WindowClosingEventArgs e)
+        private bool bypassSaving = false;
+        protected override async void OnClosing(WindowClosingEventArgs e)
         {
             JObject saveJson = new JObject();
             saveJson["FormatVersion"] = 4;
@@ -410,16 +466,33 @@ namespace Manga_Manager
             saveJson["HideJsonFile"] = hideJsonFile;
             saveJson["DownloaderLastUsedFormat"] = downloaderLastUsedFormat;
             saveJson["Library"] = JToken.FromObject(mangaList);
+            if (bypassSaving == true)
+            {
+                base.OnClosing(e);
+                return;
+            }
             try
             {
                 if (hideJsonFile == true)
+                {
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                        File.SetAttributes(".Manga Library Manager.json", File.GetAttributes(".Manga Library Manager.json") & ~FileAttributes.Hidden);
                     File.WriteAllText(".Manga Library Manager.json", saveJson.ToString());
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                        File.SetAttributes(".Manga Library Manager.json", File.GetAttributes(".Manga Library Manager.json") | FileAttributes.Hidden);
+                }
                 else
                     File.WriteAllText("Manga Library Manager.json", saveJson.ToString());
             }
             catch
             {
                 e.Cancel = true;
+                await Clipboard.SetTextAsync(saveJson.ToString());
+                if (await MessageBoxManager.GetMessageBoxStandard("Write error", "Could not save the library file, your changes will not be saved!\nThe contents have been copied to your clipboard, you can paste them somewhere yourself.\nAre you sure you want to exit?", ButtonEnum.YesNo).ShowAsync() == ButtonResult.Yes)
+                {
+                    bypassSaving = true;
+                    this.Close();
+                }
             }
 
             base.OnClosing(e);

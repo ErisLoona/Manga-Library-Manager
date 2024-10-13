@@ -5,6 +5,7 @@ using Avalonia.Markup.Xaml;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using static Manga_Manager.Globals;
@@ -13,6 +14,8 @@ namespace Manga_Manager;
 
 public partial class Settings : Window
 {
+    private bool isFirstTrigger;
+
     public Settings()
     {
         InitializeComponent();
@@ -20,36 +23,63 @@ public partial class Settings : Window
         LanguageComboBox.ItemsSource = languageDictionary.Keys;
         LanguageComboBox.SelectedItem = languageDictionary.FirstOrDefault(language => language.Value == selectedLanguage).Key;
         UpdatesCheckBox.IsChecked = checkUpdates;
+        isFirstTrigger = hideJsonFile;
         HideJsonCheckBox.IsChecked = hideJsonFile;
         WarningCheckBox.IsChecked = !noWarning;
     }
 
-    public void LanguageComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void LanguageComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         selectedLanguage = languageDictionary[LanguageComboBox.SelectedItem.ToString()];
     }
 
-    private void UpdatesCheckBox_Checked(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void UpdatesCheckBox_Checked(object sender, RoutedEventArgs e)
     {
         checkUpdates = (bool)UpdatesCheckBox.IsChecked;
     }
 
-    private void HideJsonCheckBox_Checked(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private async void HideJsonCheckBox_Checked(object sender, RoutedEventArgs e)
     {
         hideJsonFile = (bool)HideJsonCheckBox.IsChecked;
+        if (isFirstTrigger == true)
+        {
+            isFirstTrigger = false;
+            return;
+        }
+        try
+        {
+            if (hideJsonFile == true)
+            {
+                File.Move("Manga Library Manager.json", ".Manga Library Manager.json");
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    File.SetAttributes(".Manga Library Manager.json", File.GetAttributes(".Manga Library Manager.json") | FileAttributes.Hidden);
+            }
+            else
+            {
+                File.Move(".Manga Library Manager.json", "Manga Library Manager.json");
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    File.SetAttributes("Manga Library Manager.json", File.GetAttributes("Manga Library Manager.json") & ~FileAttributes.Hidden);
+            }
+        }
+        catch
+        {
+            await MessageBoxManager.GetMessageBoxStandard("Write error", "Could not complete the operation!", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error).ShowAsync();
+            isFirstTrigger = true;
+            HideJsonCheckBox.IsChecked = !HideJsonCheckBox.IsChecked;
+        }
     }
 
-    private void WarningCheckBox_Checked(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void WarningCheckBox_Checked(object sender, RoutedEventArgs e)
     {
         noWarning = !(bool)WarningCheckBox.IsChecked;
     }
 
-    public void IssueButton_Clicked(object sender, RoutedEventArgs args)
+    private void IssueButton_Clicked(object sender, RoutedEventArgs args)
     {
         OpenLink("https://github.com/ErisLoona/Manga-Library-Manager/issues");
     }
 
-    public void DonateButton_Clicked(object sender, RoutedEventArgs args)
+    private void DonateButton_Clicked(object sender, RoutedEventArgs args)
     {
         OpenLink("https://ko-fi.com/erisloona");
     }

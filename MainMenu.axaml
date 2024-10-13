@@ -58,7 +58,7 @@
         </Button>
         <Button Grid.Column="4" x:Name="SettingsButton" Click="SettingsButton_Clicked" Content="Settings"/>
       </Grid>
-      <AutoCompleteBox Grid.Row="1" x:Name="SearchBox" FilterMode="ContainsOrdinal" Background="White" Foreground="Black" Watermark="Search for a Manga..." FontSize="12" Margin="3" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+      <AutoCompleteBox Grid.Row="1" x:Name="SearchBox" LostFocus="SearchBox_LostFocus" DropDownClosed="SearchBox_DropDownClosed" KeyDown="SearchBox_KeyDown" FilterMode="ContainsOrdinal" Background="White" Foreground="Black" Watermark="Search for a Manga..." FontSize="12" Margin="3" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
       <ListBox Grid.Row="2" x:Name="MainDisplayList" SelectionChanged="MainDisplayList_SelectionChanged" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="DimGray" Padding="0"/>
     </Grid>
     
@@ -101,7 +101,7 @@
         </Grid>
         <Button Grid.Row="7" x:Name="UpdateMangaButton" Click="UpdateMangaButton_Clicked" Content="Download New Chapters" IsEnabled="False"/>
         <CheckBox Grid.Row="8" x:Name="CheckForUpdatesCheckBox" IsCheckedChanged="CheckForUpdatesCheckBox_Checked" Background="DimGray" Foreground="White" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="Include this manga in bulk update checks"/>
-        
+        <Button Grid.Row="9" x:Name="EditMetadataButton" Click="EditMetadataButton_Clicked" Content="Edit Metadata" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
       </Grid>
     </Grid>
   </Grid>

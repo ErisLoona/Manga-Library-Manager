@@ -51,7 +51,7 @@ namespace Manga_Manager
                 MDLParameters.SetUserAgent("Manga Library Manager by (github) ErisLoona");
         }
 
-        internal async static void MDLGetData_ApiRequestFailed(object sender, EventArgs e)
+        internal static async void MDLGetData_ApiRequestFailed(object sender, EventArgs e)
         {
             apiError = true;
             await MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API.", ButtonEnum.Ok).ShowAsync();
