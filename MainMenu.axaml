@@ -51,11 +51,9 @@
     <Grid Grid.Column="0" RowDefinitions="7*, 5.5*, 87.5*">
       <Grid Grid.Row="0" ColumnDefinitions="25*, 25*, 25*, 12.5*, 12.5*">
         <Button Grid.Column="0" x:Name="DownloadMangaButton" Click="DownloadMangaButton_Clicked" Content="Download a Manga"/>
-        <Button Grid.Column="1" x:Name="AddMangaFileButton" Click="AddMangaFileButton_Clicked" Content="Add Manga from File"/>
+        <Button Grid.Column="1" x:Name="AddMangaFileButton" Click="AddMangaFileButton_Clicked" Content="Add Manga from Files"/>
         <Button Grid.Column="2" x:Name="CheckUpdatesButton" Click="CheckUpdatesButton_Clicked" Content="Check for New Chapters"/>
-        <Button Grid.Column="3" x:Name="SortAndFilterButton" Click="SortAndFilterButton_Clicked" Padding="0">
-          <TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Center" TextAlignment="Center">Sorting and<LineBreak/>Filtering</TextBlock>
-        </Button>
+        <Button Grid.Column="3" x:Name="FilterButton" Click="FilterButton_Clicked" Content="Filter"/>
         <Button Grid.Column="4" x:Name="SettingsButton" Click="SettingsButton_Clicked" Content="Settings"/>
       </Grid>
       <AutoCompleteBox Grid.Row="1" x:Name="SearchBox" LostFocus="SearchBox_LostFocus" DropDownClosed="SearchBox_DropDownClosed" KeyDown="SearchBox_KeyDown" FilterMode="ContainsOrdinal" Background="White" Foreground="Black" Watermark="Search for a Manga..." FontSize="12" Margin="3" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>

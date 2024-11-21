@@ -54,7 +54,7 @@ namespace Manga_Manager
         internal static async void MDLGetData_ApiRequestFailed(object sender, EventArgs e)
         {
             apiError = true;
-            await MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API.", ButtonEnum.Ok).ShowAsync();
+            await MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API.\nPlease double-check the Manga link and try again later.", ButtonEnum.Ok).ShowAsync();
         }
 
         internal static async void OpenLink(string link)
@@ -69,6 +69,20 @@ namespace Manga_Manager
                 await MessageBoxManager.GetMessageBoxStandard("Unknown OS", $"Couldn't identify your OS, what are you running? Open the link yourself lol:\n{link}", ButtonEnum.Ok).ShowAsync();
         }
 
+        internal static bool ValidateLink(string link)
+        {
+            try
+            {
+                if(link.StartsWith("https://mangadex.org/title/") == false || link.Split('/')[4] == string.Empty)
+                    return false;
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
+        }
+
         #region Variables
 
         internal static List<Manga> mangaList = new List<Manga>();
@@ -81,6 +95,7 @@ namespace Manga_Manager
 
         internal static Dictionary<string, string> languageDictionary = new Dictionary<string, string>();
         internal static Dictionary<string, int> tagsUsage = new Dictionary<string, int>();
+        internal static int passIndex = 0;
 
         internal static bool apiError = false;
 

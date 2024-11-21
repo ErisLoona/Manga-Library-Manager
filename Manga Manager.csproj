@@ -7,6 +7,16 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Assets\arrowleft.png" />
+    <None Remove="Assets\export.png" />
+    <None Remove="Assets\reset.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\arrowleft.png" />
+    <AvaloniaResource Include="Assets\export.png" />
+    <AvaloniaResource Include="Assets\reset.png" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.1.4" />

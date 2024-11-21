@@ -22,12 +22,17 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Avalonia.Input;
 using System.Linq;
+using System.Xml;
+using System.Text.RegularExpressions;
+using System.Globalization;
+using Avalonia.Platform.Storage;
 
 namespace Manga_Manager
 {
     public partial class MainWindow : Window
     {
         private List<string> searchAutocomplete = new List<string>();
+        private bool filtering = false;
 
         private void ResetDescriptionPanel()
         {
@@ -159,7 +164,7 @@ namespace Manga_Manager
             }
             else
             {
-                await MessageBoxManager.GetMessageBoxStandard("Your library JSON is too old", "Please download and launch an older version of the program first.", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Info).ShowAsync();
+                await MessageBoxManager.GetMessageBoxStandard("Library JSON too old", "Your library JSON is too old.\nPlease download and launch an older version of the program first.", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Info).ShowAsync();
                 System.Environment.Exit(0);
             }
             #endregion
@@ -237,13 +242,26 @@ namespace Manga_Manager
                 _ = Task.Run(() =>
                 {
                     using ZipArchive manga = ZipFile.OpenRead(currentManga.Path);
-                    foreach (ZipArchiveEntry entry in manga.Entries)
-                        if (entry.Name == "cover.jpg" || entry.Name == "cover.jpeg" || entry.Name == "cover.png" || entry.Name == "cover.webp")
-                        {
-                            Bitmap b = new Bitmap(entry.Open());
-                            Dispatcher.UIThread.Post(() => { CoverImage.Source = b; });
-                            return;
-                        }
+                    if (System.IO.Path.GetExtension(currentManga.Path).ToLower() == ".epub")
+                    {
+                        foreach (ZipArchiveEntry entry in manga.Entries)
+                            if (entry.Name == "cover.jpg" || entry.Name == "cover.jpeg" || entry.Name == "cover.png" || entry.Name == "cover.webp")
+                            {
+                                MemoryStream stream = new MemoryStream();
+                                entry.Open().CopyTo(stream);
+                                stream.Seek(0, SeekOrigin.Begin);
+                                Dispatcher.UIThread.Post(() => { CoverImage.Source = new Bitmap(stream); });
+                                return;
+                            }
+                    }
+                    else if (System.IO.Path.GetExtension(currentManga.Path).ToLower() == ".cbz")
+                    {
+                        MemoryStream stream = new MemoryStream();
+                        manga.Entries.First().Open().CopyTo(stream);
+                        stream.Seek(0, SeekOrigin.Begin);
+                        Dispatcher.UIThread.Post(() => { CoverImage.Source = new Bitmap(stream); });
+                        return;
+                    }
                 });
             }
             MangaDescPanel.IsVisible = true;
@@ -254,9 +272,97 @@ namespace Manga_Manager
 
         }
 
-        private void AddMangaFileButton_Clicked(object sender, RoutedEventArgs args)
+        private async void AddMangaFileButton_Clicked(object sender, RoutedEventArgs args)
         {
+            List<string> mangaErrors = new List<string>();
+            int count = 0;
+            foreach (var file in await StorageProvider.OpenFilePickerAsync(new Avalonia.Platform.Storage.FilePickerOpenOptions()
+            {
+                Title = "Select all Manga files you want to add",
+                AllowMultiple = true,
+                FileTypeFilter = new[] { new FilePickerFileType("EPUB or CBZ Files") { Patterns = new[] { "*.epub", "*.cbz" } } }
+            }))
+            {
+                string result = AddManga(file.TryGetLocalPath());
+                if (result == null)
+                    mangaErrors.Add(file.Path.ToString());
+                else if (result != string.Empty)
+                    count++;
+            }
+            if (mangaErrors.Count > 0)
+            {
+                string message = $"Some files were not added:\nThere were {count} duplicates and {mangaErrors.Count} could not be read:\n";
+                foreach (string error in mangaErrors)
+                    message += error + '\n';
+                await MessageBoxManager.GetMessageBoxStandard("Read error", message, ButtonEnum.Ok).ShowAsync();
+            }
+        }
 
+        private Regex chapterRegex = new Regex("Ch\\.[0-9.]+");
+        private string AddManga(string path)
+        {
+            Manga tempManga = new Manga();
+            XmlDocument doc = new XmlDocument();
+            MemoryStream stream = new MemoryStream();
+            string title = string.Empty, desc = string.Empty, link = string.Empty;
+            if (System.IO.Path.GetExtension(path) == ".epub")
+            {
+                try
+                {
+                    using (ZipArchive epub = ZipFile.OpenRead(path))
+                    {
+                        foreach (ZipArchiveEntry entry in epub.Entries)
+                            if (entry.Name == "content.opf")
+                            {
+                                entry.Open().CopyTo(stream);
+                                break;
+                            }
+                    }
+                    stream.Position = 0;
+                    doc.Load(stream);
+                    XmlNamespaceManager nsmgr = new XmlNamespaceManager(doc.NameTable);
+                    nsmgr.AddNamespace("dc", "http://purl.org/dc/elements/1.1/");
+                    title = doc.DocumentElement.SelectSingleNode("//dc:title", nsmgr).InnerText;
+                    desc = doc.DocumentElement.SelectSingleNode("//dc:description", nsmgr).InnerText;
+                    link = doc.DocumentElement.SelectSingleNode("//dc:identifier", nsmgr).InnerText;
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+            else
+                title = System.IO.Path.GetFileNameWithoutExtension(path);
+            foreach (Manga manga in mangaList)
+                if (manga.Title == title)
+                    return title;
+
+            tempManga.Title = title;
+            if (path.Contains(System.IO.Path.GetDirectoryName(Environment.ProcessPath)))
+                tempManga.Path = path.Substring(System.IO.Path.GetDirectoryName(Environment.ProcessPath).Length);
+            else
+                tempManga.Path = path;
+            if (tempManga.Path[0] == System.IO.Path.DirectorySeparatorChar)
+                tempManga.Path = tempManga.Path.Substring(1);
+            try
+            {
+                MatchCollection chapters = chapterRegex.Matches(desc);
+                List<decimal> tempChapters = new List<decimal>();
+                foreach (Match match in chapters)
+                    tempChapters.Add(Convert.ToDecimal(match.Value.Substring(3), new CultureInfo("en-US")));
+                tempManga.FileLastChapter = tempChapters.Max();
+            } catch { }
+            if (ValidateLink(link) == true)
+                tempManga.ID = link.Split('/')[4];
+
+            mangaList.Add(tempManga);
+            if (filtering == false)
+            {
+                DisplayAdd(title, tempManga.FileLastChapter, false);
+                searchAutocomplete.Add(title);
+                SearchBox.ItemsSource = searchAutocomplete;
+            }
+            return string.Empty;
         }
 
         private async void CheckUpdatesButton_Clicked(object sender, RoutedEventArgs args)
@@ -268,7 +374,7 @@ namespace Manga_Manager
                 DisplaySetNewChaptersAvailable(i, mangaList[i].OnlineLastChapter - mangaList[i].FileLastChapter > 0);
         }
 
-        private void SortAndFilterButton_Clicked(object sender, RoutedEventArgs args)
+        private void FilterButton_Clicked(object sender, RoutedEventArgs args)
         {
 
         }
@@ -395,9 +501,30 @@ namespace Manga_Manager
             mangaList[MainDisplayList.SelectedIndex].CheckInBulk = (bool)CheckForUpdatesCheckBox.IsChecked;
         }
 
-        private void EditMetadataButton_Clicked(object sender, RoutedEventArgs args)
+        private async void EditMetadataButton_Clicked(object sender, RoutedEventArgs args)
         {
+            for (int i = 0; i < mangaList.Count; i++)
+                if (mangaList[i].Title == displayTitles[MainDisplayList.SelectedIndex].Text)
+                {
+                    passIndex = i;
+                    break;
+                }
+            int indexRestore = MainDisplayList.SelectedIndex;
+            MainDisplayList.SelectedIndex = -1;
+            EditMetadata editMetadata = new EditMetadata();
+            await editMetadata.ShowDialog(this);
+            tagsUsage.Clear();
+            foreach (Manga manga in mangaList)
+                foreach (string tag in manga.Tags)
+                    if (tagsUsage.ContainsKey(tag))
+                        tagsUsage[tag]++;
+                    else
+                        tagsUsage[tag] = 1;
+            tagsUsage = tagsUsage.OrderByDescending(pair => pair.Value).ToDictionary();
 
+            //TODO gotta filter the MainDisplayList again if filtering by tags
+            if (filtering == false)
+                MainDisplayList.SelectedIndex = indexRestore;
         }
 
         private List<TextBlock> displayTitles = new List<TextBlock>(), displayChapters = new List<TextBlock>();
@@ -488,7 +615,7 @@ namespace Manga_Manager
             {
                 e.Cancel = true;
                 await Clipboard.SetTextAsync(saveJson.ToString());
-                if (await MessageBoxManager.GetMessageBoxStandard("Write error", "Could not save the library file, your changes will not be saved!\nThe contents have been copied to your clipboard, you can paste them somewhere yourself.\nAre you sure you want to exit?", ButtonEnum.YesNo).ShowAsync() == ButtonResult.Yes)
+                if (await MessageBoxManager.GetMessageBoxStandard("Write error", "Could not save the library file, your changes will not be saved!\nThe contents have been copied to your clipboard, you can paste them somewhere yourself.\nAre you sure you want to exit?", ButtonEnum.YesNo, MsBox.Avalonia.Enums.Icon.Error).ShowAsync() == ButtonResult.Yes)
                 {
                     bypassSaving = true;
                     this.Close();
