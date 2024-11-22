@@ -32,7 +32,6 @@ public partial class EditMetadata : Window
         {
             MDLParameters.MangaID = mangaList[passIndex].ID;
             UpdateAllButton.IsEnabled = true;
-            UpdateCoverButton.IsEnabled = true;
             UpdateDescriptionButton.IsEnabled = true;
             UpdateOngoingStatusButton.IsEnabled = true;
             UpdateContentRatingButton.IsEnabled = true;
@@ -49,24 +48,32 @@ public partial class EditMetadata : Window
             _ = Task.Run(() =>
             {
                 using ZipArchive manga = ZipFile.OpenRead(mangaList[passIndex].Path);
-                if (System.IO.Path.GetExtension(mangaList[passIndex].Path).ToLower() == ".epub")
+                if (Path.GetExtension(mangaList[passIndex].Path).ToLower() == ".epub")
                 {
                     foreach (ZipArchiveEntry entry in manga.Entries)
-                        if (entry.Name == "cover.jpg" || entry.Name == "cover.jpeg" || entry.Name == "cover.png" || entry.Name == "cover.webp")
+                        if (entry.Name.ToLower() == "cover.jpg" || entry.Name.ToLower() == "cover.jpeg" || entry.Name.ToLower() == "cover.png" || entry.Name.ToLower() == "cover.webp")
                         {
                             MemoryStream stream = new MemoryStream();
                             entry.Open().CopyTo(stream);
                             stream.Seek(0, SeekOrigin.Begin);
-                            Dispatcher.UIThread.Post(() => { CurrentCoverImage.Source = new Bitmap(stream); });
+                            Dispatcher.UIThread.Post(() =>
+                            {
+                                CurrentCoverImage.Source = new Bitmap(stream);
+                                UpdateCoverButton.IsEnabled = true;
+                            });
                             return;
                         }
                 }
-                else if (System.IO.Path.GetExtension(mangaList[passIndex].Path).ToLower() == ".cbz")
+                else if (Path.GetExtension(mangaList[passIndex].Path).ToLower() == ".cbz")
                 {
                     MemoryStream stream = new MemoryStream();
                     manga.Entries.First().Open().CopyTo(stream);
                     stream.Seek(0, SeekOrigin.Begin);
-                    Dispatcher.UIThread.Post(() => { CurrentCoverImage.Source = new Bitmap(stream); });
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        CurrentCoverImage.Source = new Bitmap(stream);
+                        UpdateCoverButton.IsEnabled = true;
+                    });
                     return;
                 }
             });
@@ -90,10 +97,172 @@ public partial class EditMetadata : Window
         }
     }
 
+    private string coverPath = string.Empty;
+    private bool updatingCover = false;
     private async void ConfirmButton_Clicked(object sender, RoutedEventArgs e)
     {
         if (await MessageBoxManager.GetMessageBoxStandard("Confirmation", "The old cover cannot be recovered.\nThis process may take a while.\nAre you sure you want to proceed?", MsBox.Avalonia.Enums.ButtonEnum.YesNo).ShowAsync() == MsBox.Avalonia.Enums.ButtonResult.No)
             return;
+
+        updatingCover = true;
+        string tempPath, mangaPath;
+        if (Path.IsPathRooted(mangaList[passIndex].Path) == true)
+            mangaPath = mangaList[passIndex].Path;
+        else
+            mangaPath = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath), mangaList[passIndex].Path);
+        int j = 1;
+        try
+        {
+            while (Directory.Exists(Path.Combine(Path.GetDirectoryName(mangaPath), $"Manga Extraction {j}")) == true)
+                j++;
+            Directory.CreateDirectory(Path.Combine(Path.GetDirectoryName(mangaPath), $"Manga Extraction {j}"));
+        }
+        catch
+        {
+            updatingCover = false;
+            await MessageBoxManager.GetMessageBoxStandard("Write error", "Could not create a file!", MsBox.Avalonia.Enums.ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error).ShowAsync();
+            return;
+        }
+        tempPath = Path.Combine(Path.GetDirectoryName(mangaPath), $"Manga Extraction {j}");
+        try
+        {
+            CoverLabel.Text = "Extracting Manga...";
+            await Task.Run(() => { ZipFile.ExtractToDirectory(mangaPath, tempPath); });
+        }
+        catch
+        {
+            updatingCover = false;
+            CoverLabel.Text = "Cover";
+            try
+            {
+                Directory.Delete(tempPath, true);
+            } catch { }
+            await MessageBoxManager.GetMessageBoxStandard("Write error", "Could not Extract Manga!", MsBox.Avalonia.Enums.ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error).ShowAsync();
+            return;
+        }
+
+        if (Path.GetExtension(mangaPath).ToLower() == ".epub")
+        {
+            bool found = false;
+            foreach (string file in Directory.GetFiles(tempPath))
+                if (Path.GetFileName(file).ToLower() == "cover.jpg" || Path.GetFileName(file).ToLower() == "cover.jpeg" || Path.GetFileName(file).ToLower() == "cover.png" || Path.GetFileName(file).ToLower() == "cover.webp")
+                {
+                    coverPath = file;
+                    found = true;
+                    break;
+                }
+            if (found == false)
+                foreach (string file in Directory.GetFiles(Path.Combine(tempPath, "OEBPS", "OEBPS")))
+                    if (Path.GetFileName(file).ToLower() == "cover.jpg" || Path.GetFileName(file).ToLower() == "cover.jpeg" || Path.GetFileName(file).ToLower() == "cover.png" || Path.GetFileName(file).ToLower() == "cover.webp")
+                    {
+                        coverPath = file;
+                        found = true;
+                        break;
+                    }
+            if (found == false)
+                FindMeFiles(tempPath);
+            try
+            {
+                File.Delete(coverPath);
+            }
+            catch
+            {
+                updatingCover = false;
+                CoverLabel.Text = "Cover";
+                try
+                {
+                    Directory.Delete(tempPath, true);
+                }
+                catch { }
+                await MessageBoxManager.GetMessageBoxStandard("Write error", "Could not delete the existing cover file!", MsBox.Avalonia.Enums.ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error).ShowAsync();
+                return;
+            }
+            try
+            {
+                newCover.Save(coverPath);
+            }
+            catch
+            {
+                updatingCover = false;
+                CoverLabel.Text = "Cover";
+                try
+                {
+                    Directory.Delete(tempPath, true);
+                }
+                catch { }
+                await MessageBoxManager.GetMessageBoxStandard("Write error", "Could not save the new cover file!", MsBox.Avalonia.Enums.ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error).ShowAsync();
+                return;
+            }
+        }
+        else if (Path.GetExtension(mangaPath).ToLower() == ".cbz")
+        {
+            string cbzPrefix = string.Empty;
+            string[] files = Directory.GetFiles(tempPath);
+            j = 0;
+            while (Path.GetFileNameWithoutExtension(files[0]).Substring(j, 1) == Path.GetFileNameWithoutExtension(files.Last()).Substring(j, 1))
+            {
+                cbzPrefix += Path.GetFileNameWithoutExtension(files[0]).Substring(j, 1);
+                j++;
+            }
+            try
+            {
+                newCover.Save(Path.Combine(tempPath, cbzPrefix + 0.ToString("D" + (Path.GetFileNameWithoutExtension(files[0]).Length - cbzPrefix.Length).ToString())) + Path.GetExtension(files[0]));
+            }
+            catch
+            {
+                updatingCover = false;
+                CoverLabel.Text = "Cover";
+                try
+                {
+                    Directory.Delete(tempPath, true);
+                }
+                catch { }
+                await MessageBoxManager.GetMessageBoxStandard("Write error", "Could not save the new cover file!", MsBox.Avalonia.Enums.ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error).ShowAsync();
+                return;
+            }
+        }
+        try
+        {
+            CoverLabel.Text = "Archiving Manga...";
+            File.Delete(mangaPath);
+            await Task.Run(() => { ZipFile.CreateFromDirectory(tempPath, mangaPath); });
+            Directory.Delete(tempPath, true);
+        }
+        catch
+        {
+            updatingCover = false;
+            CoverLabel.Text = "Cover";
+            try
+            {
+                Directory.Delete(tempPath, true);
+            }
+            catch { }
+            await MessageBoxManager.GetMessageBoxStandard("Write error", "Could not archive the manga!", MsBox.Avalonia.Enums.ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error).ShowAsync();
+            return;
+        }
+
+        updatingCover = false;
+        CoverLabel.Text = "Cover";
+        ConfirmButton.IsEnabled = false;
+        NewCoverImage.Source = null;
+        CurrentCoverImage.Source = newCover;
+    }
+
+    private void FindMeFiles(string path)
+    {
+        try
+        {
+            string[] entries = Directory.GetFiles(path);
+            foreach (string file in entries)
+                if (Path.GetFileName(file).ToLower() == "cover.jpg" || Path.GetFileName(file).ToLower() == "cover.jpeg" || Path.GetFileName(file).ToLower() == "cover.png" || Path.GetFileName(file).ToLower() == "cover.webp")
+                {
+                    coverPath = file;
+                    return;
+                }
+            string[] subdirs = Directory.GetDirectories(path);
+            foreach (string subdir in subdirs)
+                FindMeFiles(subdir);
+        } catch { }
     }
 
     private void UpdateCoverButton_Clicked(object sender, RoutedEventArgs e)
@@ -103,7 +272,10 @@ public partial class EditMetadata : Window
             MDLGetData.GetCover().CopyTo(stream);
             stream.Seek(0, SeekOrigin.Begin);
             if (apiError == true)
+            {
+                apiError = false;
                 return;
+            }
             newCover = new Bitmap(stream);
             Dispatcher.UIThread.Post(() => {
                 NewCoverImage.Source = newCover;
@@ -227,7 +399,8 @@ public partial class EditMetadata : Window
         if (ValidateLink(LinkTextBox.Text) == true)
             MDLParameters.MangaID = LinkTextBox.Text.Split('/')[4];
         UpdateAllButton.IsEnabled = ValidateLink(LinkTextBox.Text);
-        UpdateCoverButton.IsEnabled = ValidateLink(LinkTextBox.Text);
+        if (CurrentCoverImage != null)
+            UpdateCoverButton.IsEnabled = ValidateLink(LinkTextBox.Text);
         UpdateDescriptionButton.IsEnabled = ValidateLink(LinkTextBox.Text);
         UpdateOngoingStatusButton.IsEnabled = ValidateLink(LinkTextBox.Text);
         UpdateContentRatingButton.IsEnabled = ValidateLink(LinkTextBox.Text);
@@ -238,7 +411,8 @@ public partial class EditMetadata : Window
     private void UpdateAllButton_Clicked(object sender, RoutedEventArgs e)
     {
         UpdateDescriptionButton_Clicked(this, e);
-        UpdateCoverButton_Clicked(this, e);
+        if (UpdateCoverButton.IsEnabled == true)
+            UpdateCoverButton_Clicked(this, e);
         UpdateOngoingStatusButton_Clicked(this, e);
         UpdateContentRatingButton_Clicked(this, e);
         UpdateTagsButton_Clicked(this, e);
@@ -271,6 +445,12 @@ public partial class EditMetadata : Window
 
     protected override void OnClosing(WindowClosingEventArgs e)
     {
+        if (updatingCover == true)
+        {
+            e.Cancel = true;
+            return;
+        }
+
         mangaList[passIndex].Description = DescriptionTextBox.Text;
         mangaList[passIndex].FileLastChapter = (decimal)LastChapterNumeric.Value;
         if (OngoingStatusComboBox.SelectedIndex != -1)

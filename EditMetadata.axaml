@@ -50,7 +50,7 @@
 
   <Grid RowDefinitions="92*, 8*">
       <StackPanel Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0, 5" Spacing="4">
-        <TextBlock Background="DimGray" Foreground="White" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center" Text="Cover"/>
+        <TextBlock x:Name="CoverLabel" Background="DimGray" Foreground="White" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center" Text="Cover"/>
         <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="6">
           <Image x:Name="CurrentCoverImage" Stretch="UniformToFill" Height="124" Width="82"/>
           <Button x:Name="ConfirmButton" Click="ConfirmButton_Clicked" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0" IsEnabled="False" Width="23" Height="17" Padding="0">

@@ -5,7 +5,7 @@ I've decided to re-write the entire program in AvaloniaUI instead of WinForms to
 - (Re)Create all the required windows' UI  
 	- ~~Main menu~~  
 	- Downloader  
-	- Filtering  
+	- ~~Filtering~~  
 	- ~~All online chapters~~  
 	- ~~Edit metadata~~  
 	- ~~Settings~~  
@@ -15,7 +15,7 @@ I've decided to re-write the entire program in AvaloniaUI instead of WinForms to
 		- Download button  
 		- ~~Add manga from file button~~  
 		- ~~Check for new chapters button~~  
-		- Sorting and filtering button  
+		- ~~Sorting and filtering button~~  
 		- ~~Settings button~~  
 		- ~~Search bar~~  
 		- ~~Manga list~~  
@@ -31,8 +31,7 @@ I've decided to re-write the entire program in AvaloniaUI instead of WinForms to
 			- ~~Edit metadata button (previously edit tags)~~  
 	- Downloader  
 		- **TODO** I have not yet settled on a UI or what I want in it  
-	- Filtering  
-		- **TODO** I have not yet settled on a UI or what I want in it, but I have a good idea  
+	- ~~Filtering~~  
 	- ~~All online chapters~~  
 	- ~~Edit metadata~~  
 		- Redesigned the UI completely, it looks better and can do more than before including updating the cover file  

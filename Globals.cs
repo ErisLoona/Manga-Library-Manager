@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using MsBox.Avalonia.Enums;
 using MsBox.Avalonia;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Manga_Manager
 {
@@ -17,10 +18,10 @@ namespace Manga_Manager
         public decimal FileLastChapter = 0M;
         public decimal OnlineLastChapter = 0M;
         public DateOnly LastChecked = new DateOnly(69, 1, 1);
-        public string OngoingStatus = string.Empty;
+        public string OngoingStatus = "Unknown";
         public bool CheckInBulk = false;
         public string ID = string.Empty;
-        public string ContentRating = string.Empty;
+        public string ContentRating = "Unknown";
         public List<string> Tags = new List<string>();
     }
 
@@ -81,6 +82,20 @@ namespace Manga_Manager
                 return false;
             }
             return true;
+        }
+
+        internal static class Filters
+        {
+            public static List<string> IncludedContentRatings = ["Safe", "Suggestive", "Erotica", "Pornographic"];
+            public static bool OnlyShowMangasWithUpdates = false;
+            public static bool InclusionModeIsAnd = true;
+            public static bool ExclusionModeIsAnd = false;
+            public static List<string> IncludedTags = new List<string>();
+            public static List<string> ExcludedTags = new List<string>();
+            public static bool Active()
+            {
+                return !(IncludedContentRatings.Count == 4 && OnlyShowMangasWithUpdates == false && IncludedTags.Count == 0 && ExcludedTags.Count == 0);
+            }
         }
 
         #region Variables

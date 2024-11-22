@@ -32,7 +32,6 @@ namespace Manga_Manager
     public partial class MainWindow : Window
     {
         private List<string> searchAutocomplete = new List<string>();
-        private bool filtering = false;
 
         private void ResetDescriptionPanel()
         {
@@ -145,20 +144,7 @@ namespace Manga_Manager
                         Tags = manga.SelectToken("Tags").ToObject<List<string>>()
                     });
                     string link = manga.SelectToken("Link").Value<string>();
-                    bool bad = false;
-                    try
-                    {
-                        if (link == String.Empty)
-                            throw new Exception();
-                        if (link.Split('/')[2] != "mangadex.org")
-                            throw new Exception();
-                        if (link.Split('/')[3] != "title")
-                            throw new Exception();
-                        if (link.Split('/')[4] == null || Uri.TryCreate(link, UriKind.Absolute, out Uri uriResult) == false || (uriResult.Scheme != Uri.UriSchemeHttp && uriResult.Scheme != Uri.UriSchemeHttps))
-                            throw new Exception();
-                    }
-                    catch { bad = true; }
-                    if (bad == false)
+                    if (ValidateLink(link) == true)
                         mangaList[mangaList.Count - 1].ID = link.Split('/')[4];
                 }
             }
@@ -185,7 +171,7 @@ namespace Manga_Manager
                 searchAutocomplete.Add(manga.Title);
                 DisplayAdd(manga.Title, manga.FileLastChapter, manga.FileLastChapter < manga.OnlineLastChapter);
             }
-            SearchBox.ItemsSource = searchAutocomplete;
+            SearchBox.ItemsSource = searchAutocomplete.ToArray();
             tagsUsage = tagsUsage.OrderByDescending(pair => pair.Value).ToDictionary();
         }
 
@@ -245,7 +231,7 @@ namespace Manga_Manager
                     if (System.IO.Path.GetExtension(currentManga.Path).ToLower() == ".epub")
                     {
                         foreach (ZipArchiveEntry entry in manga.Entries)
-                            if (entry.Name == "cover.jpg" || entry.Name == "cover.jpeg" || entry.Name == "cover.png" || entry.Name == "cover.webp")
+                            if (entry.Name.ToLower() == "cover.jpg" || entry.Name.ToLower() == "cover.jpeg" || entry.Name.ToLower() == "cover.png" || entry.Name.ToLower() == "cover.webp")
                             {
                                 MemoryStream stream = new MemoryStream();
                                 entry.Open().CopyTo(stream);
@@ -298,21 +284,21 @@ namespace Manga_Manager
             }
         }
 
-        private Regex chapterRegex = new Regex("Ch\\.[0-9.]+");
+        private static readonly Regex chapterRegex = new Regex("Ch\\.[0-9.]+");
         private string AddManga(string path)
         {
             Manga tempManga = new Manga();
             XmlDocument doc = new XmlDocument();
             MemoryStream stream = new MemoryStream();
             string title = string.Empty, desc = string.Empty, link = string.Empty;
-            if (System.IO.Path.GetExtension(path) == ".epub")
+            if (System.IO.Path.GetExtension(path).ToLower() == ".epub")
             {
                 try
                 {
                     using (ZipArchive epub = ZipFile.OpenRead(path))
                     {
                         foreach (ZipArchiveEntry entry in epub.Entries)
-                            if (entry.Name == "content.opf")
+                            if (entry.Name.ToLower() == "content.opf")
                             {
                                 entry.Open().CopyTo(stream);
                                 break;
@@ -356,12 +342,14 @@ namespace Manga_Manager
                 tempManga.ID = link.Split('/')[4];
 
             mangaList.Add(tempManga);
-            if (filtering == false)
+            if (Filters.Active() == false)
             {
                 DisplayAdd(title, tempManga.FileLastChapter, false);
                 searchAutocomplete.Add(title);
-                SearchBox.ItemsSource = searchAutocomplete;
+                SearchBox.ItemsSource = searchAutocomplete.ToArray();
             }
+            else
+                Filter();
             return string.Empty;
         }
 
@@ -372,11 +360,23 @@ namespace Manga_Manager
             await bulkUpdateCheck.ShowDialog(this);
             for (int i = 0; i < mangaList.Count; i++)
                 DisplaySetNewChaptersAvailable(i, mangaList[i].OnlineLastChapter - mangaList[i].FileLastChapter > 0);
+            Filter();
         }
 
-        private void FilterButton_Clicked(object sender, RoutedEventArgs args)
+        private async void FilterButton_Clicked(object sender, RoutedEventArgs args)
         {
-
+            passIndex = MainDisplayList.SelectedIndex;
+            MainDisplayList.SelectedIndex = -1;
+            Filtering filtering = new Filtering();
+            await filtering.ShowDialog(this);
+            Filter();
+            if (passIndex != -1)
+                for (int i = 0; i < displayTitles.Count; i++)
+                    if (displayTitles[i].Text == mangaList[passIndex].Title)
+                    {
+                        MainDisplayList.SelectedIndex = i;
+                        break;
+                    }
         }
 
         private void SettingsButton_Clicked(object sender, RoutedEventArgs args)
@@ -390,8 +390,8 @@ namespace Manga_Manager
         {
             if (SearchBox.Text == string.Empty)
                 return;
-            for (int i = 0; i < mangaList.Count; i++)
-                if (mangaList[i].Title.ToLower().Contains(SearchBox.Text.ToLower()))
+            for (int i = 0; i < displayTitles.Count; i++)
+                if (displayTitles[i].Text.ToLower().Contains(SearchBox.Text.ToLower()))
                 {
                     MainDisplayList.SelectedIndex = i;
                     break;
@@ -509,7 +509,6 @@ namespace Manga_Manager
                     passIndex = i;
                     break;
                 }
-            int indexRestore = MainDisplayList.SelectedIndex;
             MainDisplayList.SelectedIndex = -1;
             EditMetadata editMetadata = new EditMetadata();
             await editMetadata.ShowDialog(this);
@@ -522,9 +521,14 @@ namespace Manga_Manager
                         tagsUsage[tag] = 1;
             tagsUsage = tagsUsage.OrderByDescending(pair => pair.Value).ToDictionary();
 
-            //TODO gotta filter the MainDisplayList again if filtering by tags
-            if (filtering == false)
-                MainDisplayList.SelectedIndex = indexRestore;
+            if (Filters.Active() == true)
+                Filter();
+            for (int i = 0; i < displayTitles.Count; i++)
+                if (displayTitles[i].Text == mangaList[passIndex].Title)
+                {
+                    MainDisplayList.SelectedIndex = i;
+                    break;
+                }
         }
 
         private List<TextBlock> displayTitles = new List<TextBlock>(), displayChapters = new List<TextBlock>();
@@ -580,6 +584,83 @@ namespace Manga_Manager
                     displayPanels[index].Children.RemoveAt(2);
                 }
                 catch { }
+        }
+
+        private void Filter()
+        {
+            displayTitles.Clear();
+            displayChapters.Clear();
+            displayPanels.Clear();
+            MainDisplayList.Items.Clear();
+            searchAutocomplete.Clear();
+            if (Filters.Active() == false)
+            {
+                FilterButton.Content = "Filter";
+                FilterButton.FontStyle = FontStyle.Normal;
+                foreach (Manga manga in mangaList)
+                {
+                    searchAutocomplete.Add(manga.Title);
+                    DisplayAdd(manga.Title, manga.FileLastChapter, manga.FileLastChapter < manga.OnlineLastChapter);
+                }
+                SearchBox.ItemsSource = searchAutocomplete;
+                return;
+            }
+
+            FilterButton.Content = "Filtering";
+            FilterButton.FontStyle = FontStyle.Italic;
+            foreach (Manga manga in mangaList)
+            {
+                if ((Filters.IncludedContentRatings.Contains(manga.ContentRating) == false && manga.ContentRating != "Unknown") || (Filters.OnlyShowMangasWithUpdates == true && manga.FileLastChapter >= manga.OnlineLastChapter))
+                    continue;
+
+                if (Filters.InclusionModeIsAnd == true)
+                {
+                    bool bad = false;
+                    foreach (string tag in Filters.IncludedTags)
+                        if (manga.Tags.Contains(tag) == false)
+                        {
+                            bad = true;
+                            break;
+                        }
+                    if (bad == true)
+                        continue;
+                    if (Filters.ExclusionModeIsAnd == true)
+                    {
+                        foreach (string tag in Filters.ExcludedTags)
+                            if (manga.Tags.Contains(tag) == false)
+                            {
+                                bad = true;
+                                break;
+                            }
+                        if (bad == false && Filters.ExcludedTags.Count > 0)
+                            continue;
+                    }
+                    else if (manga.Tags.Intersect(Filters.ExcludedTags).Any() == true)
+                        continue;
+                }
+                else
+                {
+                    if (manga.Tags.Intersect(Filters.IncludedTags).Any() == false && Filters.IncludedTags.Count != 0)
+                        continue;
+                    if (Filters.ExclusionModeIsAnd == true)
+                    {
+                        bool bad = false;
+                        foreach (string tag in Filters.ExcludedTags)
+                            if (manga.Tags.Contains(tag) == false)
+                            {
+                                bad = true;
+                                break;
+                            }
+                        if (bad == false && Filters.ExcludedTags.Count > 0)
+                            continue;
+                    }
+                    else if (manga.Tags.Intersect(Filters.ExcludedTags).Any() == true)
+                        continue;
+                }
+                searchAutocomplete.Add(manga.Title);
+                DisplayAdd(manga.Title, manga.FileLastChapter, manga.FileLastChapter < manga.OnlineLastChapter);
+            }
+            SearchBox.ItemsSource = searchAutocomplete.ToArray();
         }
 
         private bool bypassSaving = false;
