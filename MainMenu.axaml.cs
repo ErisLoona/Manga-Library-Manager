@@ -1,6 +1,5 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Documents;
-using Avalonia.Controls.Shapes;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.TextFormatting;
@@ -178,10 +177,15 @@ namespace Manga_Manager
         private async void MainDisplayList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ResetDescriptionPanel();
-            int index = MainDisplayList.SelectedIndex;
-            if (index == -1)
+            if (MainDisplayList.SelectedIndex == -1)
                 return;
-            Manga currentManga = mangaList[index];
+            Manga currentManga = null;
+            foreach (Manga manga in mangaList)
+                if (manga.Title == displayTitles[MainDisplayList.SelectedIndex].Text)
+                {
+                    currentManga = manga;
+                    break;
+                }
             bool notFound = false;
             if (File.Exists(currentManga.Path) == false)
             {
@@ -193,7 +197,6 @@ namespace Manga_Manager
                         return;
                     }
                 OpenInExplorerButton.IsEnabled = false;
-                DeleteEntryButton.IsEnabled = false;
             }
 
             TitleLabel.Text = currentManga.Title;
@@ -228,7 +231,7 @@ namespace Manga_Manager
                 _ = Task.Run(() =>
                 {
                     using ZipArchive manga = ZipFile.OpenRead(currentManga.Path);
-                    if (System.IO.Path.GetExtension(currentManga.Path).ToLower() == ".epub")
+                    if (Path.GetExtension(currentManga.Path).ToLower() == ".epub")
                     {
                         foreach (ZipArchiveEntry entry in manga.Entries)
                             if (entry.Name.ToLower() == "cover.jpg" || entry.Name.ToLower() == "cover.jpeg" || entry.Name.ToLower() == "cover.png" || entry.Name.ToLower() == "cover.webp")
@@ -240,7 +243,7 @@ namespace Manga_Manager
                                 return;
                             }
                     }
-                    else if (System.IO.Path.GetExtension(currentManga.Path).ToLower() == ".cbz")
+                    else if (Path.GetExtension(currentManga.Path).ToLower() == ".cbz")
                     {
                         MemoryStream stream = new MemoryStream();
                         manga.Entries.First().Open().CopyTo(stream);
@@ -253,9 +256,21 @@ namespace Manga_Manager
             MangaDescPanel.IsVisible = true;
         }
 
-        private void DownloadMangaButton_Clicked(object sender, RoutedEventArgs args)
+        private async void DownloadMangaButton_Clicked(object sender, RoutedEventArgs args)
         {
-
+            passIndex = MainDisplayList.SelectedIndex;
+            MainDisplayList.SelectedIndex = -1;
+            Downloader downloader = new Downloader();
+            downloader.openedByDownloadUpdatesButton = false;
+            await downloader.ShowDialog(this);
+            Filter();
+            if (passIndex != -1)
+                for (int i = 0; i < displayTitles.Count; i++)
+                    if (displayTitles[i].Text == mangaList[passIndex].Title)
+                    {
+                        MainDisplayList.SelectedIndex = i;
+                        break;
+                    }
         }
 
         private async void AddMangaFileButton_Clicked(object sender, RoutedEventArgs args)
@@ -271,7 +286,7 @@ namespace Manga_Manager
             {
                 string result = AddManga(file.TryGetLocalPath());
                 if (result == null)
-                    mangaErrors.Add(file.Path.ToString());
+                    mangaErrors.Add(file.TryGetLocalPath());
                 else if (result != string.Empty)
                     count++;
             }
@@ -291,7 +306,7 @@ namespace Manga_Manager
             XmlDocument doc = new XmlDocument();
             MemoryStream stream = new MemoryStream();
             string title = string.Empty, desc = string.Empty, link = string.Empty;
-            if (System.IO.Path.GetExtension(path).ToLower() == ".epub")
+            if (Path.GetExtension(path).ToLower() == ".epub")
             {
                 try
                 {
@@ -318,17 +333,17 @@ namespace Manga_Manager
                 }
             }
             else
-                title = System.IO.Path.GetFileNameWithoutExtension(path);
+                title = Path.GetFileNameWithoutExtension(path);
             foreach (Manga manga in mangaList)
                 if (manga.Title == title)
                     return title;
 
             tempManga.Title = title;
-            if (path.Contains(System.IO.Path.GetDirectoryName(Environment.ProcessPath)))
-                tempManga.Path = path.Substring(System.IO.Path.GetDirectoryName(Environment.ProcessPath).Length);
+            if (path.Contains(Path.GetDirectoryName(Environment.ProcessPath)))
+                tempManga.Path = path.Substring(Path.GetDirectoryName(Environment.ProcessPath).Length);
             else
                 tempManga.Path = path;
-            if (tempManga.Path[0] == System.IO.Path.DirectorySeparatorChar)
+            if (tempManga.Path[0] == Path.DirectorySeparatorChar)
                 tempManga.Path = tempManga.Path.Substring(1);
             try
             {
@@ -358,8 +373,6 @@ namespace Manga_Manager
             MainDisplayList.SelectedIndex = -1;
             BulkUpdateCheck bulkUpdateCheck = new BulkUpdateCheck();
             await bulkUpdateCheck.ShowDialog(this);
-            for (int i = 0; i < mangaList.Count; i++)
-                DisplaySetNewChaptersAvailable(i, mangaList[i].OnlineLastChapter - mangaList[i].FileLastChapter > 0);
             Filter();
         }
 
@@ -412,32 +425,53 @@ namespace Manga_Manager
 
         private void TitleLabel_Tapped(object sender, TappedEventArgs e)
         {
-            if (mangaList[MainDisplayList.SelectedIndex].ID != string.Empty)
-                OpenLink("https://mangadex.org/title/" + mangaList[MainDisplayList.SelectedIndex].ID);
+            Manga currentManga = null;
+            foreach (Manga manga in mangaList)
+                if (manga.Title == displayTitles[MainDisplayList.SelectedIndex].Text)
+                {
+                    currentManga = manga;
+                    break;
+                }
+            if (currentManga.ID != string.Empty)
+                OpenLink("https://mangadex.org/title/" + currentManga.ID);
         }
 
         private void OpenInExplorerButton_Clicked(object sender, RoutedEventArgs args)
         {
-            string path = mangaList[MainDisplayList.SelectedIndex].Path;
+            Manga currentManga = null;
+            foreach (Manga manga in mangaList)
+                if (manga.Title == displayTitles[MainDisplayList.SelectedIndex].Text)
+                {
+                    currentManga = manga;
+                    break;
+                }
+            string path = currentManga.Path;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 Process.Start("explorer.exe", "/select," + path);
             else
             {
-                if (System.IO.Path.IsPathRooted(path) == true)
+                if (Path.IsPathRooted(path) == true)
                     OpenLink(path);
                 else
-                    OpenLink(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Environment.ProcessPath), System.IO.Path.GetDirectoryName(path)));
+                    OpenLink(Path.Combine(Path.GetDirectoryName(Environment.ProcessPath), Path.GetDirectoryName(path)));
             }
         }
 
         private async void CheckOnlineButton_Clicked(object sender, RoutedEventArgs args)
         {
-            Manga currentManga = mangaList[MainDisplayList.SelectedIndex];
+            Manga currentManga = null;
+            foreach (Manga manga in mangaList)
+                if (manga.Title == displayTitles[MainDisplayList.SelectedIndex].Text)
+                {
+                    currentManga = manga;
+                    break;
+                }
 
             MDLParameters.MangaID = currentManga.ID;
             MDLGetData.GetLastChapter();
             if (apiError == true)
             {
+                await MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API.\nPlease double-check the Manga link and try again later.", ButtonEnum.Ok).ShowAsync();
                 apiError = false;
                 return;
             }
@@ -481,24 +515,48 @@ namespace Manga_Manager
                         await MessageBoxManager.GetMessageBoxStandard("Write error", "Could not delete the file!", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error).ShowAsync();
                     }
                 }
-                searchAutocomplete.Remove(mangaList[index].Title);
-                SearchBox.ItemsSource = searchAutocomplete;
-                displayChapters.RemoveAt(index);
-                displayTitles.RemoveAt(index);
-                displayPanels.RemoveAt(index);
-                mangaList.RemoveAt(index);
-                MainDisplayList.Items.RemoveAt(index);
             }
+            else
+            {
+                ButtonResult result = await MessageBoxManager.GetMessageBoxStandard("Deletion confirmation", "Are you sure you want to delete the entry?", ButtonEnum.YesNo).ShowAsync();
+                if (result == ButtonResult.No)
+                    return;
+            }
+            searchAutocomplete.Remove(mangaList[index].Title);
+            SearchBox.ItemsSource = searchAutocomplete.ToArray();
+            displayChapters.RemoveAt(index);
+            displayTitles.RemoveAt(index);
+            displayPanels.RemoveAt(index);
+            mangaList.RemoveAt(index);
+            MainDisplayList.Items.RemoveAt(index);
         }
 
-        private void UpdateMangaButton_Clicked(object sender, RoutedEventArgs args)
+        private async void UpdateMangaButton_Clicked(object sender, RoutedEventArgs args)
         {
-
+            passIndex = MainDisplayList.SelectedIndex;
+            MainDisplayList.SelectedIndex = -1;
+            Downloader downloader = new Downloader();
+            downloader.openedByDownloadUpdatesButton = true;
+            await downloader.ShowDialog(this);
+            Filter();
+            for (int i = 0; i < displayTitles.Count; i++)
+                if (displayTitles[i].Text == mangaList[passIndex].Title)
+                {
+                    MainDisplayList.SelectedIndex = i;
+                    break;
+                }
         }
 
         private void CheckForUpdatesCheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            mangaList[MainDisplayList.SelectedIndex].CheckInBulk = (bool)CheckForUpdatesCheckBox.IsChecked;
+            Manga currentManga = null;
+            foreach (Manga manga in mangaList)
+                if (manga.Title == displayTitles[MainDisplayList.SelectedIndex].Text)
+                {
+                    currentManga = manga;
+                    break;
+                }
+            currentManga.CheckInBulk = (bool)CheckForUpdatesCheckBox.IsChecked;
         }
 
         private async void EditMetadataButton_Clicked(object sender, RoutedEventArgs args)

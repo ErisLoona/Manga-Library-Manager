@@ -10,6 +10,8 @@ using static Manga_Manager.Globals;
 using MangaDex_Library;
 using System.Linq;
 using Avalonia.Media;
+using MsBox.Avalonia.Enums;
+using MsBox.Avalonia;
 
 namespace Manga_Manager;
 
@@ -35,7 +37,7 @@ public partial class BulkUpdateCheck : Window
         ProgressBar.Maximum = mangaIndexes.Count;
         cancelCheck = tokenSource.Token;
         IProgress<int> progress = new Progress<int>(v => { ProgressBar.Value++; });
-        await Task.Run(() =>
+        await Task.Run(async () =>
         {
             foreach (int i in mangaIndexes)
             {
@@ -48,6 +50,7 @@ public partial class BulkUpdateCheck : Window
                 MDLGetData.GetLastChapter();
                 if (apiError == true)
                 {
+                    await MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API.\nPlease double-check the Manga link and try again later.", ButtonEnum.Ok).ShowAsync();
                     apiError = false;
                     return;
                 }

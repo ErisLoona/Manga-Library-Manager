@@ -14,6 +14,7 @@ using System.IO.Compression;
 using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
 using System.Linq;
+using MsBox.Avalonia.Enums;
 
 namespace Manga_Manager;
 
@@ -267,12 +268,13 @@ public partial class EditMetadata : Window
 
     private void UpdateCoverButton_Clicked(object sender, RoutedEventArgs e)
     {
-        _ = Task.Run(() => {
+        _ = Task.Run(async () => {
             MemoryStream stream = new MemoryStream();
             MDLGetData.GetCover().CopyTo(stream);
             stream.Seek(0, SeekOrigin.Begin);
             if (apiError == true)
             {
+                await MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API.\nPlease double-check the Manga link and try again later.", ButtonEnum.Ok).ShowAsync();
                 apiError = false;
                 return;
             }
@@ -284,24 +286,26 @@ public partial class EditMetadata : Window
         });
     }
 
-    private void UpdateDescriptionButton_Clicked(object sender, RoutedEventArgs e)
+    private async void UpdateDescriptionButton_Clicked(object sender, RoutedEventArgs e)
     {
         MDLParameters.MangaID = LinkTextBox.Text.Split('/')[4];
         MDLGetData.GetDescription();
         if (apiError == true)
         {
+            await MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API.\nPlease double-check the Manga link and try again later.", ButtonEnum.Ok).ShowAsync();
             apiError = false;
             return;
         }
         DescriptionTextBox.Text = MDLGetData.GetDescription();
     }
 
-    private void UpdateOngoingStatusButton_Clicked(object sender, RoutedEventArgs e)
+    private async void UpdateOngoingStatusButton_Clicked(object sender, RoutedEventArgs e)
     {
         MDLParameters.MangaID = LinkTextBox.Text.Split('/')[4];
         MDLGetData.GetStatus();
         if (apiError == true)
         {
+            await MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API.\nPlease double-check the Manga link and try again later.", ButtonEnum.Ok).ShowAsync();
             apiError = false;
             return;
         }
@@ -314,24 +318,26 @@ public partial class EditMetadata : Window
             OpenLink(LinkTextBox.Text);
     }
 
-    private void UpdateContentRatingButton_Clicked(object sender, RoutedEventArgs e)
+    private async void UpdateContentRatingButton_Clicked(object sender, RoutedEventArgs e)
     {
         MDLParameters.MangaID = LinkTextBox.Text.Split('/')[4];
         MDLGetData.GetContentRating();
         if (apiError == true)
         {
+            await MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API.\nPlease double-check the Manga link and try again later.", ButtonEnum.Ok).ShowAsync();
             apiError = false;
             return;
         }
         ContentRatingComboBox.SelectedIndex = Array.IndexOf(contentRatings, MDLGetData.GetContentRating().Substring(0, 1).ToUpper() + MDLGetData.GetContentRating().Substring(1));
     }
 
-    private void UpdateTagsButton_Clicked(object sender, RoutedEventArgs e)
+    private async void UpdateTagsButton_Clicked(object sender, RoutedEventArgs e)
     {
         MDLParameters.MangaID = LinkTextBox.Text.Split('/')[4];
         List<string> newTags = MDLGetData.GetTags();
         if (apiError == true)
         {
+            await MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API.\nPlease double-check the Manga link and try again later.", ButtonEnum.Ok).ShowAsync();
             apiError = false;
             return;
         }

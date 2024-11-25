@@ -2,10 +2,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="459" d:DesignHeight="604"
-        Width="459" Height="604"
-        x:Class="Manga_Manager.BulkUpdateCheck"
-        Title="Bulk update check"
+        mc:Ignorable="d" d:DesignWidth="342" d:DesignHeight="569"
+        Width="342" Height="569"
+        x:Class="Manga_Manager.Downloader_AddFromLibrary"
+        Title="Add Manga from library"
         Background="DimGray"
         RequestedThemeVariant="Light"
         FontSize="12"
@@ -47,17 +47,16 @@
     </Style>
   </Window.Styles>
 
-  <Grid RowDefinitions="6*, 4*, 82*, 8*">
-    <Grid Grid.Row="0" ColumnDefinitions="60*, 40*">
-      <TextBlock Grid.Column="0" Text="Manga name" TextAlignment="Left" HorizontalAlignment="Left" VerticalAlignment="Center" Background="DimGray" Foreground="White" FontSize="16" Margin="3"/>
-      <TextBlock Grid.Column="1" Text="Status" TextAlignment="Left" HorizontalAlignment="Left" VerticalAlignment="Center" Background="DimGray" Foreground="White" FontSize="16" Margin="3"/>
+  <Grid RowDefinitions="93*, 7*">
+    <Border Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+      <ScrollViewer>
+        <StackPanel x:Name="MangaStackPanel" Spacing="4"/>
+      </ScrollViewer>
+    </Border>
+    <Grid Grid.Row="1" ColumnDefinitions="50*, 50*">
+      <Button Grid.Column="0" Content="Confirm" Click="ConfirmButton_Clicked"/>
+      <Button Grid.Column="1" Content="Select all" Click="SelectAllButton_Clicked"/>
     </Grid>
-    <ProgressBar Grid.Row="1" x:Name="ProgressBar" Minimum="0" Value="0" Background="White" Foreground="#F8C8DC" ShowProgressText="True" Margin="3,0,3,0" ProgressTextFormat="{}{0}/{3} mangas checked"/>
-    <Grid Grid.Row="2" ColumnDefinitions="60*, 40*">
-      <ListBox Grid.Column="0" x:Name="MangaNameList" SelectionChanged="MangaNameList_SelectionChanged" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="DimGray" Foreground="White" Padding="3, 3, 0, 3" ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
-      <ListBox Grid.Column="1" x:Name="ChapterStatusList" SelectionChanged="ChapterStatusList_SelectionChanged" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="DimGray" Foreground="White" Padding="0, 3, 3, 3"/>
-    </Grid>
-    <Button Grid.Row="3" x:Name="CancelButton" Click="CancelButton_Clicked" Content="Cancel" FontSize="18"/>
   </Grid>
 
 </Window>
