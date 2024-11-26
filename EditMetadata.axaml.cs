@@ -13,13 +13,14 @@ using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
 using System.Linq;
 using MsBox.Avalonia.Enums;
+using SkiaSharp;
 
 namespace Manga_Manager;
 
 public partial class EditMetadata : Window
 {
     private List<CheckBox> tagCheckBoxes = new List<CheckBox>();
-    private Bitmap newCover;
+    private SKBitmap newCoverSKBitmap;
 
     private static readonly string[] contentRatings = [ "Safe", "Suggestive", "Erotica", "Pornographic" ], ongoingStatuses = [ "Ongoing", "Completed", "Hiatus", "Cancelled" ];
 
@@ -178,7 +179,8 @@ public partial class EditMetadata : Window
             }
             try
             {
-                newCover.Save(coverPath);
+                using FileStream fileStream = new FileStream(coverPath, FileMode.Create);
+                SKImage.FromBitmap(newCoverSKBitmap).Encode(SKEncodedImageFormat.Jpeg, 100).SaveTo(fileStream);
             }
             catch
             {
@@ -205,7 +207,8 @@ public partial class EditMetadata : Window
             }
             try
             {
-                newCover.Save(Path.Combine(tempPath, cbzPrefix + 0.ToString("D" + (Path.GetFileNameWithoutExtension(files[0]).Length - cbzPrefix.Length).ToString())) + Path.GetExtension(files[0]));
+                using FileStream fileStream = new FileStream(Path.Combine(tempPath, cbzPrefix + 0.ToString("D" + (Path.GetFileNameWithoutExtension(files[0]).Length - cbzPrefix.Length).ToString())) + Path.GetExtension(files[0]), FileMode.Create);
+                SKImage.FromBitmap(newCoverSKBitmap).Encode(SKEncodedImageFormat.Jpeg, 100).SaveTo(fileStream);
             }
             catch
             {
@@ -244,7 +247,7 @@ public partial class EditMetadata : Window
         CoverLabel.Text = "Cover";
         ConfirmButton.IsEnabled = false;
         NewCoverImage.Source = null;
-        CurrentCoverImage.Source = newCover;
+        CurrentCoverImage.Source = new Bitmap(SKImage.FromBitmap(newCoverSKBitmap).Encode(SKEncodedImageFormat.Jpeg, 100).AsStream());
     }
 
     private void FindMeFiles(string path)
@@ -266,19 +269,19 @@ public partial class EditMetadata : Window
 
     private void UpdateCoverButton_Clicked(object sender, RoutedEventArgs e)
     {
-        _ = Task.Run(async () => {
-            MemoryStream stream = new MemoryStream();
-            MDLGetData.GetCover().CopyTo(stream);
-            stream.Seek(0, SeekOrigin.Begin);
+        _ = Task.Run(() => {
+            MemoryStream newCoverStream = new MemoryStream();
+            MDLGetData.GetCover().CopyTo(newCoverStream);
+            newCoverStream.Seek(0, SeekOrigin.Begin);
             if (apiError == true)
             {
-                await MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API.\nPlease double-check the Manga link and try again later.", ButtonEnum.Ok).ShowAsync();
+                Dispatcher.UIThread.Post(async () => await MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API.\nPlease double-check the Manga link and try again later.", ButtonEnum.Ok).ShowAsync());
                 apiError = false;
                 return;
             }
-            newCover = new Bitmap(stream);
+            newCoverSKBitmap = SKBitmap.Decode(newCoverStream);
             Dispatcher.UIThread.Post(() => {
-                NewCoverImage.Source = newCover;
+                NewCoverImage.Source = new Bitmap(SKImage.FromBitmap(newCoverSKBitmap).Encode(SKEncodedImageFormat.Jpeg, 100).AsStream());
                 ConfirmButton.IsEnabled = true;
             });
         });

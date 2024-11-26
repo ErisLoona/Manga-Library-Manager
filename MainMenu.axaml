@@ -10,7 +10,8 @@
         RequestedThemeVariant="Light"
         FontSize="12"
         Foreground="White"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        Icon="/Assets/icon.png">
 
   <Window.Styles>
     <Style Selector="Button">

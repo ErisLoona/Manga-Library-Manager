@@ -11,7 +11,8 @@
         FontSize="12"
         Foreground="White"
         WindowStartupLocation="CenterScreen"
-        CanResize="False">
+        CanResize="False"
+        Icon="/Assets/icon.png">
 
   <Window.Styles>
     <Style Selector="Button">

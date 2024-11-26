@@ -18,6 +18,7 @@ using System.Linq;
 using System.Xml;
 using Avalonia.Platform.Storage;
 using System.Threading;
+using SkiaSharp;
 
 namespace Manga_Manager;
 
@@ -644,11 +645,11 @@ public partial class Downloader : Window
                 {
                     if (currentManga.Format == 0)
                     {
-                        offset = 1;
+                        offset = 1; // The folders in the existing manga folder start with 1
                         while (Directory.Exists(Path.Combine(tempFolderPath, offset.ToString())) == true)
                             offset++;
-                        offset--;
-                        offset -= chaptersToDownload.Count; // The folders were already created, so gotta subtract those to get to the correct offset
+                        offset--; // I need the last folder that was used
+                        offset -= chaptersToDownload.Count; // The folders for the new chapters were already created, so gotta subtract those to get to the correct offset
                     }
                     else
                     {
@@ -758,7 +759,7 @@ public partial class Downloader : Window
                             }
                             break;
                         } // Cancel check
-                        MemoryStream pageStream = new MemoryStream();
+                        using MemoryStream pageStream = new MemoryStream();
                         MDLGetData.GetPageImage(pageLinks[pageNumber - 1]).CopyTo(pageStream);
                         if (apiError == true || pageStream == null)
                         {
@@ -767,14 +768,15 @@ public partial class Downloader : Window
                             goto Retry;
                         }
                         pageStream.Seek(0, SeekOrigin.Begin);
-                        Bitmap page = new Bitmap(pageStream);
+                        using SKBitmap page = SKBitmap.Decode(pageStream);
                         // Saving the page
                         try
                         {
                             if (currentManga.Format == 0)
                             {
-                                string pageFileName = pageNumber.ToString("D" + chaptersToDownload.ElementAt(chapterIndex - offset).Value.ToString().Length) + Path.GetExtension(pageLinks[pageNumber - 1]);
-                                page.Save(Path.Combine(currentPath, pageFileName));
+                                string pageFileName = pageNumber.ToString("D" + chaptersToDownload.ElementAt(chapterIndex - offset).Value.ToString().Length) + ".jpg";
+                                using FileStream fileStream = new FileStream(Path.Combine(currentPath, pageFileName), FileMode.Create);
+                                SKImage.FromBitmap(page).Encode(SKEncodedImageFormat.Jpeg, 100).SaveTo(fileStream);
                                 File.WriteAllText(Path.Combine(tempFolderPath, Convert.ToString(chapterIndex + 1), "xhtml", pageNumber - 1 + ".xhtml"), $"<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\r\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\r\n<head>\r\n    <link href=\"../css/style.css\" rel=\"stylesheet\" type=\"text/css\"/>\r\n    <title>{fileName}</title>\r\n</head>\r\n<body>\r\n    <div>\r\n        <img alt=\"{fileName}\" src=\"../img/{fileName}\"/>\r\n    </div>\r\n</body>\r\n</html>\r\n");
                                 chapterPagePaths.Add(Path.Combine(currentPath, pageFileName));
                             }
@@ -786,7 +788,8 @@ public partial class Downloader : Window
                                     pageFileName = $"{cbzPrefix}{currentPageNumber.ToString("D" + totalPages.ToString().Length)}.jpg";
                                 else
                                     pageFileName = $"{cbzPrefix}{currentPageNumber.ToString("D" + (totalPages + offset).ToString().Length)}.jpg";
-                                page.Save(Path.Combine(tempFolderPath, pageFileName));
+                                using FileStream fileStream = new FileStream(Path.Combine(tempFolderPath, pageFileName), FileMode.Create);
+                                SKImage.FromBitmap(page).Encode(SKEncodedImageFormat.Jpeg, 100).SaveTo(fileStream);
                                 cbzPageNumber++;
                             }
                         }
@@ -801,7 +804,6 @@ public partial class Downloader : Window
                             skipManga = true;
                             break;
                         }
-                        page.Dispose();
 
                         // Reporting progress
                         currentManga.ProgressBars[chapterIndex - offset].Value++;
@@ -884,14 +886,17 @@ public partial class Downloader : Window
                         continue;
                     }
                     coverStream.Seek(0, SeekOrigin.Begin);
-                    Bitmap cover = new Bitmap(coverStream);
+                    using SKBitmap cover = SKBitmap.Decode(coverStream);
                     try
                     {
                         File.Delete(Path.Combine(tempFolderPath, "cover.jpg"));
                     }
                     catch { }
                     if (currentManga.Format == 0)
-                        cover.Save(Path.Combine(tempFolderPath, "cover.jpg"));
+                    {
+                        using FileStream fileStream = new FileStream(Path.Combine(tempFolderPath, "cover.jpg"), FileMode.Create);
+                        SKImage.FromBitmap(cover).Encode(SKEncodedImageFormat.Jpeg, 100).SaveTo(fileStream);
+                    }
                     else if (currentManga.Format == 1)
                     {
                         string coverFileName;
@@ -899,7 +904,13 @@ public partial class Downloader : Window
                             coverFileName = $"{cbzPrefix}{0.ToString("D" + totalPages.ToString().Length)}.jpg";
                         else
                             coverFileName = $"{cbzPrefix}{0.ToString("D" + (totalPages + offset).ToString().Length)}.jpg";
-                        cover.Save(Path.Combine(tempFolderPath, coverFileName));
+                        try
+                        {
+                            File.Delete(Path.Combine(tempFolderPath, coverFileName));
+                        }
+                        catch { }
+                        using FileStream fileStream = new FileStream(Path.Combine(tempFolderPath, coverFileName), FileMode.Create);
+                        SKImage.FromBitmap(cover).Encode(SKEncodedImageFormat.Jpeg, 100).SaveTo(fileStream);
                     }
                     cover.Dispose();
                 }
@@ -932,12 +943,15 @@ public partial class Downloader : Window
                 if (currentManga.Format == 1)
                 {
                     int hereIndex2 = queueIndex;
+                    if (currentManga.Updating == true)
+                        PackManga(tempFolderPath, Path.Combine(currentManga.TempManga.Path, fileName));
+                    else
+                        PackManga(tempFolderPath, currentManga.TempManga.Path);
                     Dispatcher.UIThread.Post(() =>
                     {
                         mangaQueueStatuses[hereIndex2].Text = "Completed";
                         mangaQueueStatuses[hereIndex2].Foreground = new SolidColorBrush(Colors.Lime);
                     });
-                    PackManga(tempFolderPath, currentManga.TempManga.Path);
                     continue;
                 }
 
@@ -1159,6 +1173,7 @@ public partial class Downloader : Window
                 });
             }
 
+            downloading = false;
             Dispatcher.UIThread.Post(() =>
             {
                 StatusTextBox.Text = "All done!";

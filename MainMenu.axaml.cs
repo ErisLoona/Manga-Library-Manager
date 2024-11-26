@@ -23,6 +23,7 @@ using System.Xml;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using Avalonia.Platform.Storage;
+using System.Net.Http;
 
 namespace Manga_Manager
 {
@@ -49,6 +50,7 @@ namespace Manga_Manager
             OpenInExplorerButton.IsEnabled = true;
             CheckOnlineButton.IsEnabled = true;
             DeleteEntryButton.IsEnabled = true;
+            UpdateMangaButton.IsEnabled = true;
             CheckForUpdatesCheckBox.IsEnabled = true;
         }
 
@@ -152,10 +154,38 @@ namespace Manga_Manager
             }
             #endregion
 
-            //TODO check for updates
             if (checkUpdates == true)
             {
-
+                _ = Task.Run(() =>
+                {
+                    using HttpClient client = new HttpClient();
+                    client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.UserAgent.ParseAdd("Manga Library Manager by (github) ErisLoona");
+                    try
+                    {
+                        JObject githubResponse = JObject.Parse(client.GetStringAsync("https://api.github.com/repos/erisloona/manga-library-manager/releases/latest").Result);
+                        List<string> versionNumbers = githubResponse.SelectToken("tag_name").Value<string>().Substring(1).Split(".").ToList();
+                        string[] currentVersion = FileVersionInfo.GetVersionInfo(Environment.ProcessPath).FileVersion.Split(".");
+                        bool update = false;
+                        for (int i = 0; i < versionNumbers.Count; i++)
+                            if (Convert.ToInt32(versionNumbers[i]) > Convert.ToInt32(currentVersion[i]))
+                            {
+                                update = true;
+                                break;
+                            }
+                            else if (Convert.ToInt32(versionNumbers[i]) < Convert.ToInt32(currentVersion[i]))
+                                break;
+                        if (update == true)
+                        {
+                            Dispatcher.UIThread.Post(async () =>
+                            {
+                                if (await MessageBoxManager.GetMessageBoxStandard("Update available", "A new version is available!\nWould you like to go download it?", ButtonEnum.YesNo).ShowAsync() == ButtonResult.Yes)
+                                    OpenLink(githubResponse.SelectToken("html_url").Value<string>());
+                            });
+                        }
+                    }
+                    catch { }
+                });
             }
 
             foreach (Manga manga in mangaList)
@@ -195,6 +225,7 @@ namespace Manga_Manager
                         return;
                     }
                 OpenInExplorerButton.IsEnabled = false;
+                UpdateMangaButton.IsEnabled = false;
             }
 
             TitleLabel.Text = currentManga.Title;
@@ -209,7 +240,7 @@ namespace Manga_Manager
             {
                 LastChapterOnlineLabel.IsVisible = true;
                 LastCheckedDateLabel.IsVisible = true;
-                if (currentManga.OnlineLastChapter - currentManga.FileLastChapter > 0)
+                if (currentManga.OnlineLastChapter - currentManga.FileLastChapter > 0 && notFound == false)
                     UpdateMangaButton.IsEnabled = true;
             }
 
