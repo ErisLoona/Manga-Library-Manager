@@ -6,7 +6,6 @@ using System.Runtime.InteropServices;
 using MsBox.Avalonia.Enums;
 using MsBox.Avalonia;
 using System.Diagnostics;
-using System.Linq;
 
 namespace Manga_Manager
 {

@@ -1,7 +1,5 @@
 using System;
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using MsBox.Avalonia;
 using static Manga_Manager.Globals;
 using MangaDex_Library;

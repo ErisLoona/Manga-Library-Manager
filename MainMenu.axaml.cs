@@ -1,8 +1,6 @@
 using Avalonia.Controls;
-using Avalonia.Controls.Documents;
 using Avalonia.Interactivity;
 using Avalonia.Media;
-using Avalonia.Media.TextFormatting;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using Newtonsoft.Json.Linq;
@@ -261,7 +259,7 @@ namespace Manga_Manager
             passIndex = MainDisplayList.SelectedIndex;
             MainDisplayList.SelectedIndex = -1;
             Downloader downloader = new Downloader();
-            downloader.openedByDownloadUpdatesButton = false;
+            openedByDownloadUpdatesButton = false;
             await downloader.ShowDialog(this);
             Filter();
             if (passIndex != -1)
@@ -531,12 +529,13 @@ namespace Manga_Manager
             MainDisplayList.Items.RemoveAt(index);
         }
 
+        internal static bool openedByDownloadUpdatesButton = false;
         private async void UpdateMangaButton_Clicked(object sender, RoutedEventArgs args)
         {
             passIndex = MainDisplayList.SelectedIndex;
             MainDisplayList.SelectedIndex = -1;
+            openedByDownloadUpdatesButton = true;
             Downloader downloader = new Downloader();
-            downloader.openedByDownloadUpdatesButton = true;
             await downloader.ShowDialog(this);
             Filter();
             for (int i = 0; i < displayTitles.Count; i++)
