@@ -50,7 +50,6 @@ namespace Manga_Manager
             OpenInExplorerButton.IsEnabled = true;
             CheckOnlineButton.IsEnabled = true;
             DeleteEntryButton.IsEnabled = true;
-            UpdateMangaButton.IsEnabled = true;
             CheckForUpdatesCheckBox.IsEnabled = true;
         }
 
@@ -225,7 +224,6 @@ namespace Manga_Manager
                         return;
                     }
                 OpenInExplorerButton.IsEnabled = false;
-                UpdateMangaButton.IsEnabled = false;
             }
 
             TitleLabel.Text = currentManga.Title;
