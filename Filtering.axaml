@@ -1,0 +1,96 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="751" d:DesignHeight="489"
+        Width="751" Height="489"
+        x:Class="Manga_Manager.Filtering"
+        Title="Filtering"
+        Background="DimGray"
+        RequestedThemeVariant="Light"
+        FontSize="12"
+        Foreground="White"
+        WindowStartupLocation="CenterScreen"
+        Icon="/Assets/icon.png">
+
+  <Window.Styles>
+    <Style Selector="Button">
+      <Setter Property="HorizontalAlignment" Value="Stretch"/>
+      <Setter Property="VerticalAlignment" Value="Stretch"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="Margin" Value="5,3,5,3"/>
+      <Setter Property="Background" Value="#F8C8DC"/>
+      <Setter Property="Foreground" Value="Black"/>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <ContentPresenter x:Name="PART_ContentPresenter"
+              Background="{TemplateBinding Background}"
+              BorderBrush="{TemplateBinding BorderBrush}"
+              BorderThickness="{TemplateBinding BorderThickness}"
+              CornerRadius="{TemplateBinding CornerRadius}"
+              Content="{TemplateBinding Content}"
+              ContentTemplate="{TemplateBinding ContentTemplate}"
+              Padding="{TemplateBinding Padding}"
+              RecognizesAccessKey="True"
+              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+        </ControlTemplate>
+      </Setter>
+      <Setter Property="FontWeight" Value="Bold"/>
+      <Setter Property="FontSize" Value="12"/>
+    </Style>
+    <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background"
+          Value="#FFE5F0"/>
+      <Setter Property="TextBlock.Foreground"
+          Value="Black"/>
+    </Style>
+  </Window.Styles>
+
+  <Grid ColumnDefinitions="70*, 30*">
+    <Grid Grid.Column="0" RowDefinitions="8*, 52*, 47*">
+      <Grid Grid.Row="0" ColumnDefinitions="30*, 70*">
+        <Button Grid.Column="0" x:Name="ResetFiltersButton" Click="ResetFiltersButton_Clicked" Content="Reset tags" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+        <StackPanel Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Orientation="Horizontal" Spacing="7">
+          <CheckBox IsCheckedChanged="DemoCheckBoxes_Checked" Foreground="White" Content="No preference"/>
+          <CheckBox IsCheckedChanged="DemoCheckBoxes_Checked" Foreground="White" Content="Included" IsChecked="True"/>
+          <CheckBox IsCheckedChanged="DemoCheckBoxes_Checked" Foreground="White" Content="Excluded" IsThreeState="True" IsChecked="{x:Null}"/>
+        </StackPanel>
+      </Grid>
+      <Grid Grid.Row="1" RowDefinitions="60*, 40*" ColumnDefinitions="50*, 50*">
+        <StackPanel Grid.Row="0" Grid.Column="0" x:Name="ContentRatingCheckBoxesPanel" VerticalAlignment="Center" HorizontalAlignment="Center">
+          <CheckBox Foreground="White" Content="Safe"/>
+          <CheckBox Foreground="White" Content="Suggestive"/>
+          <CheckBox Foreground="White" Content="Erotica"/>
+          <CheckBox Foreground="White" Content="Pornographic"/>
+        </StackPanel>
+        <CheckBox Grid.Row="0" x:Name="OnlyShowNewChaptersCheckBox" Grid.Column="1" Foreground="White" Content="Only show Mangas with new chapters" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <StackPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
+          <TextBlock Text="Inclusion Mode:" HorizontalAlignment="Center" FontSize="15"/>
+          <RadioButton x:Name="InclusionAndRadioButton" GroupName="Inclusion Mode" Foreground="White" Content="and"/>
+          <RadioButton x:Name="InclusionOrRadioButton" GroupName="Inclusion Mode" Foreground="White" Content="or"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+          <TextBlock Text="Exclusion Mode:" HorizontalAlignment="Center" FontSize="15"/>
+          <RadioButton x:Name="ExclusionAndRadioButton" GroupName="Exclusion Mode" Foreground="White" Content="and"/>
+          <RadioButton x:Name="ExclusionOrRadioButton" GroupName="Exclusion Mode" Foreground="White" Content="or"/>
+        </StackPanel>
+      </Grid>
+      <Border Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+          <WrapPanel x:Name="TagCheckBoxesWrapPanel" Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+        </ScrollViewer>
+      </Border>
+    </Grid>
+    <Grid Grid.Column="1" RowDefinitions="10*, 90*">
+      <TextBlock Grid.Row="0" x:Name="TotalMangasTextBlock" Text="Mangas:" FontWeight="Bold" FontSize="15" HorizontalAlignment="Center" Margin="5"/>
+      <Border Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <ScrollViewer>
+          <TextBlock x:Name="MangaCountByTagsTextBlock" Margin="5, 0"/>
+        </ScrollViewer>
+      </Border>
+    </Grid>
+  </Grid>
+
+</Window>

@@ -1,0 +1,64 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="459" d:DesignHeight="604"
+        Width="459" Height="604"
+        x:Class="Manga_Manager.BulkUpdateCheck"
+        Title="Bulk update check"
+        Background="DimGray"
+        RequestedThemeVariant="Light"
+        FontSize="12"
+        Foreground="White"
+        WindowStartupLocation="CenterScreen"
+        Icon="/Assets/icon.png">
+
+  <Window.Styles>
+    <Style Selector="Button">
+      <Setter Property="HorizontalAlignment" Value="Stretch"/>
+      <Setter Property="VerticalAlignment" Value="Stretch"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="Margin" Value="5,3,5,3"/>
+      <Setter Property="Background" Value="#F8C8DC"/>
+      <Setter Property="Foreground" Value="Black"/>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <ContentPresenter x:Name="PART_ContentPresenter"
+              Background="{TemplateBinding Background}"
+              BorderBrush="{TemplateBinding BorderBrush}"
+              BorderThickness="{TemplateBinding BorderThickness}"
+              CornerRadius="{TemplateBinding CornerRadius}"
+              Content="{TemplateBinding Content}"
+              ContentTemplate="{TemplateBinding ContentTemplate}"
+              Padding="{TemplateBinding Padding}"
+              RecognizesAccessKey="True"
+              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+        </ControlTemplate>
+      </Setter>
+      <Setter Property="FontWeight" Value="Bold"/>
+      <Setter Property="FontSize" Value="12"/>
+    </Style>
+    <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background"
+          Value="#FFE5F0"/>
+      <Setter Property="TextBlock.Foreground"
+          Value="Black"/>
+    </Style>
+  </Window.Styles>
+
+  <Grid RowDefinitions="6*, 4*, 82*, 8*">
+    <Grid Grid.Row="0" ColumnDefinitions="60*, 40*">
+      <TextBlock Grid.Column="0" Text="Manga name" TextAlignment="Left" HorizontalAlignment="Left" VerticalAlignment="Center" Background="DimGray" Foreground="White" FontSize="16" Margin="3"/>
+      <TextBlock Grid.Column="1" Text="Status" TextAlignment="Left" HorizontalAlignment="Left" VerticalAlignment="Center" Background="DimGray" Foreground="White" FontSize="16" Margin="3"/>
+    </Grid>
+    <ProgressBar Grid.Row="1" x:Name="ProgressBar" Minimum="0" Value="0" Background="White" Foreground="#F8C8DC" ShowProgressText="True" Margin="3,0,3,0" ProgressTextFormat="{}{0}/{3} mangas checked"/>
+    <Grid Grid.Row="2" ColumnDefinitions="60*, 40*">
+      <ListBox Grid.Column="0" x:Name="MangaNameList" SelectionChanged="MangaNameList_SelectionChanged" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="DimGray" Foreground="White" Padding="3, 3, 0, 3" ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
+      <ListBox Grid.Column="1" x:Name="ChapterStatusList" SelectionChanged="ChapterStatusList_SelectionChanged" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="DimGray" Foreground="White" Padding="0, 3, 3, 3"/>
+    </Grid>
+    <Button Grid.Row="3" x:Name="CancelButton" Click="CancelButton_Clicked" Content="Cancel" FontSize="18"/>
+  </Grid>
+
+</Window>

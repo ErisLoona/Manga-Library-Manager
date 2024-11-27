@@ -1,0 +1,87 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="939" d:DesignHeight="586"
+        Width="939" Height="586"
+        x:Class="Manga_Manager.Downloader"
+        Title="Downloader"
+        Background="DimGray"
+        RequestedThemeVariant="Light"
+        FontSize="12"
+        Foreground="White"
+        WindowStartupLocation="CenterScreen"
+        Icon="/Assets/icon.png">
+
+  <Window.Styles>
+    <Style Selector="Button">
+      <Setter Property="HorizontalAlignment" Value="Stretch"/>
+      <Setter Property="VerticalAlignment" Value="Stretch"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="Margin" Value="5,3,5,3"/>
+      <Setter Property="Background" Value="#F8C8DC"/>
+      <Setter Property="Foreground" Value="Black"/>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <ContentPresenter x:Name="PART_ContentPresenter"
+              Background="{TemplateBinding Background}"
+              BorderBrush="{TemplateBinding BorderBrush}"
+              BorderThickness="{TemplateBinding BorderThickness}"
+              CornerRadius="{TemplateBinding CornerRadius}"
+              Content="{TemplateBinding Content}"
+              ContentTemplate="{TemplateBinding ContentTemplate}"
+              Padding="{TemplateBinding Padding}"
+              RecognizesAccessKey="True"
+              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+        </ControlTemplate>
+      </Setter>
+      <Setter Property="FontWeight" Value="Bold"/>
+      <Setter Property="FontSize" Value="12"/>
+    </Style>
+    <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background"
+          Value="#FFE5F0"/>
+      <Setter Property="TextBlock.Foreground"
+          Value="Black"/>
+    </Style>
+  </Window.Styles>
+
+  <Grid RowDefinitions="7*, 86*, 7*">
+    <Grid Grid.Row="0" ColumnDefinitions="44*, 14*, 14*, 14*, 14*">
+      <ComboBox Grid.Column="0" x:Name="TitleComboBox" SelectionChanged="TitleComboBox_SelectionChanged" IsEnabled="False" FontSize="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5"/>
+      <ComboBox Grid.Column="1" x:Name="FormatComboBox" SelectionChanged="FormatComboBox_SelectionChanged" FontSize="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5">
+        <ComboBoxItem>EPUB</ComboBoxItem>
+        <ComboBoxItem>CBZ</ComboBoxItem>
+      </ComboBox>
+      <Button Grid.Column="2" x:Name="SavePathButton" Click="SavePathButton_Clicked" Content="Location" IsEnabled="False"/>
+      <CheckBox Grid.Column="3" x:Name="UpdateCoverCheckBox" Content="Update cover" IsChecked="True" IsEnabled="False" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+      <ComboBox Grid.Column="4" x:Name="QualityComboBox" FontSize="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" SelectedIndex="0">
+        <ComboBoxItem>Original</ComboBoxItem>
+        <ComboBoxItem>Data-Saver</ComboBoxItem>
+      </ComboBox>
+    </Grid>
+    <Grid Grid.Row="1" ColumnDefinitions="50*, 50*">
+      <Grid Grid.Column="0" RowDefinitions="7*, 93*">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Stretch" Orientation="Horizontal">
+          <Button Grid.Column="0" x:Name="AddFromLinkButton" Click="AddFromLinkButton_Clicked" Content="Add from link" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+          <Button Grid.Column="1" x:Name="AddFromLibraryButton" Click="AddFromLibraryButton_Clicked" Content="Add from library" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        </StackPanel>
+        <ListBox Grid.Row="1" x:Name="QueueListBox" SelectionChanged="QueueListBox_SelectionChanged" Background="DimGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0, 0, 2, 0"/>
+      </Grid>
+      <Border Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+          <StackPanel x:Name="ChaptersStackPanel" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Button x:Name="RemoveFromQueueButton" Click="RemoveFromQueueButton_Clicked" Content="Remove Manga from queue" IsVisible="False" HorizontalAlignment="Center"/>
+          </StackPanel>
+        </ScrollViewer>
+      </Border>
+    </Grid>
+    <Grid Grid.Row="2" ColumnDefinitions="50*, 50*">
+      <TextBlock Grid.Column="0" x:Name="StatusTextBox" Text="Add mangas to the queue!" FontSize="15" FontWeight="Bold" Foreground="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5, 3, 0, 3"/>
+      <Button Grid.Column="1" x:Name="DownloadButton" Click="DownloadButton_Clicked" Content="Start downloading" VerticalAlignment="Center" HorizontalAlignment="Right" IsEnabled="False"/>
+    </Grid>
+  </Grid>
+  
+</Window>

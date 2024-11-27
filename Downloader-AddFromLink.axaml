@@ -1,0 +1,56 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="396" d:DesignHeight="81"
+        Width="396" Height="81"
+        x:Class="Manga_Manager.Downloader_AddFromLink"
+        Title="Add Manga from link"
+        Background="DimGray"
+        RequestedThemeVariant="Light"
+        FontSize="12"
+        Foreground="White"
+        WindowStartupLocation="CenterScreen"
+        Icon="/Assets/icon.png">
+
+  <Window.Styles>
+    <Style Selector="Button">
+      <Setter Property="HorizontalAlignment" Value="Stretch"/>
+      <Setter Property="VerticalAlignment" Value="Stretch"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="Margin" Value="5,3,5,3"/>
+      <Setter Property="Background" Value="#F8C8DC"/>
+      <Setter Property="Foreground" Value="Black"/>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <ContentPresenter x:Name="PART_ContentPresenter"
+              Background="{TemplateBinding Background}"
+              BorderBrush="{TemplateBinding BorderBrush}"
+              BorderThickness="{TemplateBinding BorderThickness}"
+              CornerRadius="{TemplateBinding CornerRadius}"
+              Content="{TemplateBinding Content}"
+              ContentTemplate="{TemplateBinding ContentTemplate}"
+              Padding="{TemplateBinding Padding}"
+              RecognizesAccessKey="True"
+              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+        </ControlTemplate>
+      </Setter>
+      <Setter Property="FontWeight" Value="Bold"/>
+      <Setter Property="FontSize" Value="12"/>
+    </Style>
+    <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background"
+          Value="#FFE5F0"/>
+      <Setter Property="TextBlock.Foreground"
+          Value="Black"/>
+    </Style>
+  </Window.Styles>
+
+  <Grid RowDefinitions="50*, 50*">
+    <TextBox Grid.Row="0" x:Name="LinkTextBox" TextChanged="LinkTextBox_TextChanged" AcceptsReturn="False" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" TextWrapping="NoWrap" FontSize="15" Margin="3"/>
+    <Button Grid.Row="1" x:Name="AddButton" Click="AddButton_Clicked" Content="Add Manga to queue" IsEnabled="False"/>
+  </Grid>
+  
+</Window>

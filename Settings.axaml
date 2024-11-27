@@ -1,0 +1,81 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="226" d:DesignHeight="270"
+        Width="226" Height="280"
+        x:Class="Manga_Manager.Settings"
+        Title="Settings"
+        Background="DimGray"
+        RequestedThemeVariant="Light"
+        FontSize="12"
+        Foreground="White"
+        WindowStartupLocation="CenterScreen"
+        CanResize="False"
+        Icon="/Assets/icon.png">
+
+  <Window.Styles>
+    <Style Selector="Button">
+      <Setter Property="HorizontalAlignment" Value="Stretch"/>
+      <Setter Property="VerticalAlignment" Value="Stretch"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="Margin" Value="5,3,5,3"/>
+      <Setter Property="Background" Value="#F8C8DC"/>
+      <Setter Property="Foreground" Value="Black"/>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <ContentPresenter x:Name="PART_ContentPresenter"
+              Background="{TemplateBinding Background}"
+              BorderBrush="{TemplateBinding BorderBrush}"
+              BorderThickness="{TemplateBinding BorderThickness}"
+              CornerRadius="{TemplateBinding CornerRadius}"
+              Content="{TemplateBinding Content}"
+              ContentTemplate="{TemplateBinding ContentTemplate}"
+              Padding="{TemplateBinding Padding}"
+              RecognizesAccessKey="True"
+              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+        </ControlTemplate>
+      </Setter>
+      <Setter Property="FontWeight" Value="Bold"/>
+      <Setter Property="FontSize" Value="12"/>
+    </Style>
+    <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background"
+          Value="#FFE5F0"/>
+      <Setter Property="TextBlock.Foreground"
+          Value="Black"/>
+    </Style>
+  </Window.Styles>
+
+  <Grid ColumnDefinitions="10*, 80*, 10*">
+    <Grid Grid.Column="1" RowDefinitions="21*, 11*, 11*, 11*, 11*, 24*"> <!--Change the last value to change the spacing between all the top controls!-->
+      <StackPanel Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="DimGray" Orientation="Vertical" Spacing="5">
+        <TextBlock Background="DimGray" Foreground="White" FontSize="12" TextAlignment="Center" Text="Preferred Language" Margin="0, 8, 0, 0"/>
+        <ComboBox x:Name="LanguageComboBox" SelectionChanged="LanguageComboBox_SelectionChanged" Background="White" Foreground="Black" FontSize="12" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+      </StackPanel>
+      <CheckBox Grid.Row="1" x:Name="UpdatesCheckBox" IsCheckedChanged="UpdatesCheckBox_Checked" Content="Check for updates" Background="DimGray" Foreground="White" FontSize="12" VerticalAlignment="Center" HorizontalContentAlignment="Center"/>
+      <CheckBox Grid.Row="2" x:Name="HideJsonCheckBox" IsCheckedChanged="HideJsonCheckBox_Checked" Content="Hide the library file" Background="DimGray" Foreground="White" FontSize="12" VerticalAlignment="Center" HorizontalContentAlignment="Center" ToolTip.Tip="Will set the library JSON as a hidden file"/>
+      <CheckBox Grid.Row="3" x:Name="WarningCheckBox" IsCheckedChanged="WarningCheckBox_Checked" Content="Show a warning if the file no longer exists" Background="DimGray" Foreground="White" FontSize="12" VerticalAlignment="Center" HorizontalContentAlignment="Center"/>
+      <Button Grid.Row="4" x:Name="IssueButton" Click="IssueButton_Clicked" Content="Report an Issue" HorizontalAlignment="Center"/>
+      <Grid Grid.Row="5" ColumnDefinitions="50*, 50*">
+        <TextBlock Grid.Column="0" VerticalAlignment="Bottom" HorizontalAlignment="Left" TextAlignment="Left" Foreground="White" Background="DimGray" FontSize="8" Margin="-20.5, 0, 0, 2.3">
+          Using the<LineBreak/>MangaDex.org API
+        </TextBlock>
+        <Grid Grid.Column="1" RowDefinitions="70*, 30*">
+          <Grid.Styles>
+            <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+              <Setter Property="Background"
+                  Value="#483D8B"/>
+              <Setter Property="TextBlock.Foreground"
+                  Value="Black"/>
+            </Style>
+          </Grid.Styles>
+          <Button Grid.Row="0" x:Name="DonateButton" Click="DonateButton_Clicked" Content="Donate" Margin="42, 36, -17, -9" FontSize="11" Background="#9370DB" ToolTip.Tip="Thank you for considering it! &lt;3"/>
+          <TextBlock Grid.Row="1" Text="Made by Eris Loona" VerticalAlignment="Bottom" HorizontalAlignment="Right" TextAlignment="Right" Foreground="#F8C8DC" Background="DimGray" FontSize="8" Margin="0, 0, -19, 2.3"/>
+        </Grid>
+      </Grid>
+    </Grid>
+  </Grid>
+</Window>

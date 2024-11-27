@@ -1,0 +1,119 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="396" d:DesignHeight="772"
+        Width="396" Height="772"
+        x:Class="Manga_Manager.EditMetadata"
+        Title="Edit metadata"
+        Background="DimGray"
+        RequestedThemeVariant="Light"
+        FontSize="12"
+        Foreground="White"
+        WindowStartupLocation="CenterScreen"
+        CanResize="False"
+        Icon="/Assets/icon.png">
+
+  <Window.Styles>
+    <Style Selector="Button">
+      <Setter Property="HorizontalAlignment" Value="Stretch"/>
+      <Setter Property="VerticalAlignment" Value="Stretch"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="Margin" Value="5,3,5,3"/>
+      <Setter Property="Background" Value="#F8C8DC"/>
+      <Setter Property="Foreground" Value="Black"/>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <ContentPresenter x:Name="PART_ContentPresenter"
+              Background="{TemplateBinding Background}"
+              BorderBrush="{TemplateBinding BorderBrush}"
+              BorderThickness="{TemplateBinding BorderThickness}"
+              CornerRadius="{TemplateBinding CornerRadius}"
+              Content="{TemplateBinding Content}"
+              ContentTemplate="{TemplateBinding ContentTemplate}"
+              Padding="{TemplateBinding Padding}"
+              RecognizesAccessKey="True"
+              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+        </ControlTemplate>
+      </Setter>
+      <Setter Property="FontWeight" Value="Bold"/>
+      <Setter Property="FontSize" Value="12"/>
+    </Style>
+    <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background"
+          Value="#FFE5F0"/>
+      <Setter Property="TextBlock.Foreground"
+          Value="Black"/>
+    </Style>
+  </Window.Styles>
+
+  <Grid RowDefinitions="92*, 8*">
+      <StackPanel Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0, 5" Spacing="4">
+        <TextBlock x:Name="CoverLabel" Background="DimGray" Foreground="White" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center" Text="Cover"/>
+        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="6">
+          <Image x:Name="CurrentCoverImage" Stretch="UniformToFill" Height="124" Width="82"/>
+          <Button x:Name="ConfirmButton" Click="ConfirmButton_Clicked" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0" IsEnabled="False" Width="23" Height="17" Padding="0">
+            <Image Source="/Assets/arrowleft.png" Margin="0"/>
+          </Button>
+          <Image x:Name="NewCoverImage" Stretch="UniformToFill" Height="124" Width="82"/>
+          <Button x:Name="UpdateCoverButton" Click="UpdateCoverButton_Clicked" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0" IsEnabled="False" Height="23" Width="23" Padding="0">
+            <Image Source="/Assets/reset.png" Margin="0"/>
+          </Button>
+        </StackPanel>
+        <TextBlock Background="DimGray" Foreground="White" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center" Text="Description"/>
+        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="6">
+          <TextBox x:Name="DescriptionTextBox" AcceptsReturn="True" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="12" Margin="0" Width="250" Height="70"/>
+          <Button x:Name="UpdateDescriptionButton" Click="UpdateDescriptionButton_Clicked" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0" IsEnabled="False" Height="23" Width="23" Padding="0">
+            <Image Source="/Assets/reset.png" Margin="0"/>
+          </Button>
+        </StackPanel>
+        <TextBlock Background="DimGray" Foreground="White" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center" Text="Last chapter on file"/>
+        <NumericUpDown x:Name="LastChapterNumeric" VerticalAlignment="Center" Minimum="0" FormatString="0.0" Increment="1" FontSize="15" Margin="0" Width="150" TextAlignment="Center"/>
+        <TextBlock Background="DimGray" Foreground="White" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center" Text="Ongoing status"/>
+        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="6">
+          <ComboBox x:Name="OngoingStatusComboBox" HorizontalAlignment="Center" Width="130">
+            <ComboBoxItem><TextBlock Text="Ongoing" Background="Transparent" Foreground="Black" FontSize="15" FontWeight="Bold"/></ComboBoxItem>
+            <ComboBoxItem><TextBlock Text="Completed" Background="Transparent" Foreground="Black" FontSize="15" FontWeight="Bold"/></ComboBoxItem>
+            <ComboBoxItem><TextBlock Text="Hiatus" Background="Transparent" Foreground="Black" FontSize="15" FontWeight="Bold"/></ComboBoxItem>
+            <ComboBoxItem><TextBlock Text="Cancelled" Background="Transparent" Foreground="Black" FontSize="15" FontWeight="Bold"/></ComboBoxItem>
+          </ComboBox>
+          <Button x:Name="UpdateOngoingStatusButton" Click="UpdateOngoingStatusButton_Clicked" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0" IsEnabled="False" Height="23" Width="23" Padding="0">
+            <Image Source="/Assets/reset.png" Margin="0"/>
+          </Button>
+        </StackPanel>
+        <TextBlock Background="DimGray" Foreground="White" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center" Text="Link"/>
+        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="6">
+          <TextBox x:Name="LinkTextBox" TextChanged="LinkTextBox_TextChanged" AcceptsReturn="False" VerticalAlignment="Center" TextWrapping="NoWrap" FontSize="15" Margin="0" Width="260"/>
+          <Button x:Name="OpenLinkButton" Click="OpenLinkButton_Clicked" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0" IsEnabled="False" Height="23" Width="23" Padding="0" ToolTip.Tip="Open the link in your browser">
+            <Image Source="/Assets/export.png" Margin="0"/>
+          </Button>
+        </StackPanel>
+        <TextBlock Background="DimGray" Foreground="White" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center" Text="Content rating"/>
+        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="6">
+          <ComboBox x:Name="ContentRatingComboBox" HorizontalAlignment="Center" Width="160">
+            <ComboBoxItem><TextBlock Text="Safe" Background="Transparent" Foreground="Black" FontSize="15" FontWeight="Bold"/></ComboBoxItem>
+            <ComboBoxItem><TextBlock Text="Suggestive" Background="Transparent" Foreground="Black" FontSize="15" FontWeight="Bold"/></ComboBoxItem>
+            <ComboBoxItem><TextBlock Text="Erotica" Background="Transparent" Foreground="Black" FontSize="15" FontWeight="Bold"/></ComboBoxItem>
+            <ComboBoxItem><TextBlock Text="Pornographic" Background="Transparent" Foreground="Black" FontSize="15" FontWeight="Bold"/></ComboBoxItem>
+          </ComboBox>
+          <Button x:Name="UpdateContentRatingButton" Click="UpdateContentRatingButton_Clicked" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0" IsEnabled="False" Height="23" Width="23" Padding="0">
+            <Image Source="/Assets/reset.png" Margin="0"/>
+          </Button>
+        </StackPanel>
+        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="6">
+          <TextBlock Background="DimGray" Foreground="White" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center" Text="Tags"/>
+          <Button x:Name="UpdateTagsButton" Click="UpdateTagsButton_Clicked" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0" IsEnabled="False" Height="23" Width="23" Padding="0">
+            <Image Source="/Assets/reset.png" Margin="0"/>
+          </Button>
+        </StackPanel>
+        <Border Height="226">
+        <ScrollViewer x:Name="TagsScrollViewer">
+          <StackPanel x:Name="TagsPanel" Margin="10, 0"/>
+        </ScrollViewer>
+        </Border>
+      </StackPanel>
+    <Button Grid.Row="1" x:Name="UpdateAllButton" Click="UpdateAllButton_Clicked" Content="Update all" VerticalAlignment="Bottom" HorizontalAlignment="Right" IsEnabled="False" ToolTip.Tip="Will not overwrite the current cover image"/>
+  </Grid>
+</Window>

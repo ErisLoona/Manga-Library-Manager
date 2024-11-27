@@ -1,0 +1,108 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1142" d:DesignHeight="687"
+        Width="1142" Height="687"
+        x:Class="Manga_Manager.MainWindow"
+        Title="Manga Library Manager"
+        Background="DimGray"
+        RequestedThemeVariant="Light"
+        FontSize="12"
+        Foreground="White"
+        WindowStartupLocation="CenterScreen"
+        Icon="/Assets/icon.png">
+
+  <Window.Styles>
+    <Style Selector="Button">
+      <Setter Property="HorizontalAlignment" Value="Stretch"/>
+      <Setter Property="VerticalAlignment" Value="Stretch"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="Margin" Value="5,3,5,3"/>
+      <Setter Property="Background" Value="#F8C8DC"/>
+      <Setter Property="Foreground" Value="Black"/>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <ContentPresenter x:Name="PART_ContentPresenter"
+              Background="{TemplateBinding Background}"
+              BorderBrush="{TemplateBinding BorderBrush}"
+              BorderThickness="{TemplateBinding BorderThickness}"
+              CornerRadius="{TemplateBinding CornerRadius}"
+              Content="{TemplateBinding Content}"
+              ContentTemplate="{TemplateBinding ContentTemplate}"
+              Padding="{TemplateBinding Padding}"
+              RecognizesAccessKey="True"
+              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+        </ControlTemplate>
+      </Setter>
+      <Setter Property="FontWeight" Value="Bold"/>
+      <Setter Property="FontSize" Value="12"/>
+    </Style>
+    <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background"
+          Value="#FFE5F0"/>
+      <Setter Property="TextBlock.Foreground"
+          Value="Black"/>
+    </Style>
+  </Window.Styles>
+
+  <Grid ColumnDefinitions="70*, 30*">
+    <Grid Grid.Column="0" RowDefinitions="7*, 5.5*, 87.5*">
+      <Grid Grid.Row="0" ColumnDefinitions="25*, 25*, 25*, 12.5*, 12.5*">
+        <Button Grid.Column="0" x:Name="DownloadMangaButton" Click="DownloadMangaButton_Clicked" Content="Download a Manga"/>
+        <Button Grid.Column="1" x:Name="AddMangaFileButton" Click="AddMangaFileButton_Clicked" Content="Add Manga from Files"/>
+        <Button Grid.Column="2" x:Name="CheckUpdatesButton" Click="CheckUpdatesButton_Clicked" Content="Check for New Chapters"/>
+        <Button Grid.Column="3" x:Name="FilterButton" Click="FilterButton_Clicked" Content="Filter"/>
+        <Button Grid.Column="4" x:Name="SettingsButton" Click="SettingsButton_Clicked" Content="Settings"/>
+      </Grid>
+      <AutoCompleteBox Grid.Row="1" x:Name="SearchBox" LostFocus="SearchBox_LostFocus" DropDownClosed="SearchBox_DropDownClosed" KeyDown="SearchBox_KeyDown" FilterMode="ContainsOrdinal" Background="White" Foreground="Black" Watermark="Search for a Manga..." FontSize="12" Margin="3" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+      <ListBox Grid.Row="2" x:Name="MainDisplayList" SelectionChanged="MainDisplayList_SelectionChanged" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="DimGray" Padding="0"/>
+    </Grid>
+    
+    <!--Manga description panel-->
+    
+    <Grid Grid.Column="1" x:Name="MangaDescPanel" RowDefinitions="18*, 82*" IsVisible="False" Margin="3, 0, 0, 0">
+      <Grid Grid.Row="0" ColumnDefinitions="76*, 24*">
+        <TextBlock Grid.Column="0" x:Name="TitleLabel" Tapped="TitleLabel_Tapped" Background="DimGray" Foreground="White" FontWeight="Bold" FontSize="12" HorizontalAlignment="Stretch" VerticalAlignment="Center" TextWrapping="Wrap"/>
+        <Image Grid.Column="1" x:Name="CoverImage" Stretch="UniformToFill" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+      </Grid>
+      <Grid Grid.Row="1" RowDefinitions="15*, 6*, 6*, 6*, 6*, 6*, 12*, 8*, 6*, 29*">
+        <Grid.Styles>
+          <Style Selector="TextBlock">
+            <Setter Property="Background" Value="DimGray"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+          </Style>
+        </Grid.Styles>
+        <ScrollViewer Grid.Row="0" Background="DimGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled">
+          <TextBlock TextAlignment="Start" x:Name="DescriptionLabel" TextWrapping="Wrap"/>
+        </ScrollViewer>
+        <TextBlock Grid.Row="1" x:Name="StatusLabel" Text="Status: "/>
+        <TextBlock Grid.Row="2" x:Name="RatingLabel" Text="Rating: "/>
+        <TextBlock Grid.Row="3" x:Name="LastChapterTextBlock"/>
+        <TextBlock Grid.Row="4" x:Name="LastChapterOnlineLabel" Text="Last chapter online: " IsVisible="False"/>
+        <TextBlock Grid.Row="5" x:Name="LastCheckedDateLabel" Text="Last checked: " IsVisible="False"/>
+        <Grid Grid.Row="6" ColumnDefinitions="*, *, *">
+          <Button Grid.Column="0" x:Name="OpenInExplorerButton" Click="OpenInExplorerButton_Clicked">
+            <TextBlock Background="Transparent" Foreground="Black">See<LineBreak/>File</TextBlock>
+          </Button>
+          <Button Grid.Column="1" x:Name="CheckOnlineButton" Click="CheckOnlineButton_Clicked">
+            <TextBlock Background="Transparent" Foreground="Black">Check<LineBreak/>Online</TextBlock>
+          </Button>
+          <Button Grid.Column="2" x:Name="DeleteEntryButton" Click="DeleteEntryButton_Clicked">
+            <TextBlock Background="Transparent" Foreground="Black">Delete<LineBreak/>Entry</TextBlock>
+          </Button>
+        </Grid>
+        <Button Grid.Row="7" x:Name="UpdateMangaButton" Click="UpdateMangaButton_Clicked" Content="Download New Chapters" IsEnabled="False"/>
+        <CheckBox Grid.Row="8" x:Name="CheckForUpdatesCheckBox" IsCheckedChanged="CheckForUpdatesCheckBox_Checked" Background="DimGray" Foreground="White" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="Include this manga in bulk update checks"/>
+        <Button Grid.Row="9" x:Name="EditMetadataButton" Click="EditMetadataButton_Clicked" Content="Edit Metadata" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+      </Grid>
+    </Grid>
+  </Grid>
+  
+</Window>
