@@ -61,11 +61,20 @@ jobs:
       env:
         Configuration: ${{ matrix.configuration }}
 
+    - name: Create bundle
+      run: |
+            mkdir -p "Manga Library Manager.app/Contents/MacOS" "Manga Library Manager.app/Contents/Resources"
+            mv "bin/Release/net8.0/publish/osx-arm64/Manga Manager" "Manga Library Manager.app/Contents/MacOS/"
+            mv "${{ github.workspace }}"/icon256.icns "Manga Library Manager.app/Contents/Resources/"
+            cp Properties/Info.plist "Manga Library Manager.app/Contents/"
+            mkdir tmp_bs
+            cp -r "Manga Library Manager.app" tmp_bs/
+
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
         name: macOS Apple Silicon Executable
-        path: bin/Release/net8.0/publish/osx-arm64/Manga Manager
+        path: "Manga Library Manager.app/Contents/MacOS/Manga Manager"
 
   build-macos-intel:
 
@@ -91,11 +100,20 @@ jobs:
       env:
         Configuration: ${{ matrix.configuration }}
 
+    - name: Create bundle
+      run: |
+            mkdir -p "Manga Library Manager.app/Contents/MacOS" "Manga Library Manager.app/Contents/Resources"
+            mv "bin/Release/net8.0/publish/osx-x64/Manga Manager" "Manga Library Manager.app/Contents/MacOS/"
+            mv "${{ github.workspace }}"/icon256.icns "Manga Library Manager.app/Contents/Resources/"
+            cp Properties/Info.plist "Manga Library Manager.app/Contents/"
+            mkdir tmp_bs
+            cp -r "Manga Library Manager.app" tmp_bs/
+
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
         name: macOS Intel Executable
-        path: bin/Release/net8.0/publish/osx-x64/Manga Manager
+        path: "Manga Library Manager.app/Contents/MacOS/Manga Manager"
 
   build-linux:
 
