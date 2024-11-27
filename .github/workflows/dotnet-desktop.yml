@@ -61,9 +61,6 @@ jobs:
       env:
         Configuration: ${{ matrix.configuration }}
 
-    - name: Sign arm64
-      run: "codesign -s - \"bin/Release/net8.0/publish/osx-arm64/Manga Manager\""
-
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
@@ -93,9 +90,6 @@ jobs:
       run: dotnet publish /p:Configuration=$Configuration /p:PublishProfile="Properties/PublishProfiles/OSX-x64.pubxml"
       env:
         Configuration: ${{ matrix.configuration }}
-
-    - name: Sign x64
-      run: "codesign -s - \"bin/Release/net8.0/publish/osx-x64/Manga Manager\""
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
