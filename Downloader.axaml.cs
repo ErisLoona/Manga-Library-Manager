@@ -153,7 +153,7 @@ public partial class Downloader : Window
         if (result == null)
             return;
         StatusTextBox.Text = "Getting manga info...";
-        await Task.Run(() => Thread.Sleep(50));
+        await Task.Run(() => Thread.Sleep(100));
         foreach (int indexToAdd in result)
         {
             passIndex = indexToAdd;
@@ -519,6 +519,7 @@ public partial class Downloader : Window
                 Dispatcher.UIThread.Post(() =>
                 {
                     StatusTextBox.Text = "Preparing files...";
+                    StatusTextBox.Foreground = new SolidColorBrush(Colors.Yellow);
                     mangaQueueStatuses[indexHere].Text = "In progress";
                     mangaQueueStatuses[indexHere].Foreground = new SolidColorBrush(Colors.Yellow);
                     QueueListBox.SelectedIndex = indexHere;
@@ -650,7 +651,7 @@ public partial class Downloader : Window
                             offset++;
                         offset--; // I need the last folder that was used
                         offset -= chaptersToDownload.Count; // The folders for the new chapters were already created, so gotta subtract those to get to the correct offset
-                    }
+                    } // No, I will not be fixing this atrocious.. thing. It works and it shows my thought process, leave me alone.
                     else
                     {
                         try
@@ -777,7 +778,7 @@ public partial class Downloader : Window
                                 string pageFileName = pageNumber.ToString("D" + chaptersToDownload.ElementAt(chapterIndex - offset).Value.ToString().Length) + ".jpg";
                                 using FileStream fileStream = new FileStream(Path.Combine(currentPath, pageFileName), FileMode.Create);
                                 SKImage.FromBitmap(page).Encode(SKEncodedImageFormat.Jpeg, 100).SaveTo(fileStream);
-                                File.WriteAllText(Path.Combine(tempFolderPath, Convert.ToString(chapterIndex + 1), "xhtml", pageNumber - 1 + ".xhtml"), $"<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\r\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\r\n<head>\r\n    <link href=\"../css/style.css\" rel=\"stylesheet\" type=\"text/css\"/>\r\n    <title>{fileName}</title>\r\n</head>\r\n<body>\r\n    <div>\r\n        <img alt=\"{fileName}\" src=\"../img/{fileName}\"/>\r\n    </div>\r\n</body>\r\n</html>\r\n");
+                                File.WriteAllText(Path.Combine(tempFolderPath, Convert.ToString(chapterIndex + 1), "xhtml", pageNumber - 1 + ".xhtml"), $"<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\r\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\r\n<head>\r\n    <link href=\"../css/style.css\" rel=\"stylesheet\" type=\"text/css\"/>\r\n    <title>{pageFileName}</title>\r\n</head>\r\n<body>\r\n    <div>\r\n        <img alt=\"{pageFileName}\" src=\"../img/{pageFileName}\"/>\r\n    </div>\r\n</body>\r\n</html>\r\n");
                                 chapterPagePaths.Add(Path.Combine(currentPath, pageFileName));
                             }
                             else if (currentManga.Format == 1)
@@ -1177,6 +1178,7 @@ public partial class Downloader : Window
             Dispatcher.UIThread.Post(() =>
             {
                 StatusTextBox.Text = "All done!";
+                StatusTextBox.Foreground = new SolidColorBrush(Colors.Lime);
                 DownloadButton.IsEnabled = false;
             });
         }, cancelCheck);
@@ -1190,6 +1192,7 @@ public partial class Downloader : Window
             Dispatcher.UIThread.Post(() =>
             {
                 StatusTextBox.Text = "Extracting file...";
+                StatusTextBox.Foreground = new SolidColorBrush(Colors.Yellow);
             });
 
             string filePath = string.Empty;
@@ -1224,6 +1227,7 @@ public partial class Downloader : Window
             Dispatcher.UIThread.Post(() =>
             {
                 StatusTextBox.Text = "Downloading...";
+                StatusTextBox.Foreground = new SolidColorBrush(Colors.Yellow);
             });
             return true;
         }
@@ -1232,6 +1236,7 @@ public partial class Downloader : Window
             Dispatcher.UIThread.Post(() =>
             {
                 StatusTextBox.Text = "Extracting file...";
+                StatusTextBox.Foreground = new SolidColorBrush(Colors.Yellow);
             });
 
             string filePath = string.Empty;
@@ -1254,6 +1259,7 @@ public partial class Downloader : Window
             Dispatcher.UIThread.Post(() =>
             {
                 StatusTextBox.Text = "Downloading...";
+                StatusTextBox.Foreground = new SolidColorBrush(Colors.Yellow);
             });
             return true;
         }
@@ -1281,6 +1287,7 @@ public partial class Downloader : Window
                 Dispatcher.UIThread.Post(() =>
                 {
                     StatusTextBox.Text = "Downloading...";
+                    StatusTextBox.Foreground = new SolidColorBrush(Colors.Yellow);
                 });
                 return true;
             }
@@ -1294,6 +1301,7 @@ public partial class Downloader : Window
             Dispatcher.UIThread.Post(() =>
             {
                 StatusTextBox.Text = "Downloading...";
+                StatusTextBox.Foreground = new SolidColorBrush(Colors.Yellow);
             });
             return true;
         }
@@ -1305,6 +1313,7 @@ public partial class Downloader : Window
         Dispatcher.UIThread.Post(() =>
         {
             StatusTextBox.Text = "Archiving files...";
+            StatusTextBox.Foreground = new SolidColorBrush(Colors.Yellow);
         });
         if (mangaQueue[queueIndex].Format == 0)
             fileName += ".epub";
@@ -1372,6 +1381,7 @@ public partial class Downloader : Window
         RemoveFromQueueButton.IsEnabled = true;
 
         StatusTextBox.Text = "Add mangas to the queue!";
+        StatusTextBox.Foreground = new SolidColorBrush(Colors.White);
         DownloadButton.Content = "Start downloading";
 
         for (int i = queueIndex; i < mangaQueue.Count; i++)

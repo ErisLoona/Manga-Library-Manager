@@ -11,7 +11,7 @@
     <PackageProjectUrl>https://github.com/ErisLoona/Manga-Library-Manager</PackageProjectUrl>
     <NeutralLanguage>en</NeutralLanguage>
     <FileVersion>3.0.0</FileVersion>
-    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <ApplicationIcon>icon256.ico</ApplicationIcon>
     <DebugType>embedded</DebugType>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
@@ -33,7 +33,7 @@
     <AvaloniaResource Include="Assets\reset.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="icon.ico" />
+    <Content Include="icon256.ico" />
   </ItemGroup>
 
   <ItemGroup>
