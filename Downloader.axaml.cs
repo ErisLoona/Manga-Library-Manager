@@ -869,6 +869,7 @@ public partial class Downloader : Window
                     MDLGetData.GetCover().CopyTo(coverStream);
                     if (apiError == true)
                     {
+                        apiError = false;
                         try
                         {
                             Directory.Delete(tempFolderPath, true);
