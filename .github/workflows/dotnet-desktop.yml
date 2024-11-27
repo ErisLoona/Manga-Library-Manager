@@ -1,0 +1,134 @@
+name: .NET Core Desktop
+
+on:
+    release:
+        types: [published]
+    workflow_dispatch:
+
+jobs:
+
+  build-windows:
+
+    strategy:
+      matrix:
+        configuration: [Release]
+
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Publish
+      run: dotnet publish /p:Configuration=$env:Configuration /p:PublishProfile="Properties/PublishProfiles/Windows Release.pubxml"
+      env:
+        Configuration: ${{ matrix.configuration }}
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: Win64 Executable
+        path: bin/Release/net8.0/publish/win-x64/Manga Manager.exe
+
+  build-macos-arm:
+
+    strategy:
+      matrix:
+        configuration: [Release]
+
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Publish arm64
+      run: dotnet publish /p:Configuration=$Configuration /p:PublishProfile="Properties/PublishProfiles/OSX-arm.pubxml"
+      env:
+        Configuration: ${{ matrix.configuration }}
+
+    - name: Sign arm64
+      run: "codesign -s - \"bin/Release/net8.0/publish/osx-arm64/Manga Manager\""
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: macOS Apple Silicon Executable
+        path: bin/Release/net8.0/publish/osx-arm64/Manga Manager
+
+  build-macos-intel:
+
+    strategy:
+      matrix:
+        configuration: [Release]
+
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Publish x64
+      run: dotnet publish /p:Configuration=$Configuration /p:PublishProfile="Properties/PublishProfiles/OSX-x64.pubxml"
+      env:
+        Configuration: ${{ matrix.configuration }}
+
+    - name: Sign x64
+      run: "codesign -s - \"bin/Release/net8.0/publish/osx-x64/Manga Manager\""
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: macOS Intel Executable
+        path: bin/Release/net8.0/publish/osx-x64/Manga Manager
+
+  build-linux:
+
+    strategy:
+      matrix:
+        configuration: [Release]
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Publish
+      run: dotnet publish /p:Configuration=$Configuration /p:PublishProfile="Properties/PublishProfiles/Linux Publish.pubxml"
+      env:
+        Configuration: ${{ matrix.configuration }}
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: Linux Executable
+        path: bin/Release/net8.0/publish/linux-x64/Manga Manager
