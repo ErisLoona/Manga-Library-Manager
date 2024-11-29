@@ -112,6 +112,7 @@ namespace Manga_Manager
                 saveJson = JObject.Parse(File.ReadAllText(".Manga Library Manager.json"));
             }
             selectedLanguage = saveJson.SelectToken("Language").Value<string>();
+            MDLParameters.Language = selectedLanguage;
             noWarning = saveJson.SelectToken("NoWarning").Value<bool>();
             checkUpdates = saveJson.SelectToken("CheckUpdates").Value<bool>();
             if (saveJson.SelectToken("FormatVersion").Value<int>() == 4)

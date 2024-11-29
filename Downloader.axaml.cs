@@ -55,6 +55,7 @@ public partial class Downloader : Window
     internal static List<string> addedMangas = new List<string>(); // This is to not add these to "Add from library"
     private List<QueuedManga> mangaQueue = new List<QueuedManga>();
     private List<TextBlock> mangaQueueStatuses = new List<TextBlock>();
+    private bool downloadError = false;
 
     public Downloader()
     {
@@ -71,7 +72,14 @@ public partial class Downloader : Window
             MainWindow.openedByDownloadUpdatesButton = false;
             AddMangaToQueue(mangaList[passIndex].ID, true);
             QueueListBox.SelectedIndex = 0;
-        }    
+        }
+
+        MDLGetData.DownloadError += MDLGetData_DownloadError;
+    }
+
+    private void MDLGetData_DownloadError(object sender, EventArgs e)
+    {
+        downloadError = true;
     }
 
     private void FormatComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -109,7 +117,10 @@ public partial class Downloader : Window
     private void QualityComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (QueueListBox.SelectedIndex != -1)
+        {
             mangaQueue[QueueListBox.SelectedIndex].OriginalQuality = QualityComboBox.SelectedIndex == 0;
+            MDLParameters.DataSaving = QualityComboBox.SelectedIndex == 1;
+        }
     }
 
     private async void AddFromLinkButton_Clicked(object sender, RoutedEventArgs args)
@@ -705,10 +716,11 @@ public partial class Downloader : Window
                 List<List<string>> pageFileNames = new List<List<string>>();
 
                 #region Downloading
-                int cbzPageNumber = 1, pageFailures = 0;
+                int cbzPageNumber = 1;
                 bool skipManga = false;
                 for (int chapterIndex = offset; chapterIndex < chaptersToDownload.Count + offset; chapterIndex++)
                 {
+                    int pageFailures = 0;
                     string currentPath = Path.Combine(tempFolderPath, Convert.ToString(chapterIndex + 1), "img", string.Empty);
                 Retry:
                     if (pageFailures >= 5)
@@ -762,10 +774,10 @@ public partial class Downloader : Window
                         } // Cancel check
                         using MemoryStream pageStream = new MemoryStream();
                         MDLGetData.GetPageImage(pageLinks[pageNumber - 1]).CopyTo(pageStream);
-                        if (apiError == true || pageStream == null)
+                        if (downloadError == true || pageStream == null)
                         {
                             pageFailures++;
-                            apiError = false;
+                            downloadError = false;
                             goto Retry;
                         }
                         pageStream.Seek(0, SeekOrigin.Begin);

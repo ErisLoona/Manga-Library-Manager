@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using MangaDex_Library;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using System.IO;
@@ -28,6 +29,7 @@ public partial class Settings : Window
     private void LanguageComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         selectedLanguage = languageDictionary[LanguageComboBox.SelectedItem.ToString()];
+        MDLParameters.Language = selectedLanguage;
     }
 
     private void UpdatesCheckBox_Checked(object sender, RoutedEventArgs e)

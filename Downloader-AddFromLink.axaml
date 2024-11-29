@@ -49,7 +49,7 @@
   </Window.Styles>
 
   <Grid RowDefinitions="50*, 50*">
-    <TextBox Grid.Row="0" x:Name="LinkTextBox" TextChanged="LinkTextBox_TextChanged" AcceptsReturn="False" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" TextWrapping="NoWrap" FontSize="15" Margin="3"/>
+    <TextBox Grid.Row="0" x:Name="LinkTextBox" Watermark="https://mangadex.org/title/manga-id" TextChanged="LinkTextBox_TextChanged" AcceptsReturn="False" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" TextWrapping="NoWrap" FontSize="15" Margin="3"/>
     <Button Grid.Row="1" x:Name="AddButton" Click="AddButton_Clicked" Content="Add Manga to queue" IsEnabled="False"/>
   </Grid>
   
