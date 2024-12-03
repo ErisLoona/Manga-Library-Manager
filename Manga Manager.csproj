@@ -48,12 +48,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="MangaDex Library">
-      <HintPath>..\MangaDex Library\bin\Release\net8.0\publish\MangaDex Library.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="MainMenu.axaml.cs">
       <DependentUpon>MainMenu.axaml</DependentUpon>
     </Compile>
@@ -63,5 +57,11 @@
     <None Include="MangaDex Library\MDLGetData.cs" />
     <None Include="MangaDex Library\MDLParameters.cs" />
     <None Include="MangaDex Library\RateLimiter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="MangaDex Library">
+      <HintPath>..\MangaDex Library\bin\Release\net8.0\publish\MangaDex Library.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

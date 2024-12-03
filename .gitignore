@@ -1,8 +1,4 @@
 bin/
 obj/
 .vs/
-Properties/PublishProfiles/Linux Publish.pubxml.user
-Properties/PublishProfiles/OSX-arm.pubxml.user
-Properties/PublishProfiles/OSX-x64.pubxml.user
-Properties/PublishProfiles/Windows Release.pubxml.user
-Manga Manager.csproj.user
+*.user

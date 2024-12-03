@@ -64,7 +64,14 @@ namespace MangaDex_Library
             artists.Clear();
             JToken data = manga.SelectToken("data");
             bool found = false;
-            titles.Add(data.SelectToken("attributes.title.en").Value<string>());
+            try
+            {
+                titles.Add(data.SelectToken("attributes.title.en").Value<string>());
+            }
+            catch
+            {
+                titles.Add(((JProperty)data.SelectToken("attributes.title").Children().First()).Value.ToString());
+            }
             foreach (JToken subTitle in data.SelectToken("attributes.altTitles"))
             {
                 try
