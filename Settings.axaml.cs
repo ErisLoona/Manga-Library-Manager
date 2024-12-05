@@ -30,6 +30,7 @@ public partial class Settings : Window
     {
         selectedLanguage = languageDictionary[LanguageComboBox.SelectedItem.ToString()];
         MDLParameters.Language = selectedLanguage;
+        MDLGetData.ForceReset();
     }
 
     private void UpdatesCheckBox_Checked(object sender, RoutedEventArgs e)

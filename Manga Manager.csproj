@@ -10,16 +10,11 @@
     <Copyright>Eris Loona, pseudonym</Copyright>
     <PackageProjectUrl>https://github.com/ErisLoona/Manga-Library-Manager</PackageProjectUrl>
     <NeutralLanguage>en</NeutralLanguage>
-    <FileVersion>3.0.0</FileVersion>
+    <FileVersion>3.0.1</FileVersion>
     <ApplicationIcon>icon256.ico</ApplicationIcon>
     <DebugType>embedded</DebugType>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="MangaDex Library\MDLGetData.cs" />
-    <Compile Remove="MangaDex Library\MDLParameters.cs" />
-    <Compile Remove="MangaDex Library\RateLimiter.cs" />
-  </ItemGroup>
   <ItemGroup>
     <None Remove="Assets\arrowleft.png" />
     <None Remove="Assets\export.png" />
@@ -54,14 +49,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="MangaDex Library\MDLGetData.cs" />
-    <None Include="MangaDex Library\MDLParameters.cs" />
-    <None Include="MangaDex Library\RateLimiter.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="MangaDex Library">
-      <HintPath>..\MangaDex Library\bin\Release\net8.0\publish\MangaDex Library.dll</HintPath>
-    </Reference>
+    <Folder Include="MangaDex Library\" />
   </ItemGroup>
 </Project>

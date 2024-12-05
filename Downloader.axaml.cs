@@ -1001,7 +1001,7 @@ public partial class Downloader : Window
                 if (selectedChapterNumbers.Count > 0)
                 {
                     string nr = padDecimal(selectedChapterNumbers.Max(), "D" + selectedChapterNumbers.Count.ToString().Length.ToString());
-                    doc.DocumentElement.SelectSingleNode("//dc:description", nsmgr).InnerText += "<br>" + "Ch." + nr;
+                    doc.DocumentElement.SelectSingleNode("//dc:description", nsmgr).InnerText = "Last chapter: " + "Ch." + nr;
                 }
 
                 doc.DocumentElement.SelectSingleNode("//dc:title", nsmgr).InnerText = currentManga.TempManga.Title;
