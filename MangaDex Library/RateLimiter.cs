@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Threading;
+using System.Diagnostics;
 
 namespace MangaDex_Library
 {

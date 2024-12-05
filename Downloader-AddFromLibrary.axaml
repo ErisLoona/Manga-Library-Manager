@@ -51,7 +51,9 @@
   <Grid RowDefinitions="93*, 7*">
     <Border Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
       <ScrollViewer>
-        <StackPanel x:Name="MangaStackPanel" Spacing="4"/>
+        <StackPanel x:Name="MangaStackPanel" Spacing="4">
+          <AutoCompleteBox Grid.Row="1" x:Name="SearchBox" LostFocus="SearchBox_LostFocus" DropDownClosed="SearchBox_DropDownClosed" KeyDown="SearchBox_KeyDown" FilterMode="ContainsOrdinal" Background="White" Foreground="Black" Watermark="Search for a Manga..." FontSize="12" Margin="3" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+        </StackPanel>
       </ScrollViewer>
     </Border>
     <Grid Grid.Row="1" ColumnDefinitions="50*, 50*">

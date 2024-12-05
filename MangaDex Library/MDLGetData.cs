@@ -1,4 +1,9 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Diagnostics;
 using System.Globalization;
 using System.Net.Http.Json;
 using Newtonsoft.Json.Linq;
@@ -270,6 +275,11 @@ namespace MangaDex_Library
                     if (groupFound == false)
                         chapterGroups.Add("Anonymous (No Group)");
                 }
+            if (chapterNumbers.Count() == 0)
+            {
+                lastChapter = 0;
+                return;
+            }
             bool doneGoneDidThisOne = true;
             for (int j = 1; (j <= chapterNumbers.Count - 1) && (doneGoneDidThisOne == true); j++)
             {
