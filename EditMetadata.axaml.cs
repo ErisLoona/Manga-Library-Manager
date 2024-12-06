@@ -461,7 +461,10 @@ public partial class EditMetadata : Window
         mangaList[passIndex].Description = DescriptionTextBox.Text;
         mangaList[passIndex].FileLastChapter = (decimal)LastChapterNumeric.Value;
         if (OngoingStatusComboBox.SelectedIndex != -1)
+        {
             mangaList[passIndex].OngoingStatus = ongoingStatuses[OngoingStatusComboBox.SelectedIndex];
+            mangaList[passIndex].CheckInBulk = OngoingStatusComboBox.SelectedIndex == 0 || OngoingStatusComboBox.SelectedIndex == 2;
+        }
         if (ValidateLink(LinkTextBox.Text) == true)
             mangaList[passIndex].ID = LinkTextBox.Text.Split('/')[4];
         else

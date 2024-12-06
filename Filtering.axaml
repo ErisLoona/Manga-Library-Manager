@@ -51,7 +51,7 @@
   <Grid ColumnDefinitions="70*, 30*">
     <Grid Grid.Column="0" RowDefinitions="8*, 52*, 47*">
       <Grid Grid.Row="0" ColumnDefinitions="30*, 70*">
-        <Button Grid.Column="0" x:Name="ResetFiltersButton" Click="ResetFiltersButton_Clicked" Content="Reset tags" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+        <Button Grid.Column="0" x:Name="ResetFiltersButton" Click="ResetFiltersButton_Clicked" Content="Reset filters" VerticalAlignment="Center" HorizontalAlignment="Left"/>
         <StackPanel Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Orientation="Horizontal" Spacing="7">
           <CheckBox IsCheckedChanged="DemoCheckBoxes_Checked" Foreground="White" Content="No preference"/>
           <CheckBox IsCheckedChanged="DemoCheckBoxes_Checked" Foreground="White" Content="Included" IsChecked="True"/>

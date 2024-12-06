@@ -10,7 +10,7 @@
     <Copyright>Eris Loona, pseudonym</Copyright>
     <PackageProjectUrl>https://github.com/ErisLoona/Manga-Library-Manager</PackageProjectUrl>
     <NeutralLanguage>en</NeutralLanguage>
-    <FileVersion>3.0.1</FileVersion>
+    <FileVersion>3.1.0</FileVersion>
     <ApplicationIcon>icon256.ico</ApplicationIcon>
     <DebugType>embedded</DebugType>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>

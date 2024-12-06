@@ -338,7 +338,7 @@ public partial class Downloader : Window
 
             newManga.ProgressBars.Add(new MimicProgressBar()
             {
-                Maximum = MDLGetData.GetChapterNrPages()[i] - 1,
+                Maximum = MDLGetData.GetChapterNrPages()[i],
                 Value = 0
             });
         }
