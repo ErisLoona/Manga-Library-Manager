@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using MsBox.Avalonia.Enums;
 using MsBox.Avalonia;
 using System.Diagnostics;
+using Avalonia.Threading;
 
 namespace Manga_Manager
 {
@@ -53,6 +54,8 @@ namespace Manga_Manager
 
         internal static void MDLGetData_ApiRequestFailed(object sender, EventArgs e)
         {
+            Dispatcher.UIThread.Post(async () => await MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API.\nPlease double-check the Manga link and try again later.", ButtonEnum.Ok).ShowAsync());
+            MDLGetData.ForceReset();
             apiError = true;
         }
 

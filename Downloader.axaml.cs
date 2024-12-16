@@ -282,21 +282,19 @@ public partial class Downloader : Window
         }
     }
 
-    private async void AddMangaToQueue(string mangaID, bool isUpdate)
+    private void AddMangaToQueue(string mangaID, bool isUpdate)
     {
         MDLParameters.MangaID = mangaID;
         QueuedManga newManga = new QueuedManga();
         MDLGetData.GetTitles();
         if (apiError == true)
         {
-            await MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API.\nPlease double-check the Manga link and try again later.", ButtonEnum.Ok).ShowAsync();
             apiError = false;
             return;
         }
         MDLGetData.GetChapterIDs();
         if (apiError == true)
         {
-            await MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API.\nPlease double-check the Manga link and try again later.", ButtonEnum.Ok).ShowAsync();
             apiError = false;
             return;
         }
@@ -671,6 +669,14 @@ public partial class Downloader : Window
                         }
                         catch
                         {
+                            try
+                            {
+                                Directory.Delete(tempFolderPath, true);
+                            }
+                            catch
+                            {
+                                Dispatcher.UIThread.Post(() => _ = MessageBoxManager.GetMessageBoxStandard("Write error", "Could not delete the temporary folder, please delete it yourself.").ShowAsync());
+                            }
                             int indexHere3 = queueIndex;
                             Dispatcher.UIThread.Post(() =>
                             {
@@ -738,6 +744,14 @@ public partial class Downloader : Window
                     {
                         if (skip == false)
                         {
+                            try
+                            {
+                                Directory.Delete(tempFolderPath, true);
+                            }
+                            catch
+                            {
+                                Dispatcher.UIThread.Post(() => _ = MessageBoxManager.GetMessageBoxStandard("Write error", "Could not delete the temporary folder, please delete it yourself.").ShowAsync());
+                            }
                             Dispatcher.UIThread.Post(() => AbortAll());
                             return;
                         }
@@ -751,7 +765,6 @@ public partial class Downloader : Window
                         int indexHere3 = queueIndex;
                         Dispatcher.UIThread.Post(() =>
                         {
-                            _ = MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API.\nPlease double-check the Manga link and try again later.\n This Manga will be skipped.", ButtonEnum.Ok).ShowAsync();
                             mangaQueueStatuses[indexHere3].Text = "Dropped: API error";
                             mangaQueueStatuses[indexHere3].Foreground = new SolidColorBrush(Color.FromRgb(130, 0, 0));
                         });
@@ -767,6 +780,14 @@ public partial class Downloader : Window
                         {
                             if (skip == false)
                             {
+                                try
+                                {
+                                    Directory.Delete(tempFolderPath, true);
+                                }
+                                catch
+                                {
+                                    Dispatcher.UIThread.Post(() => _ = MessageBoxManager.GetMessageBoxStandard("Write error", "Could not delete the temporary folder, please delete it yourself.").ShowAsync());
+                                }
                                 Dispatcher.UIThread.Post(() => AbortAll());
                                 return;
                             }
@@ -831,6 +852,14 @@ public partial class Downloader : Window
                     {
                         if (skip == false)
                         {
+                            try
+                            {
+                                Directory.Delete(tempFolderPath, true);
+                            }
+                            catch
+                            {
+                                Dispatcher.UIThread.Post(() => _ = MessageBoxManager.GetMessageBoxStandard("Write error", "Could not delete the temporary folder, please delete it yourself.").ShowAsync());
+                            }
                             Dispatcher.UIThread.Post(() => AbortAll());
                             return;
                         }
@@ -893,7 +922,6 @@ public partial class Downloader : Window
                         int indexHere3 = queueIndex;
                         Dispatcher.UIThread.Post(() =>
                         {
-                            _ = MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API.\nPlease double-check the Manga link and try again later.\n This Manga will be skipped.", ButtonEnum.Ok).ShowAsync();
                             mangaQueueStatuses[indexHere3].Text = "Dropped: API error";
                             mangaQueueStatuses[indexHere3].Foreground = new SolidColorBrush(Color.FromRgb(130, 0, 0));
                         });
@@ -1001,7 +1029,7 @@ public partial class Downloader : Window
                 if (selectedChapterNumbers.Count > 0)
                 {
                     string nr = padDecimal(selectedChapterNumbers.Max(), "D" + selectedChapterNumbers.Count.ToString().Length.ToString());
-                    doc.DocumentElement.SelectSingleNode("//dc:description", nsmgr).InnerText = "Last chapter: " + "Ch." + nr;
+                    doc.DocumentElement.SelectSingleNode("//dc:description", nsmgr).InnerText = currentManga.TempManga.Description.Replace("\r\n", "<br>").Replace("\n", "<br>") + "<br>Last chapter: " + "Ch." + nr;
                 }
 
                 doc.DocumentElement.SelectSingleNode("//dc:title", nsmgr).InnerText = currentManga.TempManga.Title;
@@ -1384,18 +1412,10 @@ public partial class Downloader : Window
 
         QueueListBox.SelectedIndex = -1;
 
-        QueueListBox.SelectionChanged -= AltQueueListBox_SelectionChanged;
-        QueueListBox.SelectionChanged += QueueListBox_SelectionChanged;
-        TitleComboBox.IsEnabled = true;
-        QualityComboBox.IsEnabled = true;
-
-        AddFromLinkButton.IsEnabled = true;
-        AddFromLibraryButton.IsEnabled = true;
-        RemoveFromQueueButton.IsEnabled = true;
-
-        StatusTextBox.Text = "Add mangas to the queue!";
-        StatusTextBox.Foreground = new SolidColorBrush(Colors.White);
-        DownloadButton.Content = "Start downloading";
+        StatusTextBox.Text = "All downloads cancelled.";
+        StatusTextBox.Foreground = new SolidColorBrush(Color.FromRgb(130, 0, 0));
+        DownloadButton.Content = "Cancelled";
+        DownloadButton.IsEnabled = false;
 
         for (int i = queueIndex; i < mangaQueue.Count; i++)
         {

@@ -1,8 +1,7 @@
 name: .NET Core Desktop
 
 on:
-    release:
-        types: [published]
+    push:
     workflow_dispatch:
 
 jobs:
@@ -34,7 +33,7 @@ jobs:
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: Win64 Executable
+        name: Windows-MangaLibraryManager
         path: bin/Release/net8.0/publish/win-x64/Manga Manager.exe
 
   build-macos-arm:
@@ -73,7 +72,7 @@ jobs:
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: macOS Apple Silicon Executable
+        name: macOSAppleSilicon-MangaLibraryManager
         path: "Manga Library Manager.app/Contents/MacOS/Manga Manager"
 
   build-macos-intel:
@@ -112,7 +111,7 @@ jobs:
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: macOS Intel Executable
+        name: macOSIntel-MangaLibraryManager
         path: "Manga Library Manager.app/Contents/MacOS/Manga Manager"
 
   build-linux:
@@ -142,5 +141,5 @@ jobs:
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: Linux Executable
+        name: Linux-MangaLibraryManager
         path: bin/Release/net8.0/publish/linux-x64/Manga Manager

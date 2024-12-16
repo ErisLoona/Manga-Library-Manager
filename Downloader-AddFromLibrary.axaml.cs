@@ -63,11 +63,8 @@ public partial class Downloader_AddFromLibrary : Window
 
     private void SelectAllButton_Clicked(object sender, RoutedEventArgs args)
     {
-        foreach (Control child in MangaStackPanel.Children)
-        {
-            CheckBox checkBox = child as CheckBox;
+        foreach (CheckBox checkBox in checkBoxes)
             checkBox.IsChecked = true;
-        }
     }
 
     private void ConfirmButton_Clicked(object sender, RoutedEventArgs args)

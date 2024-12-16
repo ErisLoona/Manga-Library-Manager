@@ -49,14 +49,18 @@ public partial class BulkUpdateCheck : Window
                 MDLGetData.GetLastChapter();
                 if (apiError == true)
                 {
-                    Dispatcher.UIThread.Post(async () => await MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API.\nPlease double-check the Manga link and try again later.", ButtonEnum.Ok).ShowAsync());
                     apiError = false;
-                    return;
+                    mangaIndexesNewChapters[i] = -1;
+                    continue;
                 }
                 decimal onlineChapter = MDLGetData.GetLastChapter();
                 mangaList[i].OnlineLastChapter = onlineChapter;
                 mangaList[i].LastChecked = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
-                mangaIndexesNewChapters[i] = Convert.ToInt32(Math.Ceiling(onlineChapter - mangaList[i].FileLastChapter));
+                int newChapters = 0;
+                for (int j = 0; j < MDLGetData.GetChapterNumbers().Count; j++)
+                    if (MDLGetData.GetChapterNumbers()[j] > mangaList[i].FileLastChapter)
+                        newChapters++;
+                mangaIndexesNewChapters[i] = newChapters;
                 progress.Report(0);
             }
             mangaIndexesNewChapters = mangaIndexesNewChapters.OrderByDescending(pair => pair.Value).ToDictionary();

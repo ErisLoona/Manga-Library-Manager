@@ -59,7 +59,8 @@ public partial class EditMetadata : Window
                             Dispatcher.UIThread.Post(() =>
                             {
                                 CurrentCoverImage.Source = new Bitmap(stream);
-                                UpdateCoverButton.IsEnabled = true;
+                                if (mangaList[passIndex].ID != string.Empty)
+                                    UpdateCoverButton.IsEnabled = true;
                             });
                             return;
                         }
@@ -275,7 +276,6 @@ public partial class EditMetadata : Window
             newCoverStream.Seek(0, SeekOrigin.Begin);
             if (apiError == true)
             {
-                Dispatcher.UIThread.Post(async () => await MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API.\nPlease double-check the Manga link and try again later.", ButtonEnum.Ok).ShowAsync());
                 apiError = false;
                 return;
             }
@@ -287,26 +287,24 @@ public partial class EditMetadata : Window
         });
     }
 
-    private async void UpdateDescriptionButton_Clicked(object sender, RoutedEventArgs e)
+    private void UpdateDescriptionButton_Clicked(object sender, RoutedEventArgs e)
     {
         MDLParameters.MangaID = LinkTextBox.Text.Split('/')[4];
         MDLGetData.GetDescription();
         if (apiError == true)
         {
-            await MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API.\nPlease double-check the Manga link and try again later.", ButtonEnum.Ok).ShowAsync();
             apiError = false;
             return;
         }
         DescriptionTextBox.Text = MDLGetData.GetDescription();
     }
 
-    private async void UpdateOngoingStatusButton_Clicked(object sender, RoutedEventArgs e)
+    private void UpdateOngoingStatusButton_Clicked(object sender, RoutedEventArgs e)
     {
         MDLParameters.MangaID = LinkTextBox.Text.Split('/')[4];
         MDLGetData.GetStatus();
         if (apiError == true)
         {
-            await MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API.\nPlease double-check the Manga link and try again later.", ButtonEnum.Ok).ShowAsync();
             apiError = false;
             return;
         }
@@ -319,26 +317,24 @@ public partial class EditMetadata : Window
             OpenLink(LinkTextBox.Text);
     }
 
-    private async void UpdateContentRatingButton_Clicked(object sender, RoutedEventArgs e)
+    private void UpdateContentRatingButton_Clicked(object sender, RoutedEventArgs e)
     {
         MDLParameters.MangaID = LinkTextBox.Text.Split('/')[4];
         MDLGetData.GetContentRating();
         if (apiError == true)
         {
-            await MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API.\nPlease double-check the Manga link and try again later.", ButtonEnum.Ok).ShowAsync();
             apiError = false;
             return;
         }
         ContentRatingComboBox.SelectedIndex = Array.IndexOf(contentRatings, MDLGetData.GetContentRating().Substring(0, 1).ToUpper() + MDLGetData.GetContentRating().Substring(1));
     }
 
-    private async void UpdateTagsButton_Clicked(object sender, RoutedEventArgs e)
+    private void UpdateTagsButton_Clicked(object sender, RoutedEventArgs e)
     {
         MDLParameters.MangaID = LinkTextBox.Text.Split('/')[4];
         List<string> newTags = MDLGetData.GetTags();
         if (apiError == true)
         {
-            await MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API.\nPlease double-check the Manga link and try again later.", ButtonEnum.Ok).ShowAsync();
             apiError = false;
             return;
         }
@@ -403,16 +399,17 @@ public partial class EditMetadata : Window
 
     private void LinkTextBox_TextChanged(object sender, TextChangedEventArgs e)
     {
-        if (ValidateLink(LinkTextBox.Text) == true)
+        bool isLinkGood = ValidateLink(LinkTextBox.Text);
+        if (isLinkGood == true)
             MDLParameters.MangaID = LinkTextBox.Text.Split('/')[4];
-        UpdateAllButton.IsEnabled = ValidateLink(LinkTextBox.Text);
+        UpdateAllButton.IsEnabled = isLinkGood;
         if (CurrentCoverImage != null)
-            UpdateCoverButton.IsEnabled = ValidateLink(LinkTextBox.Text);
-        UpdateDescriptionButton.IsEnabled = ValidateLink(LinkTextBox.Text);
-        UpdateOngoingStatusButton.IsEnabled = ValidateLink(LinkTextBox.Text);
-        UpdateContentRatingButton.IsEnabled = ValidateLink(LinkTextBox.Text);
-        UpdateTagsButton.IsEnabled = ValidateLink(LinkTextBox.Text);
-        OpenLinkButton.IsEnabled = ValidateLink(LinkTextBox.Text);
+            UpdateCoverButton.IsEnabled = isLinkGood;
+        UpdateDescriptionButton.IsEnabled = isLinkGood;
+        UpdateOngoingStatusButton.IsEnabled = isLinkGood;
+        UpdateContentRatingButton.IsEnabled = isLinkGood;
+        UpdateTagsButton.IsEnabled = isLinkGood;
+        OpenLinkButton.IsEnabled = isLinkGood;
     }
 
     private void UpdateAllButton_Clicked(object sender, RoutedEventArgs e)
@@ -468,7 +465,10 @@ public partial class EditMetadata : Window
         if (ValidateLink(LinkTextBox.Text) == true)
             mangaList[passIndex].ID = LinkTextBox.Text.Split('/')[4];
         else
+        {
             mangaList[passIndex].ID = string.Empty;
+            mangaList[passIndex].CheckInBulk = false;
+        }
         if (ContentRatingComboBox.SelectedIndex != -1)
             mangaList[passIndex].ContentRating = contentRatings[ContentRatingComboBox.SelectedIndex];
         mangaList[passIndex].Tags.Clear();

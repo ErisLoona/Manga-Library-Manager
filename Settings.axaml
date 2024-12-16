@@ -57,7 +57,7 @@
       </StackPanel>
       <CheckBox Grid.Row="1" x:Name="UpdatesCheckBox" IsCheckedChanged="UpdatesCheckBox_Checked" Content="Check for updates" Background="DimGray" Foreground="White" FontSize="12" VerticalAlignment="Center" HorizontalContentAlignment="Center"/>
       <CheckBox Grid.Row="2" x:Name="HideJsonCheckBox" IsCheckedChanged="HideJsonCheckBox_Checked" Content="Hide the library file" Background="DimGray" Foreground="White" FontSize="12" VerticalAlignment="Center" HorizontalContentAlignment="Center" ToolTip.Tip="Will set the library JSON as a hidden file"/>
-      <CheckBox Grid.Row="3" x:Name="WarningCheckBox" IsCheckedChanged="WarningCheckBox_Checked" Content="Show a warning if the file no longer exists" Background="DimGray" Foreground="White" FontSize="12" VerticalAlignment="Center" HorizontalContentAlignment="Center"/>
+      <CheckBox Grid.Row="3" x:Name="WarningCheckBox" IsCheckedChanged="WarningCheckBox_Checked" Content="Show a warning if the manga file no longer exists" Background="DimGray" Foreground="White" FontSize="12" VerticalAlignment="Center" HorizontalContentAlignment="Center"/>
       <Button Grid.Row="4" x:Name="IssueButton" Click="IssueButton_Clicked" Content="Report an Issue" HorizontalAlignment="Center"/>
       <Grid Grid.Row="5" ColumnDefinitions="50*, 50*">
         <TextBlock Grid.Column="0" VerticalAlignment="Bottom" HorizontalAlignment="Left" TextAlignment="Left" Foreground="White" Background="DimGray" FontSize="8" Margin="-20.5, 0, 0, 2.3">
