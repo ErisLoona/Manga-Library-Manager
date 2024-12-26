@@ -260,6 +260,8 @@ namespace MangaDex_Library
             foreach (JObject page in feed)
                 foreach (JToken chapter in page.SelectToken("data"))
                 {
+                    if (chapter.SelectToken("attributes.pages").Value<int>() == 0)
+                        continue;
                     chapterIDs.Add(chapter.SelectToken("id").Value<string>());
                     chapterNumbers.Add(Convert.ToDecimal(chapter.SelectToken("attributes.chapter").Value<string>(), new CultureInfo("en-US")));
                     chapterTitles.Add(chapter.SelectToken("attributes.title").Value<string>());
