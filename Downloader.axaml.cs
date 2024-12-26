@@ -360,6 +360,8 @@ public partial class Downloader : Window
             ContentRating = MDLGetData.GetContentRating().Substring(0, 1).ToUpper() + MDLGetData.GetContentRating().Substring(1),
             Tags = MDLGetData.GetTags().ToList<string>()
         };
+        if (isUpdate == true)
+            newManga.TempManga.Tags = mangaList[passIndex].Tags;
         newManga.Updating = isUpdate;
 
         TextBlock title = new TextBlock()
@@ -538,8 +540,8 @@ public partial class Downloader : Window
 
                 currentManga.TempManga.Title = currentManga.Titles[currentManga.SelectedTitleIndex];
 
-                Dictionary<string, int> chaptersToDownload = new Dictionary<string, int>(); // Chapter ID to Nr. of pages
-                List<decimal> selectedChapterNumbers = new List<decimal>();
+                Dictionary<string, int> chaptersToDownload = new Dictionary<string, int>(); // Chapter ID to Nr. of pages for the Progress Bars
+                List<string> selectedChapterNumbers = new List<string>();
                 for (int i = 0; i < currentManga.Chapters.Count; i++)
                     if (currentManga.Chapters[i].Checked == true)
                     {
@@ -547,12 +549,13 @@ public partial class Downloader : Window
                         try
                         {
                             currentManga.TempManga.FileLastChapter = Convert.ToDecimal(currentManga.Chapters[i].Content.Split(' ')[0].Split("Ch.")[1]);
-                            selectedChapterNumbers.Add(Convert.ToDecimal(currentManga.Chapters[i].Content.Split(' ')[0].Split("Ch.")[1]));
+                            string sanitizedGroupName = new string(currentManga.Chapters[i].Content.Split(" by ")[1].Where(c => char.IsLetter(c)).ToArray()).ToLower();
+                            selectedChapterNumbers.Add(currentManga.Chapters[i].Content.Split(' ')[0].Split("Ch.")[1] + "by" + sanitizedGroupName);
                         }
                         catch
                         {
                             currentManga.TempManga.FileLastChapter = Convert.ToDecimal(currentManga.Chapters[i].Content.Split("Ch.")[1]);
-                            selectedChapterNumbers.Add(Convert.ToDecimal(currentManga.Chapters[i].Content.Split("Ch.")[1]));
+                            selectedChapterNumbers.Add(currentManga.Chapters[i].Content.Split("Ch.")[1]);
                         }
                     }
 
@@ -1028,7 +1031,7 @@ public partial class Downloader : Window
 
                 if (selectedChapterNumbers.Count > 0)
                 {
-                    string nr = padDecimal(selectedChapterNumbers.Max(), "D" + selectedChapterNumbers.Count.ToString().Length.ToString());
+                    string nr = padDecimal(currentManga.TempManga.FileLastChapter, "D" + selectedChapterNumbers.Count.ToString().Length.ToString());
                     doc.DocumentElement.SelectSingleNode("//dc:description", nsmgr).InnerText = currentManga.TempManga.Description.Replace("\r\n", "<br>").Replace("\n", "<br>") + "<br>Last chapter: " + "Ch." + nr;
                 }
 

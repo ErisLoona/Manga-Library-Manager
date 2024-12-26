@@ -231,7 +231,7 @@ namespace MangaDex_Library
             RateLimiter.ApiCall();
             try
             {
-                pages.Add(JObject.Parse(client.GetStringAsync($"{apiLink}{MDLParameters.MangaID}/feed?translatedLanguage[]={MDLParameters.Language}&limit=100&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic&includes[]=scanlation_group").Result));
+                pages.Add(JObject.Parse(client.GetStringAsync($"{apiLink}{MDLParameters.MangaID}/feed?translatedLanguage[]={MDLParameters.Language}&limit=100&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic&includes[]=scanlation_group&order[volume]=asc&order[chapter]=asc").Result));
                 int nrPages = pages[0].SelectToken("total").Value<int>();
                 if (nrPages > 100)
                 {
@@ -239,7 +239,7 @@ namespace MangaDex_Library
                     while (passes > 0)
                     {
                         RateLimiter.ApiCall();
-                        pages.Add(JObject.Parse(client.GetStringAsync($"{apiLink}{MDLParameters.MangaID}/feed?translatedLanguage[]={MDLParameters.Language}&limit=100&offset={passes * 100}&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic&includes[]=scanlation_group").Result));
+                        pages.Add(JObject.Parse(client.GetStringAsync($"{apiLink}{MDLParameters.MangaID}/feed?translatedLanguage[]={MDLParameters.Language}&limit=100&offset={passes * 100}&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic&includes[]=scanlation_group&order[volume]=asc&order[chapter]=asc").Result));
                         passes--;
                     }
                 }
@@ -260,6 +260,8 @@ namespace MangaDex_Library
             foreach (JObject page in feed)
                 foreach (JToken chapter in page.SelectToken("data"))
                 {
+                    if (chapter.SelectToken("attributes.pages").Value<int>() == 0)
+                        continue;
                     chapterIDs.Add(chapter.SelectToken("id").Value<string>());
                     chapterNumbers.Add(Convert.ToDecimal(chapter.SelectToken("attributes.chapter").Value<string>(), new CultureInfo("en-US")));
                     chapterTitles.Add(chapter.SelectToken("attributes.title").Value<string>());
