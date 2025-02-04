@@ -56,11 +56,11 @@ public partial class Downloader : Window
     private List<QueuedManga> mangaQueue = new List<QueuedManga>();
     private List<TextBlock> mangaQueueStatuses = new List<TextBlock>();
     private bool downloadError = false;
+    private static bool shiftHeld = false;
 
     public Downloader()
     {
         InitializeComponent();
-
 
         // More Avalonia weirdness, same issue as in Filtering, I think setting their states in the XAML triggers these methods before the QueueListBox "exists", so it's throwing the null reference error
         UpdateCoverCheckBox.IsCheckedChanged += UpdateCoverCheckBox_Checked;
@@ -268,8 +268,36 @@ public partial class Downloader : Window
         QualityComboBox.SelectionChanged += QualityComboBox_SelectionChanged;
     }
 
+    private int oldSelectedChapterIndex = 0;
     private void ChapterCheckBox_Checked(object sender, RoutedEventArgs e)
     {
+        if (shiftHeld == true)
+        {
+            int currentIndex = -1;
+            StackPanel parent = null;
+            CheckBox checkBox = null;
+            for (int i = 1; i < ChaptersStackPanel.Children.Count; i++)
+            {
+                parent = ChaptersStackPanel.Children[i] as StackPanel;
+                checkBox = parent.Children[0] as CheckBox;
+                if (checkBox == (sender as CheckBox))
+                {
+                    mangaQueue[QueueListBox.SelectedIndex].Chapters[i - 1].Checked = (bool)checkBox.IsChecked;
+                    currentIndex = i;
+                    break;
+                }
+            }
+
+            for (int i = Int32.Min(currentIndex, oldSelectedChapterIndex) + 1; i < Int32.Max(currentIndex, oldSelectedChapterIndex); i++)
+            {
+                ((CheckBox)((StackPanel)ChaptersStackPanel.Children[i]).Children[0]).IsChecked = checkBox.IsChecked;
+                mangaQueue[QueueListBox.SelectedIndex].Chapters[i - 1].Checked = (bool)checkBox.IsChecked;
+            }
+
+            oldSelectedChapterIndex = currentIndex;
+            return;
+        }
+
         for (int i = 1; i < ChaptersStackPanel.Children.Count; i++)
         {
             StackPanel parent = ChaptersStackPanel.Children[i] as StackPanel;
@@ -277,6 +305,7 @@ public partial class Downloader : Window
             if (checkBox == (sender as CheckBox))
             {
                 mangaQueue[QueueListBox.SelectedIndex].Chapters[i - 1].Checked = (bool)checkBox.IsChecked;
+                oldSelectedChapterIndex = i;
                 break;
             }
         }
@@ -1428,6 +1457,22 @@ public partial class Downloader : Window
     }
 
     #endregion
+
+    protected override void OnKeyDown(Avalonia.Input.KeyEventArgs e)
+    {
+        if (e.Key == Avalonia.Input.Key.LeftShift || e.Key == Avalonia.Input.Key.RightShift)
+            shiftHeld = true;
+
+        base.OnKeyDown(e);
+    }
+
+    protected override void OnKeyUp(Avalonia.Input.KeyEventArgs e)
+    {
+        if (e.Key == Avalonia.Input.Key.LeftShift || e.Key == Avalonia.Input.Key.RightShift)
+            shiftHeld = false;
+
+        base.OnKeyUp(e);
+    }
 
     protected override void OnClosing(WindowClosingEventArgs e)
     {

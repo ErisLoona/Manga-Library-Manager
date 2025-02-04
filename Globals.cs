@@ -7,6 +7,7 @@ using MsBox.Avalonia.Enums;
 using MsBox.Avalonia;
 using System.Diagnostics;
 using Avalonia.Threading;
+using System.Linq;
 
 namespace Manga_Manager
 {
@@ -40,6 +41,7 @@ namespace Manga_Manager
             languageDictionary["Romanized Japanese"] = "ja-ro";
             languageDictionary["Romanized Korean"] = "ko-ro";
             languageDictionary["Romanized Chinese"] = "zh-ro";
+            languageDictionary = languageDictionary.OrderBy(keyValuePair => keyValuePair.Key).ToDictionary();
 
             MDLGetData.ApiRequestFailed += MDLGetData_ApiRequestFailed;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
