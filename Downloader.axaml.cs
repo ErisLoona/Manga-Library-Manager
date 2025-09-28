@@ -624,7 +624,7 @@ public partial class Downloader : Window
                     int indexHere3 = queueIndex;
                     Dispatcher.UIThread.Post(() =>
                     {
-                        mangaQueueStatuses[indexHere3].Text = "Error: could not create folder";
+                        mangaQueueStatuses[indexHere3].Text = "Dropped: could not create folder";
                         mangaQueueStatuses[indexHere3].Foreground = new SolidColorBrush(Color.FromRgb(130, 0, 0));
                     });
                     continue;
@@ -1021,11 +1021,6 @@ public partial class Downloader : Window
                         PackManga(tempFolderPath, Path.Combine(currentManga.TempManga.Path, fileName));
                     else
                         PackManga(tempFolderPath, currentManga.TempManga.Path);
-                    Dispatcher.UIThread.Post(() =>
-                    {
-                        mangaQueueStatuses[hereIndex2].Text = "Completed";
-                        mangaQueueStatuses[hereIndex2].Foreground = new SolidColorBrush(Colors.Lime);
-                    });
                     continue;
                 }
 
@@ -1238,13 +1233,6 @@ public partial class Downloader : Window
                     PackManga(tempFolderPath, Path.Combine(currentManga.TempManga.Path, fileName));
                 else
                     PackManga(tempFolderPath, currentManga.TempManga.Path);
-
-                int hereIndex = queueIndex;
-                Dispatcher.UIThread.Post(() =>
-                {
-                    mangaQueueStatuses[hereIndex].Text = "Completed";
-                    mangaQueueStatuses[hereIndex].Foreground = new SolidColorBrush(Colors.Lime);
-                });
             }
 
             downloading = false;
@@ -1419,6 +1407,13 @@ public partial class Downloader : Window
         {
             Dispatcher.UIThread.Post(() => _ = MessageBoxManager.GetMessageBoxStandard("Write error", "Could not delete the temporary folder, please delete it yourself.").ShowAsync());
         }
+        int hereIndex = queueIndex;
+        Dispatcher.UIThread.Post(() =>
+        {
+            mangaQueueStatuses[hereIndex].Text = "Completed";
+            mangaQueueStatuses[hereIndex].Foreground = new SolidColorBrush(Colors.Lime);
+        });
+
         mangaQueue[queueIndex].TempManga.Path = fileName;
         if (mangaQueue[queueIndex].Updating == false)
             mangaList.Add(mangaQueue[queueIndex].TempManga);

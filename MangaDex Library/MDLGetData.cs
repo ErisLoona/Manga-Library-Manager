@@ -99,7 +99,14 @@ namespace MangaDex_Library
             }
             catch
             {
-                description = data.SelectToken("attributes.description.en").Value<string>();
+                try
+                {
+                    description = ((JProperty)data.SelectToken("attributes.description").Children().First()).Value.ToString();
+                }
+                catch
+                {
+                    description = string.Empty;
+                }
             }
             originalLanguage = data.SelectToken("attributes.originalLanguage").Value<string>();
             publicationDemographic = data.SelectToken("attributes.publicationDemographic").Value<string>();
