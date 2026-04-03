@@ -2,3 +2,6 @@ bin/
 obj/
 .vs/
 *.user
+release template.md
+.vscode
+windows publish.bat

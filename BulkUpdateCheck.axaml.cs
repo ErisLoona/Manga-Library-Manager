@@ -59,7 +59,11 @@ public partial class BulkUpdateCheck : Window
                 int newChapters = 0;
                 for (int j = 0; j < MDLGetData.GetChapterNumbers().Count; j++)
                     if (MDLGetData.GetChapterNumbers()[j] > mangaList[i].FileLastChapter)
+                    {
+                        if (j > 0 && MDLGetData.GetChapterNumbers()[j] == MDLGetData.GetChapterNumbers()[j - 1])
+                            continue;
                         newChapters++;
+                    }
                 mangaIndexesNewChapters[i] = newChapters;
                 progress.Report(0);
             }

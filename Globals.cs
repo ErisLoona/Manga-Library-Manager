@@ -114,6 +114,7 @@ namespace Manga_Manager
         internal static Dictionary<string, string> languageDictionary = new Dictionary<string, string>();
         internal static Dictionary<string, int> tagsUsage = new Dictionary<string, int>();
         internal static int passIndex = 0;
+        internal static string oldSelectedMangaTitle = string.Empty;
 
         internal static bool apiError = false;
 

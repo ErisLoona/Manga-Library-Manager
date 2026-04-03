@@ -102,14 +102,22 @@ namespace Manga_Manager
                 }
             }
 
-            JObject saveJson;
+            JObject saveJson = null;
             try
             {
                 saveJson = JObject.Parse(File.ReadAllText("Manga Library Manager.json"));
             }
             catch
             {
-                saveJson = JObject.Parse(File.ReadAllText(".Manga Library Manager.json"));
+                try
+                {
+                    saveJson = JObject.Parse(File.ReadAllText(".Manga Library Manager.json"));
+                }
+                catch
+                {
+                    await MessageBoxManager.GetMessageBoxStandard("Invalid JSON", "The database JSON file is invalid!\nPlease correct it or delete the file, then open the program again.", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error).ShowAsync();
+                    System.Environment.Exit(0);
+                }
             }
             selectedLanguage = saveJson.SelectToken("Language").Value<string>();
             MDLParameters.Language = selectedLanguage;
@@ -285,14 +293,18 @@ namespace Manga_Manager
         private async void DownloadMangaButton_Clicked(object sender, RoutedEventArgs args)
         {
             passIndex = MainDisplayList.SelectedIndex;
+            if (passIndex != -1)
+                oldSelectedMangaTitle = displayTitles[MainDisplayList.SelectedIndex].Text.ToString();
             MainDisplayList.SelectedIndex = -1;
             Downloader downloader = new Downloader();
             openedByDownloadUpdatesButton = false;
             await downloader.ShowDialog(this);
+
+            RebuildTags();
             Filter();
             if (passIndex != -1)
                 for (int i = 0; i < displayTitles.Count; i++)
-                    if (displayTitles[i].Text == mangaList[passIndex].Title)
+                    if (displayTitles[i].Text == oldSelectedMangaTitle)
                     {
                         MainDisplayList.SelectedIndex = i;
                         break;
@@ -396,22 +408,34 @@ namespace Manga_Manager
 
         private async void CheckUpdatesButton_Clicked(object sender, RoutedEventArgs args)
         {
+            passIndex = MainDisplayList.SelectedIndex;
+            if (passIndex != -1)
+                oldSelectedMangaTitle = displayTitles[MainDisplayList.SelectedIndex].Text.ToString();
             MainDisplayList.SelectedIndex = -1;
             BulkUpdateCheck bulkUpdateCheck = new BulkUpdateCheck();
             await bulkUpdateCheck.ShowDialog(this);
             Filter();
+            if (passIndex != -1)
+                for (int i = 0; i < displayTitles.Count; i++)
+                    if (displayTitles[i].Text == oldSelectedMangaTitle)
+                    {
+                        MainDisplayList.SelectedIndex = i;
+                        break;
+                    }
         }
 
         private async void FilterButton_Clicked(object sender, RoutedEventArgs args)
         {
             passIndex = MainDisplayList.SelectedIndex;
+            if (passIndex != -1)
+                oldSelectedMangaTitle = displayTitles[MainDisplayList.SelectedIndex].Text.ToString();
             MainDisplayList.SelectedIndex = -1;
             Filtering filtering = new Filtering();
             await filtering.ShowDialog(this);
             Filter();
             if (passIndex != -1)
                 for (int i = 0; i < displayTitles.Count; i++)
-                    if (displayTitles[i].Text == mangaList[passIndex].Title)
+                    if (displayTitles[i].Text == oldSelectedMangaTitle)
                     {
                         MainDisplayList.SelectedIndex = i;
                         break;
@@ -531,27 +555,24 @@ namespace Manga_Manager
                     return;
             }
             mangaList.Remove(currentManga);
+            RebuildTags();
             Filter();
-            /*searchAutocomplete.Remove(mangaList[index].Title);
-            SearchBox.ItemsSource = searchAutocomplete.ToArray();
-            displayChapters.RemoveAt(index);
-            displayTitles.RemoveAt(index);
-            displayPanels.RemoveAt(index);
-            mangaList.RemoveAt(index);
-            MainDisplayList.Items.RemoveAt(index);*/
         }
 
         internal static bool openedByDownloadUpdatesButton = false;
         private async void UpdateMangaButton_Clicked(object sender, RoutedEventArgs args)
         {
             passIndex = mangaList.IndexOf(FindSelectedManga());
+            oldSelectedMangaTitle = displayTitles[MainDisplayList.SelectedIndex].Text.ToString();
             MainDisplayList.SelectedIndex = -1;
             openedByDownloadUpdatesButton = true;
             Downloader downloader = new Downloader();
             await downloader.ShowDialog(this);
+
+            RebuildTags();
             Filter();
             for (int i = 0; i < displayTitles.Count; i++)
-                if (displayTitles[i].Text == mangaList[passIndex].Title)
+                if (displayTitles[i].Text == oldSelectedMangaTitle)
                 {
                     MainDisplayList.SelectedIndex = i;
                     break;
@@ -566,26 +587,14 @@ namespace Manga_Manager
 
         private async void EditMetadataButton_Clicked(object sender, RoutedEventArgs args)
         {
-            for (int i = 0; i < mangaList.Count; i++)
-                if (mangaList[i].Title == displayTitles[MainDisplayList.SelectedIndex].Text)
-                {
-                    passIndex = i;
-                    break;
-                }
+            passIndex = mangaList.IndexOf(FindSelectedManga());
             MainDisplayList.SelectedIndex = -1;
             EditMetadata editMetadata = new EditMetadata();
             await editMetadata.ShowDialog(this);
-            tagsUsage.Clear();
-            foreach (Manga manga in mangaList)
-                foreach (string tag in manga.Tags)
-                    if (tagsUsage.ContainsKey(tag))
-                        tagsUsage[tag]++;
-                    else
-                        tagsUsage[tag] = 1;
-            tagsUsage = tagsUsage.OrderByDescending(pair => pair.Value).ToDictionary();
 
-            if (Filters.Active() == true)
-                Filter();
+            RebuildTags();
+            Filter();
+            
             for (int i = 0; i < displayTitles.Count; i++)
                 if (displayTitles[i].Text == mangaList[passIndex].Title)
                 {
@@ -732,6 +741,18 @@ namespace Manga_Manager
                 if (manga.Title == displayTitles[MainDisplayList.SelectedIndex].Text)
                     return manga;
             return null;
+        }
+
+        private void RebuildTags()
+        {
+            tagsUsage.Clear();
+            foreach (Manga manga in mangaList)
+                foreach (string tag in manga.Tags)
+                    if (tagsUsage.ContainsKey(tag))
+                        tagsUsage[tag]++;
+                    else
+                        tagsUsage[tag] = 1;
+            tagsUsage = tagsUsage.OrderByDescending(pair => pair.Value).ToDictionary();
         }
 
         private bool bypassSaving = false;

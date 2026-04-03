@@ -380,12 +380,14 @@ public partial class EditMetadata : Window
     {
         StackPanel stackPanel = TagsPanel.Children[0] as StackPanel;
         TextBox newTagTextBox = stackPanel.Children[0] as TextBox;
+        if (newTagTextBox.Text == string.Empty || newTagTextBox.Text == null)
+            return;
         foreach (CheckBox tagCheckBox in tagCheckBoxes)
-            if (tagCheckBox.Content.ToString().ToLower() == newTagTextBox.Text.ToLower())
-            {
-                await MessageBoxManager.GetMessageBoxStandard("Tag already exists", "This tag already exists!").ShowAsync();
-                return;
-            }
+                if (tagCheckBox.Content.ToString().ToLower() == newTagTextBox.Text.ToLower())
+                {
+                    await MessageBoxManager.GetMessageBoxStandard("Tag already exists", "This tag already exists!").ShowAsync();
+                    return;
+                }
         CheckBox checkBox = new CheckBox()
         {
             Foreground = new SolidColorBrush(Colors.White),
@@ -403,7 +405,7 @@ public partial class EditMetadata : Window
         if (isLinkGood == true)
             MDLParameters.MangaID = LinkTextBox.Text.Split('/')[4];
         UpdateAllButton.IsEnabled = isLinkGood;
-        if (CurrentCoverImage != null)
+        if (File.Exists(mangaList[passIndex].Path) == true)
             UpdateCoverButton.IsEnabled = isLinkGood;
         UpdateDescriptionButton.IsEnabled = isLinkGood;
         UpdateOngoingStatusButton.IsEnabled = isLinkGood;
