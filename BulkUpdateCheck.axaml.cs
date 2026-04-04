@@ -8,9 +8,7 @@ using static Manga_Manager.Globals;
 using MangaDex_Library;
 using System.Linq;
 using Avalonia.Media;
-using MsBox.Avalonia.Enums;
-using MsBox.Avalonia;
-using Avalonia.Threading;
+using System.Globalization;
 
 namespace Manga_Manager;
 
@@ -54,16 +52,29 @@ public partial class BulkUpdateCheck : Window
                     continue;
                 }
                 decimal onlineChapter = MDLGetData.GetLastChapter();
+                decimal onlineVolume = MDLGetData.GetLastVolume();
                 mangaList[i].OnlineLastChapter = onlineChapter;
+                mangaList[i].OnlineLastVolume = onlineVolume;
                 mangaList[i].LastChecked = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
                 int newChapters = 0;
+
+                if (mangaList[i].FileLastVolume == 0 && onlineVolume > 0)
+                    try
+                    {
+                        mangaList[i].FileLastVolume = Convert.ToDecimal(MDLGetData.GetChapterVolumes()[MDLGetData.GetChapterNumbers().IndexOf(mangaList[i].FileLastChapter)], new CultureInfo("en-US"));
+                    } catch { }
+
                 for (int j = 0; j < MDLGetData.GetChapterNumbers().Count; j++)
-                    if (MDLGetData.GetChapterNumbers()[j] > mangaList[i].FileLastChapter)
+                {
+                    if (MDLGetData.GetChapterNumbers()[j] == null)
+                        continue;
+                    if ((MDLGetData.GetChapterNumbers()[j] > mangaList[i].FileLastChapter && MDLGetData.GetChapterVolumes()[j] == mangaList[i].FileLastVolume) || MDLGetData.GetChapterVolumes()[j] > mangaList[i].FileLastVolume)
                     {
                         if (j > 0 && MDLGetData.GetChapterNumbers()[j] == MDLGetData.GetChapterNumbers()[j - 1])
                             continue;
                         newChapters++;
                     }
+                }
                 mangaIndexesNewChapters[i] = newChapters;
                 progress.Report(0);
             }

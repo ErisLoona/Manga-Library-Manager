@@ -17,12 +17,15 @@ namespace Manga_Manager
         public string Description = string.Empty;
         public string Path = string.Empty;
         public decimal FileLastChapter = 0M;
+        public decimal FileLastVolume = 0M;
         public decimal OnlineLastChapter = 0M;
+        public decimal OnlineLastVolume = 0M;
         public DateOnly LastChecked = new DateOnly(69, 1, 1);
         public string OngoingStatus = "Unknown";
         public bool CheckInBulk = false;
         public string ID = string.Empty;
         public string ContentRating = "Unknown";
+        public List<string> DownloadedNullChapers= new List<string>();
         public List<string> Tags = new List<string>();
     }
 
@@ -45,13 +48,13 @@ namespace Manga_Manager
 
             MDLGetData.ApiRequestFailed += MDLGetData_ApiRequestFailed;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                MDLParameters.SetUserAgent("Manga Library Manager for Windows by (github) ErisLoona");
+                MDLParameters.SetUserAgent("Manga Library Manager for Windows by ErisLoona on GitHub");
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                MDLParameters.SetUserAgent("Manga Library Manager for OSX by (github) ErisLoona");
+                MDLParameters.SetUserAgent("Manga Library Manager for OSX by ErisLoona on GitHub");
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                MDLParameters.SetUserAgent("Manga Library Manager for Linux by (github) ErisLoona");
+                MDLParameters.SetUserAgent("Manga Library Manager for Linux by ErisLoona on GitHub");
             else
-                MDLParameters.SetUserAgent("Manga Library Manager by (github) ErisLoona");
+                MDLParameters.SetUserAgent("Manga Library Manager by ErisLoona on GitHub");
         }
 
         internal static void MDLGetData_ApiRequestFailed(object sender, EventArgs e)
@@ -109,6 +112,7 @@ namespace Manga_Manager
         internal static string selectedLanguage = "en";
         internal static bool noWarning = false, checkUpdates = false, hideJsonFile = false;
         internal static int downloaderLastUsedFormat = 0;
+        internal const int JSON_FORMAT_VERSION = 5;
         #endregion
 
         internal static Dictionary<string, string> languageDictionary = new Dictionary<string, string>();

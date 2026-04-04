@@ -26,8 +26,8 @@ namespace MangaDex_Library
         //Feed API Data
         private static List<string> chapterIDs = new List<string>(), chapterTitles = new List<string>(), chapterGroups = new List<string>();
         private static List<int> chapterPages = new List<int>();
-        private static List<decimal> chapterNumbers = new List<decimal>();
-        private static decimal lastChapter;
+        private static List<decimal?> chapterNumbers = new List<decimal?>(), chapterVolumes = new List<decimal?>();
+        private static decimal lastChapter, lastVolume;
 
         //Downloads
         public static Stream pageImage;
@@ -243,11 +243,12 @@ namespace MangaDex_Library
                 if (nrPages > 100)
                 {
                     int passes = nrPages / 100;
-                    while (passes > 0)
+                    int passed = 1; // I need the pages to be in order now
+                    while (passed <= passes)
                     {
                         RateLimiter.ApiCall();
-                        pages.Add(JObject.Parse(client.GetStringAsync($"{apiLink}{MDLParameters.MangaID}/feed?translatedLanguage[]={MDLParameters.Language}&limit=100&offset={passes * 100}&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic&includes[]=scanlation_group&order[volume]=asc&order[chapter]=asc").Result));
-                        passes--;
+                        pages.Add(JObject.Parse(client.GetStringAsync($"{apiLink}{MDLParameters.MangaID}/feed?translatedLanguage[]={MDLParameters.Language}&limit=100&offset={passed * 100}&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic&includes[]=scanlation_group&order[volume]=asc&order[chapter]=asc").Result));
+                        passed++;
                     }
                 }
                 feed = pages;
@@ -259,9 +260,11 @@ namespace MangaDex_Library
             }
             oldIDFeed = MDLParameters.MangaID;
             lastChapter = 0M;
+            lastVolume = 0M;
             chapterIDs.Clear();
             chapterTitles.Clear();
             chapterPages.Clear();
+            chapterVolumes.Clear();
             chapterNumbers.Clear();
             chapterGroups.Clear();
             foreach (JObject page in feed)
@@ -269,10 +272,23 @@ namespace MangaDex_Library
                 {
                     if (chapter.SelectToken("attributes.pages").Value<int>() == 0)
                         continue;
+                    
                     chapterIDs.Add(chapter.SelectToken("id").Value<string>());
-                    chapterNumbers.Add(Convert.ToDecimal(chapter.SelectToken("attributes.chapter").Value<string>(), new CultureInfo("en-US")));
+
+                    if (chapter.SelectToken("attributes.volume").Type != JTokenType.Null)
+                        chapterVolumes.Add(Convert.ToDecimal(chapter.SelectToken("attributes.volume").Value<string>(), new CultureInfo("en-US")));
+                    else
+                        chapterVolumes.Add(null);
+                    
+                    if (chapter.SelectToken("attributes.chapter").Type != JTokenType.Null)
+                        chapterNumbers.Add(Convert.ToDecimal(chapter.SelectToken("attributes.chapter").Value<string>(), new CultureInfo("en-US")));
+                    else
+                        chapterNumbers.Add(null);
+                    
                     chapterTitles.Add(chapter.SelectToken("attributes.title").Value<string>());
+
                     chapterPages.Add(chapter.SelectToken("attributes.pages").Value<int>());
+
                     bool groupFound = false;
                     foreach (JToken group in chapter.SelectToken("relationships"))
                         if (group.SelectToken("type").Value<string>() == "scanlation_group")
@@ -285,44 +301,26 @@ namespace MangaDex_Library
                         chapterGroups.Add("Anonymous (No Group)");
                 }
             if (chapterNumbers.Count() == 0)
-            {
-                lastChapter = 0;
                 return;
-            }
-            bool doneGoneDidThisOne = true;
-            for (int j = 1; (j <= chapterNumbers.Count - 1) && (doneGoneDidThisOne == true); j++)
+
+            bool inProgressVolume = false;
+            for (int i = 0; i < chapterNumbers.Count; i++) // Need to go through the array anyway so might as well find the last chapter and volume manually
             {
-                doneGoneDidThisOne = false;
-                for (int i = 0; i < chapterNumbers.Count - 1; i++)
-                    if (chapterNumbers[i] > chapterNumbers[i + 1])
-                    {
-                        doneGoneDidThisOne = true;
-                        string str;
-                        decimal dec;
-                        int inte;
+                if (chapterNumbers[i] != null)
+                    lastChapter = Convert.ToDecimal(chapterNumbers[i], new CultureInfo("en-US"));
+                if (chapterVolumes[i] != null)
+                    lastVolume = Convert.ToDecimal(chapterVolumes[i], new CultureInfo("en-US"));
 
-                        str = chapterIDs[i + 1];
-                        chapterIDs[i + 1] = chapterIDs[i];
-                        chapterIDs[i] = str;
-
-                        str = chapterTitles[i + 1];
-                        chapterTitles[i + 1] = chapterTitles[i];
-                        chapterTitles[i] = str;
-
-                        inte = chapterPages[i + 1];
-                        chapterPages[i + 1] = chapterPages[i];
-                        chapterPages[i] = inte;
-
-                        dec = chapterNumbers[i + 1];
-                        chapterNumbers[i + 1] = chapterNumbers[i];
-                        chapterNumbers[i] = dec;
-
-                        str = chapterGroups[i + 1];
-                        chapterGroups[i + 1] = chapterGroups[i];
-                        chapterGroups[i] = str;
-                    }
+                if (chapterNumbers[i] != null && chapterVolumes[i] == null)
+                {
+                    chapterVolumes[i] = lastVolume + 1M;
+                    inProgressVolume = true;
+                }
             }
-            lastChapter = chapterNumbers[chapterNumbers.Count - 1];
+            if (inProgressVolume == true)
+                lastVolume++;
+
+
         }
 
         public static List<string> GetChapterIDs()
@@ -332,7 +330,14 @@ namespace MangaDex_Library
             return chapterIDs;
         }
 
-        public static List<decimal> GetChapterNumbers()
+        public static List<decimal?> GetChapterVolumes()
+        {
+            if (oldIDFeed != MDLParameters.MangaID || feed == null)
+                UpdateFeed();
+            return chapterVolumes;
+        }
+
+        public static List<decimal?> GetChapterNumbers()
         {
             if (oldIDFeed != MDLParameters.MangaID || feed == null)
                 UpdateFeed();
@@ -365,6 +370,13 @@ namespace MangaDex_Library
             if (oldIDFeed != MDLParameters.MangaID || feed == null)
                 UpdateFeed();
             return lastChapter;
+        }
+
+        public static decimal GetLastVolume()
+        {
+            if (oldIDFeed != MDLParameters.MangaID || feed == null)
+                UpdateFeed();
+            return lastVolume;
         }
 
         public static List<int> GetCuratedChapterIndexes()
@@ -422,9 +434,9 @@ namespace MangaDex_Library
             for (int i = 0; i < chapterNumbers.Count; i++)
             {
                 groupIndexes[chapterGroups[i]] = i;
-                if (i != chapterNumbers.Count - 1 && chapterNumbers[i] == chapterNumbers[i + 1])
+                if (chapterNumbers[i] != null && i != chapterNumbers.Count - 1 && chapterNumbers[i] == chapterNumbers[i + 1])
                     continue;
-                if (groupIndexes.Count == 1)
+                if (groupIndexes.Count == 1 || chapterNumbers[i] == null)
                 {
                     curatedIndexes.Add(i);
                     groupIndexes.Clear();

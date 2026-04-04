@@ -2,8 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="396" d:DesignHeight="772"
-        Width="396" Height="772"
+        mc:Ignorable="d" d:DesignWidth="396" d:DesignHeight="820"
+        Width="396" Height="820"
         x:Class="Manga_Manager.EditMetadata"
         Title="Edit metadata"
         Background="DimGray"
@@ -71,6 +71,8 @@
         </StackPanel>
         <TextBlock Background="DimGray" Foreground="White" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center" Text="Last chapter on file"/>
         <NumericUpDown x:Name="LastChapterNumeric" VerticalAlignment="Center" Minimum="0" FormatString="0.0" Increment="1" FontSize="15" Margin="0" Width="150" TextAlignment="Center"/>
+        <TextBlock Background="DimGray" Foreground="White" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center" Text="Last volume on file"/>
+        <NumericUpDown x:Name="LastVolumeNumeric" VerticalAlignment="Center" Minimum="0" FormatString="0" Increment="1" FontSize="15" Margin="0" Width="150" TextAlignment="Center"/>
         <TextBlock Background="DimGray" Foreground="White" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center" Text="Ongoing status"/>
         <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="6">
           <ComboBox x:Name="OngoingStatusComboBox" HorizontalAlignment="Center" Width="130">

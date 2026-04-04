@@ -12,7 +12,6 @@ using System.IO.Compression;
 using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
 using System.Linq;
-using MsBox.Avalonia.Enums;
 using SkiaSharp;
 
 namespace Manga_Manager;
@@ -81,6 +80,7 @@ public partial class EditMetadata : Window
         }
         DescriptionTextBox.Text = mangaList[passIndex].Description;
         LastChapterNumeric.Value = mangaList[passIndex].FileLastChapter;
+        LastVolumeNumeric.Value = mangaList[passIndex].FileLastVolume;
         OngoingStatusComboBox.SelectedIndex = Array.IndexOf(ongoingStatuses, mangaList[passIndex].OngoingStatus);
         ContentRatingComboBox.SelectedIndex = Array.IndexOf(contentRatings, mangaList[passIndex].ContentRating);
         AddNewTagPanel();
@@ -458,7 +458,10 @@ public partial class EditMetadata : Window
         }
 
         mangaList[passIndex].Description = DescriptionTextBox.Text;
-        mangaList[passIndex].FileLastChapter = (decimal)LastChapterNumeric.Value;
+        if (LastChapterNumeric.Value != null)
+            mangaList[passIndex].FileLastChapter = (decimal)LastChapterNumeric.Value;
+        if (LastVolumeNumeric.Value != null)
+            mangaList[passIndex].FileLastVolume = (decimal)LastVolumeNumeric.Value;
         if (OngoingStatusComboBox.SelectedIndex != -1)
         {
             mangaList[passIndex].OngoingStatus = ongoingStatuses[OngoingStatusComboBox.SelectedIndex];

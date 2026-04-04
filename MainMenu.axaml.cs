@@ -64,7 +64,7 @@ namespace Manga_Manager
             if (File.Exists("Manga Library Manager.json") == false && File.Exists(".Manga Library Manager.json") == false)
             {
                 JObject tempSaveJson = new JObject();
-                tempSaveJson["FormatVersion"] = 4;
+                tempSaveJson["FormatVersion"] = JSON_FORMAT_VERSION;
                 tempSaveJson["Language"] = "en";
                 tempSaveJson["NoWarning"] = false;
 
@@ -123,44 +123,49 @@ namespace Manga_Manager
             MDLParameters.Language = selectedLanguage;
             noWarning = saveJson.SelectToken("NoWarning").Value<bool>();
             checkUpdates = saveJson.SelectToken("CheckUpdates").Value<bool>();
-            if (saveJson.SelectToken("FormatVersion").Value<int>() == 4)
+
+            switch (saveJson.SelectToken("FormatVersion").Value<int>())
             {
-                hideJsonFile = saveJson.SelectToken("HideJsonFile").Value<bool>();
-                downloaderLastUsedFormat = saveJson.SelectToken("DownloaderLastUsedFormat").Value<int>();
-                mangaList = saveJson.SelectToken("Library").ToObject<List<Manga>>();
-            }
-            #region Legacy JSON Formats
-            else if (saveJson.SelectToken("FormatVersion").Value<int>() == 3)
-            {
-                hideJsonFile = false;
-                downloaderLastUsedFormat = 0;
-                foreach (JToken manga in saveJson.SelectToken("Library"))
-                {
-                    mangaList.Add(new Manga
+                case 5:
+
+                #region Legacy JSON Formats
+                case 4:
+                    hideJsonFile = saveJson.SelectToken("HideJsonFile").Value<bool>();
+                    downloaderLastUsedFormat = saveJson.SelectToken("DownloaderLastUsedFormat").Value<int>();
+                    mangaList = saveJson.SelectToken("Library").ToObject<List<Manga>>();
+                    break;
+                
+                case 3:
+                    hideJsonFile = false;
+                    downloaderLastUsedFormat = 0;
+                    foreach (JToken manga in saveJson.SelectToken("Library"))
                     {
-                        Title = manga.SelectToken("Title").Value<string>(),
-                        Description = string.Empty,
-                        Path = manga.SelectToken("Path").Value<string>(),
-                        FileLastChapter = manga.SelectToken("LastChapter").Value<decimal>(),
-                        OnlineLastChapter = 0M,
-                        LastChecked = new DateOnly(69, 1, 1),
-                        OngoingStatus = "Unknown",
-                        CheckInBulk = manga.SelectToken("Ongoing").Value<bool>(),
-                        ID = manga.SelectToken("Link").Value<string>(),
-                        ContentRating = manga.SelectToken("ContentRating").Value<string>(),
-                        Tags = manga.SelectToken("Tags").ToObject<List<string>>()
-                    });
-                    string link = manga.SelectToken("Link").Value<string>();
-                    if (ValidateLink(link) == true)
-                        mangaList[mangaList.Count - 1].ID = link.Split('/')[4];
-                }
+                        mangaList.Add(new Manga
+                        {
+                            Title = manga.SelectToken("Title").Value<string>(),
+                            Description = string.Empty,
+                            Path = manga.SelectToken("Path").Value<string>(),
+                            FileLastChapter = manga.SelectToken("LastChapter").Value<decimal>(),
+                            OnlineLastChapter = 0M,
+                            LastChecked = new DateOnly(69, 1, 1),
+                            OngoingStatus = "Unknown",
+                            CheckInBulk = manga.SelectToken("Ongoing").Value<bool>(),
+                            ID = manga.SelectToken("Link").Value<string>(),
+                            ContentRating = manga.SelectToken("ContentRating").Value<string>(),
+                            Tags = manga.SelectToken("Tags").ToObject<List<string>>()
+                        });
+                        string link = manga.SelectToken("Link").Value<string>();
+                        if (ValidateLink(link) == true)
+                            mangaList[mangaList.Count - 1].ID = link.Split('/')[4];
+                    }
+                    break;
+
+                default:
+                    await MessageBoxManager.GetMessageBoxStandard("Library JSON too old", "Your library JSON is too old.\nPlease download and launch an older version of the program first.", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Info).ShowAsync();
+                    System.Environment.Exit(0);
+                    break;
+                #endregion
             }
-            else
-            {
-                await MessageBoxManager.GetMessageBoxStandard("Library JSON too old", "Your library JSON is too old.\nPlease download and launch an older version of the program first.", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Info).ShowAsync();
-                System.Environment.Exit(0);
-            }
-            #endregion
 
             if (checkUpdates == true)
             {
@@ -204,7 +209,7 @@ namespace Manga_Manager
                     else
                         tagsUsage[tag] = 1;
                 searchAutocomplete.Add(manga.Title);
-                DisplayAdd(manga.Title, manga.FileLastChapter, manga.FileLastChapter < manga.OnlineLastChapter);
+                DisplayAdd(manga.Title, manga.FileLastChapter, manga.FileLastVolume, (manga.FileLastChapter < manga.OnlineLastChapter && manga.FileLastVolume <= manga.OnlineLastVolume) || manga.FileLastVolume < manga.OnlineLastVolume);
             }
             SearchBox.ItemsSource = searchAutocomplete.ToArray();
             tagsUsage = tagsUsage.OrderByDescending(pair => pair.Value).ToDictionary();
@@ -233,8 +238,8 @@ namespace Manga_Manager
             DescriptionLabel.Text = currentManga.Description;
             StatusLabel.Text += currentManga.OngoingStatus;
             RatingLabel.Text += currentManga.ContentRating;
-            LastChapterTextBlock.Text += currentManga.FileLastChapter.ToString();
-            LastChapterOnlineLabel.Text += currentManga.OnlineLastChapter.ToString();
+            LastChapterTextBlock.Text += "Ch. " + currentManga.FileLastChapter.ToString() + " Vol. " + currentManga.FileLastVolume.ToString();
+            LastChapterOnlineLabel.Text += "Ch. " + currentManga.OnlineLastChapter.ToString() + " Vol. " + currentManga.OnlineLastVolume.ToString();
             LastCheckedDateLabel.Text += currentManga.LastChecked.ToShortDateString();
             CheckForUpdatesCheckBox.IsChecked = currentManga.CheckInBulk;
             if (currentManga.LastChecked != new DateOnly(69, 1, 1))
@@ -338,6 +343,7 @@ namespace Manga_Manager
         }
 
         private static readonly Regex chapterRegex = new Regex("Ch\\.[0-9.]+");
+        private static readonly Regex volumeRegex = new Regex("Vol\\.[0-9.]+");
         private string AddManga(string path)
         {
             Manga tempManga = new Manga();
@@ -391,13 +397,21 @@ namespace Manga_Manager
                     tempChapters.Add(Convert.ToDecimal(match.Value.Substring(3), new CultureInfo("en-US")));
                 tempManga.FileLastChapter = tempChapters.Max();
             } catch { }
+            try
+            {
+                MatchCollection volumes = volumeRegex.Matches(desc);
+                List<decimal> tempVolumes = new List<decimal>();
+                foreach (Match match in volumes)
+                    tempVolumes.Add(Convert.ToDecimal(match.Value.Substring(4), new CultureInfo("en-US")));
+                tempManga.FileLastVolume = tempVolumes[tempVolumes.Count - 1];
+            } catch { }
             if (ValidateLink(link) == true)
                 tempManga.ID = link.Split('/')[4];
 
             mangaList.Add(tempManga);
             if (Filters.Active() == false)
             {
-                DisplayAdd(title, tempManga.FileLastChapter, false);
+                DisplayAdd(title, tempManga.FileLastChapter, tempManga.FileLastVolume, false);
                 searchAutocomplete.Add(title);
                 SearchBox.ItemsSource = searchAutocomplete.ToArray();
             }
@@ -507,23 +521,51 @@ namespace Manga_Manager
                 return;
             }
             decimal onlineChapter = MDLGetData.GetLastChapter();
+            decimal onlineVolume = MDLGetData.GetLastVolume();
             currentManga.OnlineLastChapter = onlineChapter;
+            currentManga.OnlineLastVolume = onlineVolume;
             currentManga.LastChecked = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
-            LastChapterOnlineLabel.Text = $"Last chapter online: {onlineChapter.ToString()}";
+            LastChapterOnlineLabel.Text = $"Last chapter online: Ch. {onlineChapter.ToString()} Vol. {onlineVolume.ToString()}";
             LastCheckedDateLabel.Text = $"Last checked: {currentManga.LastChecked.ToShortDateString()}";
             LastChapterOnlineLabel.IsVisible = true;
             LastCheckedDateLabel.IsVisible = true;
-            if (onlineChapter > currentManga.FileLastChapter)
+
+            bool initializedVolume = false;
+            if (currentManga.FileLastVolume == 0 && onlineVolume > 0)
+            {
+                try
+                {
+                    currentManga.FileLastVolume = Convert.ToDecimal(MDLGetData.GetChapterVolumes()[MDLGetData.GetChapterNumbers().IndexOf(currentManga.FileLastChapter)], new CultureInfo("en-US"));
+                    initializedVolume = true;
+                } catch { }
+            }
+
+            if ((onlineChapter > currentManga.FileLastChapter && onlineVolume == currentManga.FileLastVolume) || onlineVolume > currentManga.FileLastVolume)
             {
                 DisplaySetNewChaptersAvailable(MainDisplayList.SelectedIndex, true);
-                UpdateMangaButton.IsEnabled = true;
+                if (File.Exists(currentManga.Path))
+                    UpdateMangaButton.IsEnabled = true;
             }
-            else if (onlineChapter == currentManga.FileLastChapter)
+            else if (onlineChapter == currentManga.FileLastChapter && onlineVolume == currentManga.FileLastVolume)
                 DisplaySetNewChaptersAvailable(MainDisplayList.SelectedIndex, false);
-            else if (onlineChapter < currentManga.FileLastChapter)
+            else if (onlineVolume < currentManga.FileLastVolume || (onlineVolume == currentManga.FileLastVolume && onlineChapter < currentManga.FileLastChapter))
             {
                 DisplaySetNewChaptersAvailable(MainDisplayList.SelectedIndex, false);
-                await MessageBoxManager.GetMessageBoxStandard("Invalid data", "Online chapter number is behind! Please double-check the manga ID and last chapter in the file.", ButtonEnum.Ok).ShowAsync();
+                await MessageBoxManager.GetMessageBoxStandard("Invalid data", "Online chapter number is behind! Please double-check the manga ID and last chapter / volume in the file.", ButtonEnum.Ok).ShowAsync();
+            }
+
+            if (initializedVolume == true)
+            {
+                int tempIndex = mangaList.IndexOf(FindSelectedManga());
+                MainDisplayList.SelectedIndex = -1;
+                Filter();
+
+                for (int i = 0; i < displayTitles.Count; i++)
+                if (displayTitles[i].Text == mangaList[tempIndex].Title)
+                {
+                    MainDisplayList.SelectedIndex = i;
+                    break;
+                }
             }
         }
 
@@ -605,7 +647,7 @@ namespace Manga_Manager
 
         private List<TextBlock> displayTitles = new List<TextBlock>(), displayChapters = new List<TextBlock>();
         private List<StackPanel> displayPanels = new List<StackPanel>();
-        private void DisplayAdd(string title, decimal chapterOnFile, bool ahead)
+        private void DisplayAdd(string title, decimal chapterOnFile, decimal volumeOnFile, bool ahead)
         {
             displayTitles.Add(new TextBlock
             {
@@ -623,8 +665,8 @@ namespace Manga_Manager
                 Margin = new Avalonia.Thickness(0),
                 Text = string.Empty
             });
-            if (chapterOnFile != 0)
-                displayChapters[displayChapters.Count - 1].Text = "At chapter " + chapterOnFile.ToString();
+
+            displayChapters[displayChapters.Count - 1].Text = "At chapter " + chapterOnFile.ToString() + " Volume " + volumeOnFile.ToString();
 
             displayPanels.Add(new StackPanel
             {
@@ -672,7 +714,7 @@ namespace Manga_Manager
                 foreach (Manga manga in mangaList)
                 {
                     searchAutocomplete.Add(manga.Title);
-                    DisplayAdd(manga.Title, manga.FileLastChapter, manga.FileLastChapter < manga.OnlineLastChapter);
+                    DisplayAdd(manga.Title, manga.FileLastChapter, manga.FileLastVolume, (manga.FileLastChapter < manga.OnlineLastChapter && manga.FileLastVolume <= manga.OnlineLastVolume) || manga.FileLastVolume < manga.OnlineLastVolume);
                 }
                 SearchBox.ItemsSource = searchAutocomplete;
                 return;
@@ -730,7 +772,7 @@ namespace Manga_Manager
                         continue;
                 }
                 searchAutocomplete.Add(manga.Title);
-                DisplayAdd(manga.Title, manga.FileLastChapter, manga.FileLastChapter < manga.OnlineLastChapter);
+                DisplayAdd(manga.Title, manga.FileLastChapter, manga.FileLastVolume, (manga.FileLastChapter < manga.OnlineLastChapter && manga.FileLastVolume <= manga.OnlineLastVolume) || manga.FileLastVolume < manga.OnlineLastVolume);
             }
             SearchBox.ItemsSource = searchAutocomplete.ToArray();
         }
@@ -759,7 +801,7 @@ namespace Manga_Manager
         protected override async void OnClosing(WindowClosingEventArgs e)
         {
             JObject saveJson = new JObject();
-            saveJson["FormatVersion"] = 4;
+            saveJson["FormatVersion"] = JSON_FORMAT_VERSION;
             saveJson["Language"] = selectedLanguage;
             saveJson["NoWarning"] = noWarning;
             saveJson["CheckUpdates"] = checkUpdates;
