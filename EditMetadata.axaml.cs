@@ -1,6 +1,7 @@
 using System;
 using Avalonia.Controls;
 using MsBox.Avalonia;
+using MsBox.Avalonia.Enums;
 using static Manga_Manager.Globals;
 using MangaDex_Library;
 using System.Collections.Generic;
@@ -276,6 +277,7 @@ public partial class EditMetadata : Window
             newCoverStream.Seek(0, SeekOrigin.Begin);
             if (apiError == true)
             {
+                MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API. Please double-check the manga link and try again later.", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error).ShowAsync();
                 apiError = false;
                 return;
             }
@@ -293,6 +295,7 @@ public partial class EditMetadata : Window
         MDLGetData.GetDescription();
         if (apiError == true)
         {
+            MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API. Please double-check the manga link and try again later.", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error).ShowAsync();
             apiError = false;
             return;
         }
@@ -305,6 +308,7 @@ public partial class EditMetadata : Window
         MDLGetData.GetStatus();
         if (apiError == true)
         {
+            MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API. Please double-check the manga link and try again later.", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error).ShowAsync();
             apiError = false;
             return;
         }
@@ -323,6 +327,7 @@ public partial class EditMetadata : Window
         MDLGetData.GetContentRating();
         if (apiError == true)
         {
+            MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API. Please double-check the manga link and try again later.", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error).ShowAsync();
             apiError = false;
             return;
         }
@@ -335,6 +340,7 @@ public partial class EditMetadata : Window
         List<string> newTags = MDLGetData.GetTags();
         if (apiError == true)
         {
+            MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API. Please double-check the manga link and try again later.", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error).ShowAsync();
             apiError = false;
             return;
         }

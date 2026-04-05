@@ -285,7 +285,10 @@ namespace MangaDex_Library
                     else
                         chapterNumbers.Add(null);
                     
-                    chapterTitles.Add(chapter.SelectToken("attributes.title").Value<string>());
+                    if (chapter.SelectToken("attributes.title").Type != JTokenType.Null)
+                        chapterTitles.Add(chapter.SelectToken("attributes.title").Value<string>());
+                    else
+                        chapterTitles.Add("(No Title)");
 
                     chapterPages.Add(chapter.SelectToken("attributes.pages").Value<int>());
 

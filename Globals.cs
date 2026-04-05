@@ -25,7 +25,8 @@ namespace Manga_Manager
         public bool CheckInBulk = false;
         public string ID = string.Empty;
         public string ContentRating = "Unknown";
-        public List<string> DownloadedNullChapers= new List<string>();
+        public List<string> DownloadedNullChapters= new List<string>();
+        public List<string> IgnoredNullChapters= new List<string>();
         public List<string> Tags = new List<string>();
     }
 
@@ -59,7 +60,6 @@ namespace Manga_Manager
 
         internal static void MDLGetData_ApiRequestFailed(object sender, EventArgs e)
         {
-            Dispatcher.UIThread.Post(async () => await MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API.\nPlease double-check the Manga link and try again later.", ButtonEnum.Ok).ShowAsync());
             MDLGetData.ForceReset();
             apiError = true;
         }
