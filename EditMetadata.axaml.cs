@@ -202,11 +202,20 @@ public partial class EditMetadata : Window
             string cbzPrefix = string.Empty;
             string[] files = Directory.GetFiles(tempPath);
             j = 0;
-            while (Path.GetFileNameWithoutExtension(files[0]).Substring(j, 1) == Path.GetFileNameWithoutExtension(files.Last()).Substring(j, 1))
-            {
-                cbzPrefix += Path.GetFileNameWithoutExtension(files[0]).Substring(j, 1);
-                j++;
-            }
+            if (files[0] != files.Last())
+                while (Path.GetFileNameWithoutExtension(files[0]).Substring(j, 1) == Path.GetFileNameWithoutExtension(files.Last()).Substring(j, 1))
+                {
+                    cbzPrefix += Path.GetFileNameWithoutExtension(files[0]).Substring(j, 1);
+                    j++;
+                }
+            else
+                while (Char.IsNumber(Convert.ToChar(Path.GetFileNameWithoutExtension(files[0]).Substring(j, 1))) == false)
+                {
+                    cbzPrefix += Path.GetFileNameWithoutExtension(files[0]).Substring(j, 1);
+                    j++;
+                    if (j > Path.GetFileNameWithoutExtension(files[0]).Length)
+                        break;
+                }
             try
             {
                 using FileStream fileStream = new FileStream(Path.Combine(tempPath, cbzPrefix + 0.ToString("D" + (Path.GetFileNameWithoutExtension(files[0]).Length - cbzPrefix.Length).ToString())) + Path.GetExtension(files[0]), FileMode.Create);
@@ -437,7 +446,7 @@ public partial class EditMetadata : Window
             AcceptsReturn = false,
             TextWrapping = TextWrapping.NoWrap,
             Width = 160,
-            Watermark = "Custom tag",
+            PlaceholderText = "Custom tag",
             FontSize = 15
         };
         Button addNewTagButton = new Button()

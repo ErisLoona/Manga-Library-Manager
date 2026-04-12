@@ -38,7 +38,7 @@ public partial class Downloader_AddFromLibrary : Window
         SearchBox.ItemsSource = addedMangaIndexes.Keys.ToArray();
     }
 
-    private void SearchBox_LostFocus(object sender, RoutedEventArgs e)
+    private void SearchBox_LostFocus(object sender, FocusChangedEventArgs e)
     {
         if (SearchBox.Text == string.Empty)
             return;

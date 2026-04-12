@@ -57,7 +57,7 @@
         <Button Grid.Column="3" x:Name="FilterButton" Click="FilterButton_Clicked" Content="Filter"/>
         <Button Grid.Column="4" x:Name="SettingsButton" Click="SettingsButton_Clicked" Content="Settings"/>
       </Grid>
-      <AutoCompleteBox Grid.Row="1" x:Name="SearchBox" LostFocus="SearchBox_LostFocus" DropDownClosed="SearchBox_DropDownClosed" KeyDown="SearchBox_KeyDown" FilterMode="ContainsOrdinal" Background="White" Foreground="Black" Watermark="Search for a Manga..." FontSize="12" Margin="3" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+      <AutoCompleteBox Grid.Row="1" x:Name="SearchBox" LostFocus="SearchBox_LostFocus" DropDownClosed="SearchBox_DropDownClosed" KeyDown="SearchBox_KeyDown" FilterMode="ContainsOrdinal" Background="White" Foreground="Black" PlaceholderText="Search for a Manga..." FontSize="12" Margin="3" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
       <ListBox Grid.Row="2" x:Name="MainDisplayList" SelectionChanged="MainDisplayList_SelectionChanged" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="DimGray" Padding="0"/>
     </Grid>
     

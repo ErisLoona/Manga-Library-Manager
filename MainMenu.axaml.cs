@@ -24,6 +24,7 @@ using System.Text.RegularExpressions;
 using System.Globalization;
 using Avalonia.Platform.Storage;
 using System.Net.Http;
+using Avalonia.Input.Platform;
 
 namespace Manga_Manager
 {
@@ -80,8 +81,9 @@ namespace Manga_Manager
                     CanResize = false,
                     WindowStartupLocation = WindowStartupLocation.CenterScreen,
                     SizeToContent = SizeToContent.WidthAndHeight,
-                    Topmost = true,
-                    SystemDecorations = SystemDecorations.None
+                    //WindowDecorations = WindowDecorations.None,
+                    //SystemDecorations = WindowDecorations.None,
+                    Topmost = true
                 };
                 if (await MessageBoxManager.GetMessageBoxCustom(updatePopup).ShowAsync() == "Yes")
                     tempSaveJson["CheckUpdates"] = true;
@@ -463,7 +465,7 @@ namespace Manga_Manager
         }
 
         #region SearchBox Logic
-        private void SearchBox_LostFocus(object sender, RoutedEventArgs e)
+        private void SearchBox_LostFocus(object sender, FocusChangedEventArgs e)
         {
             if (SearchBox.Text == string.Empty)
                 return;
@@ -708,6 +710,7 @@ namespace Manga_Manager
             displayPanels.Clear();
             MainDisplayList.Items.Clear();
             searchAutocomplete.Clear();
+            SearchBox.ItemsSource = null;
             if (Filters.Active() == false)
             {
                 FilterButton.Content = "Filter";

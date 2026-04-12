@@ -16,14 +16,14 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
 
     - name: Install .NET Core
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: 10.0.x
 
     - name: Publish
       run: dotnet publish /p:Configuration=$env:Configuration /p:PublishProfile="Properties/PublishProfiles/Windows Release.pubxml"
@@ -31,10 +31,10 @@ jobs:
         Configuration: ${{ matrix.configuration }}
 
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: Windows-MangaLibraryManager
-        path: bin/Release/net8.0/publish/win-x64/Manga Manager.exe
+        path: bin/Release/net10.0/publish/win-x64/Manga Manager.exe
 
   build-macos-arm:
 
@@ -46,14 +46,14 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
 
     - name: Install .NET Core
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: 10.0.x
 
     - name: Publish arm64
       run: dotnet publish /p:Configuration=$Configuration /p:PublishProfile="Properties/PublishProfiles/OSX-arm.pubxml"
@@ -63,14 +63,14 @@ jobs:
     - name: Create bundle
       run: |
             mkdir -p "Manga Library Manager.app/Contents/MacOS" "Manga Library Manager.app/Contents/Resources"
-            mv "bin/Release/net8.0/publish/osx-arm64/Manga Manager" "Manga Library Manager.app/Contents/MacOS/"
+            mv "bin/Release/net10.0/publish/osx-arm64/Manga Manager" "Manga Library Manager.app/Contents/MacOS/"
             mv "${{ github.workspace }}"/icon256.icns "Manga Library Manager.app/Contents/Resources/"
             cp Properties/Info.plist "Manga Library Manager.app/Contents/"
             mkdir tmp_bs
             cp -r "Manga Library Manager.app" tmp_bs/
 
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: macOSAppleSilicon-MangaLibraryManager
         path: "Manga Library Manager.app/Contents/MacOS/Manga Manager"
@@ -85,14 +85,14 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
 
     - name: Install .NET Core
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: 10.0.x
 
     - name: Publish x64
       run: dotnet publish /p:Configuration=$Configuration /p:PublishProfile="Properties/PublishProfiles/OSX-x64.pubxml"
@@ -102,14 +102,14 @@ jobs:
     - name: Create bundle
       run: |
             mkdir -p "Manga Library Manager.app/Contents/MacOS" "Manga Library Manager.app/Contents/Resources"
-            mv "bin/Release/net8.0/publish/osx-x64/Manga Manager" "Manga Library Manager.app/Contents/MacOS/"
+            mv "bin/Release/net10.0/publish/osx-x64/Manga Manager" "Manga Library Manager.app/Contents/MacOS/"
             mv "${{ github.workspace }}"/icon256.icns "Manga Library Manager.app/Contents/Resources/"
             cp Properties/Info.plist "Manga Library Manager.app/Contents/"
             mkdir tmp_bs
             cp -r "Manga Library Manager.app" tmp_bs/
 
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: macOSIntel-MangaLibraryManager
         path: "Manga Library Manager.app/Contents/MacOS/Manga Manager"
@@ -124,14 +124,14 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
 
     - name: Install .NET Core
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: 10.0.x
 
     - name: Publish
       run: dotnet publish /p:Configuration=$Configuration /p:PublishProfile="Properties/PublishProfiles/Linux Publish.pubxml"
@@ -139,7 +139,7 @@ jobs:
         Configuration: ${{ matrix.configuration }}
 
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: Linux-MangaLibraryManager
-        path: bin/Release/net8.0/publish/linux-x64/Manga Manager
+        path: bin/Release/net10.0/publish/linux-x64/Manga Manager

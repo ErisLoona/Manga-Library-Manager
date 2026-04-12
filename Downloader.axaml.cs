@@ -598,8 +598,9 @@ public partial class Downloader : Window
                 CanResize = false,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,
                 SizeToContent = SizeToContent.WidthAndHeight,
-                Topmost = true,
-                SystemDecorations = SystemDecorations.None
+                //WindowDecorations = WindowDecorations.None,
+                //SystemDecorations = WindowDecorations.None,
+                Topmost = true
             }).ShowAsync();
             if (result == "Cancel")
                 return;
@@ -780,11 +781,20 @@ public partial class Downloader : Window
                     {
                         string[] files = Directory.GetFiles(tempFolderPath);
                         int i = 0;
-                        while (Path.GetFileNameWithoutExtension(files[0]).Substring(i, 1) == Path.GetFileNameWithoutExtension(files.Last()).Substring(i, 1))
-                        {
-                            cbzPrefix += Path.GetFileNameWithoutExtension(files[0]).Substring(i, 1);
-                            i++;
-                        }
+                        if (files[0] != files.Last())
+                            while (Path.GetFileNameWithoutExtension(files[0]).Substring(i, 1) == Path.GetFileNameWithoutExtension(files.Last()).Substring(i, 1))
+                            {
+                                cbzPrefix += Path.GetFileNameWithoutExtension(files[0]).Substring(i, 1);
+                                i++;
+                            }
+                        else
+                            while (Char.IsNumber(Convert.ToChar(Path.GetFileNameWithoutExtension(files[0]).Substring(i, 1))) == false)
+                            {
+                                cbzPrefix += Path.GetFileNameWithoutExtension(files[0]).Substring(i, 1);
+                                i++;
+                                if (i > Path.GetFileNameWithoutExtension(files[0]).Length)
+                                    break;
+                            }
                     }
                     else
                         cbzPrefix = "pg-";
