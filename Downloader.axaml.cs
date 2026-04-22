@@ -162,7 +162,7 @@ public partial class Downloader : Window
         if (addedMangas.Contains(result.Split('/')[4]) == true)
         {
             await MessageBoxManager.GetMessageBoxStandard("Manga already added", "This manga is already in queue!").ShowAsync();
-            StatusTextBox.Text = "Add mangas to the queue!";
+            StatusTextBox.Text = "Add manga to the queue!";
             return;
         }
         foreach (Manga manga in mangaList)
@@ -172,36 +172,36 @@ public partial class Downloader : Window
                 {
                     if (await MessageBoxManager.GetMessageBoxStandard("Manga already exists", "This manga is already in the library, but its file is missing.\nIt will be removed from the library and added to the queue.", ButtonEnum.OkCancel).ShowAsync() == ButtonResult.Cancel)
                     {
-                        StatusTextBox.Text = "Add mangas to the queue!";
+                        StatusTextBox.Text = "Add manga to the queue!";
                         return;
                     }
                     AddMangaToQueue(manga.ID, false);
                     if (apiErrorManga.Count > 0)
                     {
                         AddMangaErrorHandling(false);
-                        StatusTextBox.Text = "Add mangas to the queue!";
+                        StatusTextBox.Text = "Add manga to the queue!";
                         return;
                     }
                     mangaList.Remove(manga);
-                    StatusTextBox.Text = "Add mangas to the queue!";
+                    StatusTextBox.Text = "Add manga to the queue!";
                     return;
                 }
                 if (await MessageBoxManager.GetMessageBoxStandard("Manga already exists", "This manga is already in the library!\nWould you like to update it instead?", ButtonEnum.YesNo).ShowAsync() == ButtonResult.No)
                 {
-                    StatusTextBox.Text = "Add mangas to the queue!";
+                    StatusTextBox.Text = "Add manga to the queue!";
                     return;
                 }
                 passIndex = mangaList.IndexOf(manga);
                 AddMangaToQueue(manga.ID, true);
                 if (apiErrorManga.Count > 0)
                     AddMangaErrorHandling(false);
-                StatusTextBox.Text = "Add mangas to the queue!";
+                StatusTextBox.Text = "Add manga to the queue!";
                 return;
             }
         AddMangaToQueue(result.Split('/')[4], false);
         if (apiErrorManga.Count > 0)
             AddMangaErrorHandling(false);
-        StatusTextBox.Text = "Add mangas to the queue!";
+        StatusTextBox.Text = "Add manga to the queue!";
         QueueListBox.SelectedIndex = QueueListBox.Items.Count - 1;
     }
 
@@ -221,7 +221,7 @@ public partial class Downloader : Window
         }
         if (apiErrorManga.Count > 0)
             AddMangaErrorHandling(true);
-        StatusTextBox.Text = "Add mangas to the queue!";
+        StatusTextBox.Text = "Add manga to the queue!";
         if (result.Count == 1)
             QueueListBox.SelectedIndex = QueueListBox.Items.Count - 1;
     }
@@ -411,17 +411,7 @@ public partial class Downloader : Window
         List<decimal?> chapterVolumes = MDLGetData.GetChapterVolumes().ToList();
         List<string> chapterIDs = MDLGetData.GetChapterIDs().ToList();
         List<int> chapterPages = MDLGetData.GetChapterNrPages().ToList();
-        Dictionary<decimal, int> chapterNumberAppearances = new Dictionary<decimal, int>();
         decimal extractedLastVolume = 0M;
-        foreach (decimal? number in chapterNumbers)
-        {
-            if (number == null)
-                continue;
-            if (chapterNumberAppearances.Count > 0 && chapterNumberAppearances.ElementAt(chapterNumberAppearances.Count - 1).Key == number)
-                chapterNumberAppearances[Convert.ToDecimal(number, new CultureInfo("en-US"))]++;
-            else
-                chapterNumberAppearances[Convert.ToDecimal(number, new CultureInfo("en-US"))] = 1;
-        }
         for (int i = 0; i < chapterNumbers.Count; i++)
         {
             if (isUpdate == true && ((chapterNumbers[i] != null && chapterNumbers[i] <= mangaList[passIndex].FileLastChapter && chapterVolumes[i] == mangaList[passIndex].FileLastVolume) || (chapterVolumes[i] != null & chapterVolumes[i] < mangaList[passIndex].FileLastVolume) || (chapterNumbers[i] == null && downloadedNullChapters.Contains(chapterIDs[i]))))
@@ -437,7 +427,7 @@ public partial class Downloader : Window
             });
             if (chapterNumbers[i] != null)
             {
-                if (chapterNumberAppearances[Convert.ToDecimal(chapterNumbers[i], new CultureInfo("en-US"))] > 1) // If the current chapter number appears more than once, I also add the scanlator name to it
+                if ((i > 0 && chapterNumbers[i] == chapterNumbers[i-1]) || (i < chapterNumbers.Count - 1 && chapterNumbers[i] == chapterNumbers[i + 1])) // If the current chapter number appears more than once sequentially, I also add the scanlator name to it
                     newManga.Chapters[newManga.Chapters.Count - 1].Content = $"Ch.{chapterNumbers[i]} by {MDLGetData.GetChapterGroups()[i]}";
                 else
                     newManga.Chapters[newManga.Chapters.Count - 1].Content = $"Ch.{chapterNumbers[i]}";
@@ -447,6 +437,8 @@ public partial class Downloader : Window
                 newManga.Chapters[newManga.Chapters.Count - 1].Content = $"{MDLGetData.GetChapterTitles()[i]} by {MDLGetData.GetChapterGroups()[i]}";
                 newManga.nullChapterIDs.Add(chapterIDs[i]);
             }
+            if (chapterVolumes[i] != null)
+                newManga.Chapters[newManga.Chapters.Count - 1].Content = newManga.Chapters[newManga.Chapters.Count - 1].Content.Insert(0, $"Vol.{chapterVolumes[i]} ");
 
             newManga.ProgressBars.Add(new MimicProgressBar()
             {
@@ -598,8 +590,7 @@ public partial class Downloader : Window
                 CanResize = false,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,
                 SizeToContent = SizeToContent.WidthAndHeight,
-                //WindowDecorations = WindowDecorations.None,
-                //SystemDecorations = WindowDecorations.None,
+                WindowDecorations = WindowDecorations.None,
                 Topmost = true
             }).ShowAsync();
             if (result == "Cancel")
@@ -676,15 +667,31 @@ public partial class Downloader : Window
                         else
                         {
                             try
-                            {
-                                currentManga.TempManga.FileLastChapter = Convert.ToDecimal(currentManga.Chapters[i].Content.Split(' ')[0].Split("Ch.")[1]);
+                            { // Sample: [Vol.1 ]Ch.2.1[ by GroupName]; the brackets things may or may not be there
                                 string sanitizedGroupName = new string(currentManga.Chapters[i].Content.Split(" by ")[1].Where(c => char.IsLetter(c)).ToArray()).ToLower();
-                                selectedChapterNumbers.Add(currentManga.Chapters[i].Content.Split(' ')[0].Split("Ch.")[1] + "by" + sanitizedGroupName);
+                                if (currentManga.Chapters[i].Content.Contains("Vol."))
+                                {
+                                    currentManga.TempManga.FileLastChapter = Convert.ToDecimal(currentManga.Chapters[i].Content.Split(' ')[1].Split("Ch.")[1]);
+                                    selectedChapterNumbers.Add((currentManga.Chapters[i].Content.Split(' ')[0].ToLower() + currentManga.Chapters[i].Content.Split(' ')[1].ToLower() + "by" + sanitizedGroupName).Replace(".", ""));
+                                }
+                                else
+                                {
+                                    currentManga.TempManga.FileLastChapter = Convert.ToDecimal(currentManga.Chapters[i].Content.Split(' ')[0].Split("Ch.")[1]);
+                                    selectedChapterNumbers.Add((currentManga.Chapters[i].Content.Split(' ')[0].ToLower() + "by" + sanitizedGroupName).Replace(".", ""));
+                                }
                             }
                             catch
                             {
-                                currentManga.TempManga.FileLastChapter = Convert.ToDecimal(currentManga.Chapters[i].Content.Split("Ch.")[1]);
-                                selectedChapterNumbers.Add(currentManga.Chapters[i].Content.Split("Ch.")[1]);
+                                if (currentManga.Chapters[i].Content.Contains("Vol."))
+                                {
+                                    currentManga.TempManga.FileLastChapter = Convert.ToDecimal(currentManga.Chapters[i].Content.Split(' ')[1].Split("Ch.")[1]);
+                                    selectedChapterNumbers.Add((currentManga.Chapters[i].Content.Split(' ')[0].ToLower() + currentManga.Chapters[i].Content.Split(' ')[1].ToLower()).Replace(".", ""));
+                                }
+                                else
+                                {
+                                    currentManga.TempManga.FileLastChapter = Convert.ToDecimal(currentManga.Chapters[i].Content.Split("Ch.")[1]);
+                                    selectedChapterNumbers.Add(currentManga.Chapters[i].Content.Split(' ')[0].ToLower().Replace(".", ""));
+                                }
                             }
                         }
                         if (currentManga.VolumesList[i] != null)
@@ -739,7 +746,7 @@ public partial class Downloader : Window
                     continue;
                 }
 
-                if (FileSetup(tempFolderPath, chaptersToDownload.Count) == false) // Creates empty folder structure for new mangas or extracts the archives if it's an update
+                if (FileSetup(tempFolderPath, chaptersToDownload.Count) == false) // Creates empty folder structure for new manga or extracts the archives if it's an update
                 {
                     Dispatcher.UIThread.Post(() =>
                     {
@@ -1279,7 +1286,7 @@ public partial class Downloader : Window
                 playOrder++;
                 for (int i = 0; i < selectedChapterNumbers.Count; i++)
                 {
-                    string chapterName = "Ch." + selectedChapterNumbers[i];
+                    string chapterName = selectedChapterNumbers[i];
                     XmlElement navPoint = toc.CreateElement("navPoint", toc.DocumentElement.GetAttribute("xmlns"));
                     navPoint.SetAttribute("id", "book" + Convert.ToString(playOrder));
                     navPoint.SetAttribute("playOrder", Convert.ToString(playOrder));

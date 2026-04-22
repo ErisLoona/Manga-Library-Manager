@@ -12,7 +12,7 @@ public partial class Filtering : Window
     {
         InitializeComponent();
 
-        TotalMangasTextBlock.Text = $"Mangas: {mangaList.Count}";
+        TotalMangasTextBlock.Text = $"Manga: {mangaList.Count}";
         int safeMangas = 0, suggestiveMangas = 0, eroticaMangas = 0, pornographicMangas = 0;
         foreach (Manga manga in mangaList)
             if(manga.ContentRating == "Safe")
@@ -23,7 +23,7 @@ public partial class Filtering : Window
                 eroticaMangas++;
             else if (manga.ContentRating == "Pornographic")
                 pornographicMangas++;
-        MangaCountByTagsTextBlock.Text = $"\nSafe: {safeMangas}\nSuggestive: {suggestiveMangas}\nErotica: {eroticaMangas}\nPornographic: {pornographicMangas}\n\nNr. of Mangas by tag:";
+        MangaCountByTagsTextBlock.Text = $"\nSafe: {safeMangas}\nSuggestive: {suggestiveMangas}\nErotica: {eroticaMangas}\nPornographic: {pornographicMangas}\n\nNr. of Manga by tag:";
         foreach (KeyValuePair<string, int> tag in tagsUsage)
             MangaCountByTagsTextBlock.Text += $"\n{tag.Key}: {tag.Value}";
         LoadControlStates();

@@ -12,7 +12,7 @@ This program streamlines the process of downloading, updating, and organizing yo
 
   * **Supported Formats:** `.epub` (full metadata support) and `.cbz` (basic support)  
   * **Compatibility:** Cross-platform support for Windows, macOS, and Linux  
-  * Built with C# .NET 8.0 and AvaloniaUI  
+  * Built with C# .NET 10.0 and [AvaloniaUI](https://github.com/AvaloniaUI/Avalonia)  
 
 -----
 

@@ -79,7 +79,7 @@
       </Border>
     </Grid>
     <Grid Grid.Row="2" ColumnDefinitions="50*, 50*">
-      <TextBlock Grid.Column="0" x:Name="StatusTextBox" Text="Add mangas to the queue!" FontSize="15" FontWeight="Bold" Foreground="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5, 3, 0, 3"/>
+      <TextBlock Grid.Column="0" x:Name="StatusTextBox" Text="Add manga to the queue!" FontSize="15" FontWeight="Bold" Foreground="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5, 3, 0, 3"/>
       <Button Grid.Column="1" x:Name="DownloadButton" Click="DownloadButton_Clicked" Content="Start downloading" VerticalAlignment="Center" HorizontalAlignment="Right" IsEnabled="False"/>
     </Grid>
   </Grid>

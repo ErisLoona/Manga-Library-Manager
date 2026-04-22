@@ -65,7 +65,7 @@
           <CheckBox Foreground="White" Content="Erotica"/>
           <CheckBox Foreground="White" Content="Pornographic"/>
         </StackPanel>
-        <CheckBox Grid.Row="0" x:Name="OnlyShowNewChaptersCheckBox" Grid.Column="1" Foreground="White" Content="Only show Mangas with new chapters" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <CheckBox Grid.Row="0" x:Name="OnlyShowNewChaptersCheckBox" Grid.Column="1" Foreground="White" Content="Only show Manga with new chapters" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         <StackPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
           <TextBlock Text="Inclusion Mode:" HorizontalAlignment="Center" FontSize="15"/>
           <RadioButton x:Name="InclusionAndRadioButton" GroupName="Inclusion Mode" Foreground="White" Content="and"/>
@@ -84,7 +84,7 @@
       </Border>
     </Grid>
     <Grid Grid.Column="1" RowDefinitions="10*, 90*">
-      <TextBlock Grid.Row="0" x:Name="TotalMangasTextBlock" Text="Mangas:" FontWeight="Bold" FontSize="15" HorizontalAlignment="Center" Margin="5"/>
+      <TextBlock Grid.Row="0" x:Name="TotalMangasTextBlock" Text="Manga:" FontWeight="Bold" FontSize="15" HorizontalAlignment="Center" Margin="5"/>
       <Border Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <ScrollViewer>
           <TextBlock x:Name="MangaCountByTagsTextBlock" Margin="5, 0"/>

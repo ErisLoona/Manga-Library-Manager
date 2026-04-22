@@ -16,7 +16,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0
 
@@ -31,10 +31,40 @@ jobs:
         Configuration: ${{ matrix.configuration }}
 
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v7
       with:
         name: Windows-MangaLibraryManager
         path: bin/Release/net10.0/publish/win-x64/Manga Manager.exe
+
+  build-windows-arm:
+
+    strategy:
+      matrix:
+        configuration: [Release]
+
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: 10.0.x
+
+    - name: Publish
+      run: dotnet publish /p:Configuration=$env:Configuration /p:PublishProfile="Properties/PublishProfiles/Windows ARM.pubxml"
+      env:
+        Configuration: ${{ matrix.configuration }}
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v7
+      with:
+        name: WindowsARM-MangaLibraryManager
+        path: bin/Release/net10.0/publish/win-arm64/Manga Manager.exe
 
   build-macos-arm:
 
@@ -46,7 +76,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0
 
@@ -70,7 +100,7 @@ jobs:
             cp -r "Manga Library Manager.app" tmp_bs/
 
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v7
       with:
         name: macOSAppleSilicon-MangaLibraryManager
         path: "Manga Library Manager.app/Contents/MacOS/Manga Manager"
@@ -85,7 +115,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0
 
@@ -109,7 +139,7 @@ jobs:
             cp -r "Manga Library Manager.app" tmp_bs/
 
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v7
       with:
         name: macOSIntel-MangaLibraryManager
         path: "Manga Library Manager.app/Contents/MacOS/Manga Manager"
@@ -124,7 +154,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0
 
@@ -139,7 +169,37 @@ jobs:
         Configuration: ${{ matrix.configuration }}
 
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v7
       with:
         name: Linux-MangaLibraryManager
         path: bin/Release/net10.0/publish/linux-x64/Manga Manager
+
+  build-linux-arm:
+
+    strategy:
+      matrix:
+        configuration: [Release]
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: 10.0.x
+
+    - name: Publish
+      run: dotnet publish /p:Configuration=$Configuration /p:PublishProfile="Properties/PublishProfiles/Linux ARM.pubxml"
+      env:
+        Configuration: ${{ matrix.configuration }}
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v7
+      with:
+        name: LinuxARM-MangaLibraryManager
+        path: bin/Release/net10.0/publish/linux-arm64/Manga Manager

@@ -23,8 +23,8 @@ namespace MangaDex_Library
             apiCalls++;
             if (apiCalls > 5)
             {
-                if (span.Milliseconds < 1000)
-                    Thread.Sleep(1000 - span.Milliseconds);
+                if (span.TotalMilliseconds < 1000)
+                    Thread.Sleep(1000 - Convert.ToInt32(span.TotalMilliseconds));
                 apiCalls = 0;
                 api.Reset();
             }
@@ -44,8 +44,8 @@ namespace MangaDex_Library
             homeCalls++;
             if (homeCalls > 40)
             {
-                if (span.Milliseconds < 60000)
-                    Thread.Sleep(60000 - span.Milliseconds);
+                if (span.TotalMilliseconds < 60000)
+                    Thread.Sleep(60000 - Convert.ToInt32(span.TotalMilliseconds));
                 homeCalls = 0;
                 home.Reset();
             }

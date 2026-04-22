@@ -53,7 +53,7 @@
       <TextBlock Grid.Column="0" Text="Manga name" TextAlignment="Left" HorizontalAlignment="Left" VerticalAlignment="Center" Background="DimGray" Foreground="White" FontSize="16" Margin="3"/>
       <TextBlock Grid.Column="1" Text="Status" TextAlignment="Left" HorizontalAlignment="Left" VerticalAlignment="Center" Background="DimGray" Foreground="White" FontSize="16" Margin="3"/>
     </Grid>
-    <ProgressBar Grid.Row="1" x:Name="ProgressBar" Minimum="0" Value="0" Background="White" Foreground="#F8C8DC" ShowProgressText="True" Margin="3,0,3,0" ProgressTextFormat="{}{0}/{3} mangas checked"/>
+    <ProgressBar Grid.Row="1" x:Name="ProgressBar" Minimum="0" Value="0" Background="White" Foreground="#F8C8DC" ShowProgressText="True" Margin="3,0,3,0" ProgressTextFormat="{}{0}/{3} manga checked"/>
     <Grid Grid.Row="2" ColumnDefinitions="60*, 40*">
       <ListBox Grid.Column="0" x:Name="MangaNameList" SelectionChanged="MangaNameList_SelectionChanged" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="DimGray" Foreground="White" Padding="3, 3, 0, 3" ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
       <ListBox Grid.Column="1" x:Name="ChapterStatusList" SelectionChanged="ChapterStatusList_SelectionChanged" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="DimGray" Foreground="White" Padding="0, 3, 3, 3"/>

@@ -557,13 +557,13 @@ namespace MangaDex_Library
                 if (response.Headers.TryGetValues("X-Cache", out IEnumerable<string> headers) == true)
                     if (headers.First().StartsWith("HIT") == true)
                         cached = true;
-                Report(link, success, cached, response.Content.ReadAsStream().Length, span.Milliseconds, !success);
+                Report(link, success, cached, response.Content.ReadAsStream().Length, span.TotalMilliseconds, !success);
             }
             dlTime.Reset();
             return response.Content.ReadAsStream();
         }
 
-        private static async void Report(string link, bool success, bool cached, long bytes, long duration, bool wait)
+        private static async void Report(string link, bool success, bool cached, long bytes, double duration, bool wait)
         {
             Dictionary<string, object> values = new Dictionary<string, object>();
             values["url"] = link;

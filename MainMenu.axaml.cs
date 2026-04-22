@@ -81,8 +81,7 @@ namespace Manga_Manager
                     CanResize = false,
                     WindowStartupLocation = WindowStartupLocation.CenterScreen,
                     SizeToContent = SizeToContent.WidthAndHeight,
-                    //WindowDecorations = WindowDecorations.None,
-                    //SystemDecorations = WindowDecorations.None,
+                    WindowDecorations = WindowDecorations.None,
                     Topmost = true
                 };
                 if (await MessageBoxManager.GetMessageBoxCustom(updatePopup).ShowAsync() == "Yes")
@@ -163,7 +162,7 @@ namespace Manga_Manager
                     break;
 
                 default:
-                    await MessageBoxManager.GetMessageBoxStandard("Library JSON too old", "Your library JSON is too old.\nPlease download and launch an older version of the program first.", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Info).ShowAsync();
+                    await MessageBoxManager.GetMessageBoxStandard("Invalid library JSON", "Your library JSON is invalid.", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Info).ShowAsync();
                     System.Environment.Exit(0);
                     break;
                 #endregion
@@ -240,8 +239,8 @@ namespace Manga_Manager
             DescriptionLabel.Text = currentManga.Description;
             StatusLabel.Text += currentManga.OngoingStatus;
             RatingLabel.Text += currentManga.ContentRating;
-            LastChapterTextBlock.Text += "Ch. " + currentManga.FileLastChapter.ToString() + " Vol. " + currentManga.FileLastVolume.ToString();
-            LastChapterOnlineLabel.Text += "Ch. " + currentManga.OnlineLastChapter.ToString() + " Vol. " + currentManga.OnlineLastVolume.ToString();
+            LastChapterTextBlock.Text += "Vol. " + currentManga.FileLastVolume.ToString() + " Ch. " + currentManga.FileLastChapter.ToString();
+            LastChapterOnlineLabel.Text += "Vol. " + currentManga.OnlineLastVolume.ToString() + " Ch. " + currentManga.OnlineLastChapter.ToString();
             LastCheckedDateLabel.Text += currentManga.LastChecked.ToShortDateString();
             CheckForUpdatesCheckBox.IsChecked = currentManga.CheckInBulk;
             if (currentManga.LastChecked != new DateOnly(69, 1, 1))
@@ -371,6 +370,7 @@ namespace Manga_Manager
                     nsmgr.AddNamespace("dc", "http://purl.org/dc/elements/1.1/");
                     title = doc.DocumentElement.SelectSingleNode("//dc:title", nsmgr).InnerText;
                     desc = doc.DocumentElement.SelectSingleNode("//dc:description", nsmgr).InnerText;
+                    tempManga.Description = desc;
                     link = doc.DocumentElement.SelectSingleNode("//dc:identifier", nsmgr).InnerText;
                 }
                 catch
@@ -528,7 +528,7 @@ namespace Manga_Manager
             currentManga.OnlineLastChapter = onlineChapter;
             currentManga.OnlineLastVolume = onlineVolume;
             currentManga.LastChecked = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
-            LastChapterOnlineLabel.Text = $"Last chapter online: Ch. {onlineChapter.ToString()} Vol. {onlineVolume.ToString()}";
+            LastChapterOnlineLabel.Text = $"Last chapter online: Vol. {onlineVolume.ToString()} Ch. {onlineChapter.ToString()}";
             LastCheckedDateLabel.Text = $"Last checked: {currentManga.LastChecked.ToShortDateString()}";
             LastChapterOnlineLabel.IsVisible = true;
             LastCheckedDateLabel.IsVisible = true;
