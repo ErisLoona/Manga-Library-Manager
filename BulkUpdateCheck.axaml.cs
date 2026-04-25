@@ -44,7 +44,7 @@ public partial class BulkUpdateCheck : Window
                     return;
                 }
                 MDLParameters.MangaID = mangaList[i].ID;
-                MDLGetData.GetLastChapter();
+                MDLGetData.GetFeed();
                 if (apiError == true)
                 {
                     apiError = false;

@@ -56,10 +56,9 @@ public partial class Downloader : Window
 
     internal static List<string> addedMangas = new List<string>(); // This is to not add these to "Add from library"
     private static Dictionary<string, string> apiErrorManga = new Dictionary<string, string>(); // Collects errors after bulk adds; Manga ID | Error "code"
-    private List<QueuedManga> mangaQueue = new List<QueuedManga>();
-    private List<TextBlock> mangaQueueStatuses = new List<TextBlock>();
-    private bool downloadError = false;
-    private static bool shiftHeld = false;
+    private static List<QueuedManga> mangaQueue = new List<QueuedManga>();
+    private static List<TextBlock> mangaQueueStatuses = new List<TextBlock>();
+    private static bool downloadError = false, shiftHeld = false, loading = false; // loading stops the "animation" when set to false
 
     public Downloader()
     {
@@ -69,15 +68,25 @@ public partial class Downloader : Window
         UpdateCoverCheckBox.IsCheckedChanged += UpdateCoverCheckBox_Checked;
         QualityComboBox.SelectionChanged += QualityComboBox_SelectionChanged;
 
+        Startup();
+
+        MDLGetData.DownloadError += MDLGetData_DownloadError;
+    }
+
+    private async void Startup()
+    {
         FormatComboBox.SelectedIndex = downloaderLastUsedFormat;
         if (MainWindow.openedByDownloadUpdatesButton == true)
         {
             MainWindow.openedByDownloadUpdatesButton = false;
-            AddMangaToQueue(mangaList[passIndex].ID, true);
-            QueueListBox.SelectedIndex = 0;
+            LoadingAnimation();
+            await AddMangaToQueue(mangaList[passIndex].ID, true);
+            if (apiErrorManga.Count > 0)
+                AddMangaErrorHandling(false);
+            else
+                QueueListBox.SelectedIndex = 0;
+            loading = false;
         }
-
-        MDLGetData.DownloadError += MDLGetData_DownloadError;
     }
 
     private void MDLGetData_DownloadError(object sender, EventArgs e)
@@ -106,6 +115,7 @@ public partial class Downloader : Window
                 message += '\n' + manga.Title;
             }
         
+        apiErrorManga.Clear();
         MessageBoxManager.GetMessageBoxStandard("API error", message, ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error).ShowAsync();
     }
 
@@ -158,11 +168,11 @@ public partial class Downloader : Window
         if (ValidateLink(result) == false)
             return;
 
-        StatusTextBox.Text = "Getting manga info...";
+        LoadingAnimation();
         if (addedMangas.Contains(result.Split('/')[4]) == true)
         {
             await MessageBoxManager.GetMessageBoxStandard("Manga already added", "This manga is already in queue!").ShowAsync();
-            StatusTextBox.Text = "Add manga to the queue!";
+            loading = false;
             return;
         }
         foreach (Manga manga in mangaList)
@@ -172,36 +182,36 @@ public partial class Downloader : Window
                 {
                     if (await MessageBoxManager.GetMessageBoxStandard("Manga already exists", "This manga is already in the library, but its file is missing.\nIt will be removed from the library and added to the queue.", ButtonEnum.OkCancel).ShowAsync() == ButtonResult.Cancel)
                     {
-                        StatusTextBox.Text = "Add manga to the queue!";
+                        loading = false;
                         return;
                     }
-                    AddMangaToQueue(manga.ID, false);
+                    await AddMangaToQueue(manga.ID, false);
                     if (apiErrorManga.Count > 0)
                     {
                         AddMangaErrorHandling(false);
-                        StatusTextBox.Text = "Add manga to the queue!";
+                        loading = false;
                         return;
                     }
                     mangaList.Remove(manga);
-                    StatusTextBox.Text = "Add manga to the queue!";
+                    loading = false;
                     return;
                 }
                 if (await MessageBoxManager.GetMessageBoxStandard("Manga already exists", "This manga is already in the library!\nWould you like to update it instead?", ButtonEnum.YesNo).ShowAsync() == ButtonResult.No)
                 {
-                    StatusTextBox.Text = "Add manga to the queue!";
+                    loading = false;
                     return;
                 }
                 passIndex = mangaList.IndexOf(manga);
-                AddMangaToQueue(manga.ID, true);
+                await AddMangaToQueue(manga.ID, true);
                 if (apiErrorManga.Count > 0)
                     AddMangaErrorHandling(false);
-                StatusTextBox.Text = "Add manga to the queue!";
+                loading = false;
                 return;
             }
-        AddMangaToQueue(result.Split('/')[4], false);
+        await AddMangaToQueue(result.Split('/')[4], false);
         if (apiErrorManga.Count > 0)
             AddMangaErrorHandling(false);
-        StatusTextBox.Text = "Add manga to the queue!";
+        loading = false;
         QueueListBox.SelectedIndex = QueueListBox.Items.Count - 1;
     }
 
@@ -212,16 +222,15 @@ public partial class Downloader : Window
         List<int> result = await downloader_AddFromLibrary.ShowDialog<List<int>>(this);
         if (result == null)
             return;
-        StatusTextBox.Text = "Getting manga info...";
-        await Task.Run(() => Thread.Sleep(100));
+        LoadingAnimation();
         foreach (int indexToAdd in result)
         {
             passIndex = indexToAdd;
-            AddMangaToQueue(mangaList[indexToAdd].ID, true);
+            await AddMangaToQueue(mangaList[indexToAdd].ID, true);
         }
         if (apiErrorManga.Count > 0)
             AddMangaErrorHandling(true);
-        StatusTextBox.Text = "Add manga to the queue!";
+        loading = false;
         if (result.Count == 1)
             QueueListBox.SelectedIndex = QueueListBox.Items.Count - 1;
     }
@@ -363,18 +372,18 @@ public partial class Downloader : Window
         }
     }
 
-    private void AddMangaToQueue(string mangaID, bool isUpdate)
+    private async Task AddMangaToQueue(string mangaID, bool isUpdate)
     {
         MDLParameters.MangaID = mangaID;
         QueuedManga newManga = new QueuedManga();
-        MDLGetData.GetTitles();
+        await Task.Run(MDLGetData.GetManga);
         if (apiError == true)
         {
             apiErrorManga.Add(mangaID, "manga");
             apiError = false;
             return;
         }
-        MDLGetData.GetChapterIDs();
+        await Task.Run(MDLGetData.GetFeed);
         if (apiError == true)
         {
             apiErrorManga.Add(mangaID, "chapter");
@@ -1579,6 +1588,47 @@ public partial class Downloader : Window
 
     #endregion
 
+    private async void LoadingAnimation()
+    {
+        loading = true;
+        FormatComboBox.IsEnabled = false;
+        QualityComboBox.IsEnabled = false;
+        AddFromLinkButton.IsEnabled = false;
+        AddFromLibraryButton.IsEnabled = false;
+        DownloadButton.IsEnabled = false;
+        QueueListBox.IsEnabled = false;
+
+        _ = Task.Run(() =>
+        {
+            while (loading == true)
+            {
+                Dispatcher.UIThread.Post(() => { StatusTextBox.Text = "Getting manga info"; });
+                Thread.Sleep(500);
+                if (loading == false)
+                    break;
+                Dispatcher.UIThread.Post(() => { StatusTextBox.Text = "Getting manga info."; });
+                Thread.Sleep(500);
+                if (loading == false)
+                    break;
+                Dispatcher.UIThread.Post(() => { StatusTextBox.Text = "Getting manga info.."; });
+                Thread.Sleep(500);
+                if (loading == false)
+                    break;
+                Dispatcher.UIThread.Post(() => { StatusTextBox.Text = "Getting manga info..."; });
+                Thread.Sleep(500);
+            }
+            
+            Dispatcher.UIThread.Post(() => {
+                StatusTextBox.Text = "Add manga to the queue!";
+                FormatComboBox.IsEnabled = true;
+                QualityComboBox.IsEnabled = true;
+                AddFromLinkButton.IsEnabled = true;
+                AddFromLibraryButton.IsEnabled = true;
+                QueueListBox.IsEnabled = true;
+            });
+        });
+    }
+
     protected override void OnKeyDown(Avalonia.Input.KeyEventArgs e)
     {
         if (e.Key == Avalonia.Input.Key.LeftShift || e.Key == Avalonia.Input.Key.RightShift)
@@ -1597,7 +1647,7 @@ public partial class Downloader : Window
 
     protected override void OnClosing(WindowClosingEventArgs e)
     {
-        if (downloading == true)
+        if (downloading == true || loading == true)
         {
             e.Cancel = true;
             return;

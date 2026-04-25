@@ -197,8 +197,7 @@ namespace Manga_Manager
                                     OpenLink(githubResponse.SelectToken("html_url").Value<string>());
                             });
                         }
-                    }
-                    catch { }
+                    } catch { }
                 });
             }
 
@@ -513,14 +512,24 @@ namespace Manga_Manager
 
         private async void CheckOnlineButton_Clicked(object sender, RoutedEventArgs args)
         {
-            Manga currentManga = FindSelectedManga();
+            CheckOnlineButton.IsEnabled = false;
+            MainDisplayList.IsEnabled = false;
+            bool updateMangaButtonPreviousState = UpdateMangaButton.IsEnabled;
+            UpdateMangaButton.IsEnabled = false;
+            EditMetadataButton.IsEnabled = false;
 
+            Manga currentManga = FindSelectedManga();
             MDLParameters.MangaID = currentManga.ID;
-            MDLGetData.GetLastChapter();
+            await Task.Run(MDLGetData.GetFeed);
             if (apiError == true)
             {
                 await MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API. Please double-check the manga link and try again later.", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error).ShowAsync();
                 apiError = false;
+
+                CheckOnlineButton.IsEnabled = true;
+                MainDisplayList.IsEnabled = true;
+                UpdateMangaButton.IsEnabled = updateMangaButtonPreviousState;
+                EditMetadataButton.IsEnabled = true;
                 return;
             }
             decimal onlineChapter = MDLGetData.GetLastChapter();
@@ -570,6 +579,10 @@ namespace Manga_Manager
                     break;
                 }
             }
+
+            CheckOnlineButton.IsEnabled = true;
+            MainDisplayList.IsEnabled = true;
+            EditMetadataButton.IsEnabled = true;
         }
 
         private async void DeleteEntryButton_Clicked(object sender, RoutedEventArgs args)

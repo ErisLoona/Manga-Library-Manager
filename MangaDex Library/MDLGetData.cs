@@ -138,6 +138,13 @@ namespace MangaDex_Library
             }
         }
 
+        public static void GetManga()
+        {
+            if (oldIDManga != MDLParameters.MangaID || manga == null)
+                UpdateManga();
+            return;
+        }
+
         public static List<string> GetTitles()
         {
             if (oldIDManga != MDLParameters.MangaID || manga == null)
@@ -324,6 +331,13 @@ namespace MangaDex_Library
                 lastVolume++;
 
 
+        }
+
+        public static void GetFeed()
+        {
+            if (oldIDFeed != MDLParameters.MangaID || feed == null)
+                UpdateFeed();
+            return;
         }
 
         public static List<string> GetChapterIDs()
