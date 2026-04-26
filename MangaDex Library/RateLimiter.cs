@@ -7,7 +7,6 @@ namespace MangaDex_Library
     internal static class RateLimiter
     {
         private static Stopwatch api = new Stopwatch(), home = new Stopwatch();
-        private static TimeSpan span;
         private static int apiCalls = 0, homeCalls = 0;
 
         internal static void ApiCall()
@@ -19,13 +18,12 @@ namespace MangaDex_Library
                 return;
             }
             api.Stop();
-            span = api.Elapsed;
             apiCalls++;
             if (apiCalls > 5)
             {
-                if (span.TotalMilliseconds < 1000)
-                    Thread.Sleep(1000 - Convert.ToInt32(span.TotalMilliseconds));
-                apiCalls = 0;
+                if (api.ElapsedMilliseconds < 1000)
+                    Thread.Sleep(1000 - Convert.ToInt32(api.ElapsedMilliseconds));
+                apiCalls = 1;
                 api.Reset();
             }
             api.Start();
@@ -40,13 +38,12 @@ namespace MangaDex_Library
                 return;
             }
             home.Stop();
-            span = home.Elapsed;
             homeCalls++;
             if (homeCalls > 40)
             {
-                if (span.TotalMilliseconds < 60000)
-                    Thread.Sleep(60000 - Convert.ToInt32(span.TotalMilliseconds));
-                homeCalls = 0;
+                if (home.ElapsedMilliseconds < 60000)
+                    Thread.Sleep(60000 - Convert.ToInt32(home.ElapsedMilliseconds));
+                homeCalls = 1;
                 home.Reset();
             }
             home.Start();

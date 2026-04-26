@@ -30,7 +30,7 @@ namespace Manga_Manager
 {
     public partial class MainWindow : Window
     {
-        private List<string> searchAutocomplete = new List<string>();
+        private static List<string> searchAutocomplete = new List<string>();
 
         private void ResetDescriptionPanel()
         {
@@ -125,48 +125,37 @@ namespace Manga_Manager
             noWarning = saveJson.SelectToken("NoWarning").Value<bool>();
             checkUpdates = saveJson.SelectToken("CheckUpdates").Value<bool>();
 
-            switch (saveJson.SelectToken("FormatVersion").Value<int>())
+            #region Legacy JSON Formats
+            int foundJsonFormat = saveJson.SelectToken("FormatVersion").Value<int>();
+            if (foundJsonFormat < 3 || foundJsonFormat > JSON_FORMAT_VERSION)
             {
-                case 5:
-
-                #region Legacy JSON Formats
-                case 4:
-                    hideJsonFile = saveJson.SelectToken("HideJsonFile").Value<bool>();
-                    downloaderLastUsedFormat = saveJson.SelectToken("DownloaderLastUsedFormat").Value<int>();
-                    mangaList = saveJson.SelectToken("Library").ToObject<List<Manga>>();
-                    break;
-                
-                case 3:
-                    hideJsonFile = false;
-                    downloaderLastUsedFormat = 0;
-                    foreach (JToken manga in saveJson.SelectToken("Library"))
-                    {
-                        mangaList.Add(new Manga
-                        {
-                            Title = manga.SelectToken("Title").Value<string>(),
-                            Description = string.Empty,
-                            Path = manga.SelectToken("Path").Value<string>(),
-                            FileLastChapter = manga.SelectToken("LastChapter").Value<decimal>(),
-                            OnlineLastChapter = 0M,
-                            LastChecked = new DateOnly(69, 1, 1),
-                            OngoingStatus = "Unknown",
-                            CheckInBulk = manga.SelectToken("Ongoing").Value<bool>(),
-                            ID = manga.SelectToken("Link").Value<string>(),
-                            ContentRating = manga.SelectToken("ContentRating").Value<string>(),
-                            Tags = manga.SelectToken("Tags").ToObject<List<string>>()
-                        });
-                        string link = manga.SelectToken("Link").Value<string>();
-                        if (ValidateLink(link) == true)
-                            mangaList[mangaList.Count - 1].ID = link.Split('/')[4];
-                    }
-                    break;
-
-                default:
-                    await MessageBoxManager.GetMessageBoxStandard("Invalid library JSON", "Your library JSON is invalid.", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Info).ShowAsync();
-                    System.Environment.Exit(0);
-                    break;
-                #endregion
+                await MessageBoxManager.GetMessageBoxStandard("Invalid library JSON", "Your library JSON is invalid.", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Info).ShowAsync();
+                System.Environment.Exit(0);
             }
+            if (foundJsonFormat == 3)
+            {
+                saveJson["HideJsonFile"] = false;
+                saveJson["DownloaderLastUsedFormat"] = 0;
+
+                foreach (JObject manga in saveJson.SelectToken("Library"))
+                {
+                    manga["FileLastChapter"] = manga["LastChapter"];
+                    manga["CheckInBulk"] = manga["Ongoing"];
+                    if (ValidateLink(manga.SelectToken("Link").Value<string>()) == true)
+                        manga["ID"] = manga.SelectToken("Link").Value<string>().Split('/')[4];
+                    else
+                        manga["ID"] = manga["Link"];
+                    
+                    foundJsonFormat = 4;
+                }
+            }
+
+            if (foundJsonFormat == 4)
+                foundJsonFormat = 5;
+            #endregion
+            hideJsonFile = saveJson.SelectToken("HideJsonFile").Value<bool>();
+            downloaderLastUsedFormat = saveJson.SelectToken("DownloaderLastUsedFormat").Value<int>();
+            mangaList = saveJson.SelectToken("Library").ToObject<List<Manga>>();
 
             if (checkUpdates == true)
             {
@@ -517,6 +506,9 @@ namespace Manga_Manager
             bool updateMangaButtonPreviousState = UpdateMangaButton.IsEnabled;
             UpdateMangaButton.IsEnabled = false;
             EditMetadataButton.IsEnabled = false;
+            DeleteEntryButton.IsEnabled = false;
+            SearchBox.IsEnabled = false;
+            LastChapterOnlineLabel.Text = $"Last chapter online:";
 
             Manga currentManga = FindSelectedManga();
             MDLParameters.MangaID = currentManga.ID;
@@ -526,10 +518,13 @@ namespace Manga_Manager
                 await MessageBoxManager.GetMessageBoxStandard("API error", "An error occurred while trying to contact the MangaDex API. Please double-check the manga link and try again later.", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error).ShowAsync();
                 apiError = false;
 
+                LastChapterOnlineLabel.Text = $"Last chapter online: Vol. {currentManga.OnlineLastVolume.ToString()} Ch. {currentManga.OnlineLastChapter.ToString()}";
                 CheckOnlineButton.IsEnabled = true;
                 MainDisplayList.IsEnabled = true;
                 UpdateMangaButton.IsEnabled = updateMangaButtonPreviousState;
                 EditMetadataButton.IsEnabled = true;
+                DeleteEntryButton.IsEnabled = true;
+                SearchBox.IsEnabled = true;
                 return;
             }
             decimal onlineChapter = MDLGetData.GetLastChapter();
@@ -583,6 +578,8 @@ namespace Manga_Manager
             CheckOnlineButton.IsEnabled = true;
             MainDisplayList.IsEnabled = true;
             EditMetadataButton.IsEnabled = true;
+            DeleteEntryButton.IsEnabled = true;
+            SearchBox.IsEnabled = true;
         }
 
         private async void DeleteEntryButton_Clicked(object sender, RoutedEventArgs args)

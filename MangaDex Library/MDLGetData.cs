@@ -549,7 +549,6 @@ namespace MangaDex_Library
             if (MDLParameters.AgentSet == false)
                 throw new Exception("No User Agent set for the HttpClient.");
             Stopwatch dlTime = new Stopwatch();
-            TimeSpan span = new TimeSpan();
             HttpResponseMessage response = new HttpResponseMessage();
             bool success = true, cached = false;
             try
@@ -567,11 +566,10 @@ namespace MangaDex_Library
             }
             if (doReports == true)
             {
-                span = dlTime.Elapsed;
                 if (response.Headers.TryGetValues("X-Cache", out IEnumerable<string> headers) == true)
                     if (headers.First().StartsWith("HIT") == true)
                         cached = true;
-                Report(link, success, cached, response.Content.ReadAsStream().Length, span.TotalMilliseconds, !success);
+                Report(link, success, cached, response.Content.ReadAsStream().Length, dlTime.ElapsedMilliseconds, !success);
             }
             dlTime.Reset();
             return response.Content.ReadAsStream();
