@@ -583,6 +583,8 @@ public partial class Downloader : Window
     private bool skip = false;
     private async void DownloadButton_Clicked(object sender, RoutedEventArgs args)
     {
+        if (loading == true)
+            return;
         if (downloading == true)
         {
             string result = await MessageBoxManager.GetMessageBoxCustom(new MessageBoxCustomParams
