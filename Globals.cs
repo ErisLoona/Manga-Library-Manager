@@ -16,10 +16,10 @@ namespace Manga_Manager
         public string Title = string.Empty;
         public string Description = string.Empty;
         public string Path = string.Empty;
-        public decimal FileLastChapter = 0M;
-        public decimal FileLastVolume = 0M;
-        public decimal OnlineLastChapter = 0M;
-        public decimal OnlineLastVolume = 0M;
+        public MDNumber FileLastChapter = 0M;
+        public MDNumber FileLastVolume = 0M;
+        public MDNumber OnlineLastChapter = 0M;
+        public MDNumber OnlineLastVolume = 0M;
         public DateOnly LastChecked = new DateOnly(69, 1, 1);
         public string OngoingStatus = "Unknown";
         public bool CheckInBulk = false;
@@ -112,7 +112,7 @@ namespace Manga_Manager
         internal static string selectedLanguage = "en";
         internal static bool noWarning = false, checkUpdates = false, hideJsonFile = false;
         internal static int downloaderLastUsedFormat = 0;
-        internal const int JSON_FORMAT_VERSION = 5;
+        internal const int JSON_FORMAT_VERSION = 6;
         #endregion
 
         internal static Dictionary<string, string> languageDictionary = new Dictionary<string, string>();

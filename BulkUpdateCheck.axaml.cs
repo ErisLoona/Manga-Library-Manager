@@ -8,7 +8,6 @@ using static Manga_Manager.Globals;
 using MangaDex_Library;
 using System.Linq;
 using Avalonia.Media;
-using System.Globalization;
 
 namespace Manga_Manager;
 
@@ -51,8 +50,8 @@ public partial class BulkUpdateCheck : Window
                     mangaIndexesNewChapters[i] = -1;
                     continue;
                 }
-                decimal onlineChapter = MDLGetData.GetLastChapter();
-                decimal onlineVolume = MDLGetData.GetLastVolume();
+                MDNumber onlineChapter = MDLGetData.GetLastChapter();
+                MDNumber onlineVolume = MDLGetData.GetLastVolume();
                 mangaList[i].OnlineLastChapter = onlineChapter;
                 mangaList[i].OnlineLastVolume = onlineVolume;
                 mangaList[i].LastChecked = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
@@ -61,7 +60,7 @@ public partial class BulkUpdateCheck : Window
                 if (mangaList[i].FileLastVolume == 0 && onlineVolume > 0)
                     try
                     {
-                        mangaList[i].FileLastVolume = Convert.ToDecimal(MDLGetData.GetChapterVolumes()[MDLGetData.GetChapterNumbers().IndexOf(mangaList[i].FileLastChapter)], new CultureInfo("en-US"));
+                        mangaList[i].FileLastVolume = MDLGetData.GetChapterVolumes()[MDLGetData.GetChapterNumbers().IndexOf(mangaList[i].FileLastChapter)];
                     } catch { }
 
                 for (int j = 0; j < MDLGetData.GetChapterNumbers().Count; j++)

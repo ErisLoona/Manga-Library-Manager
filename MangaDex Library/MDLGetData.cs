@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Diagnostics;
-using System.Globalization;
 using System.Net.Http.Json;
 using Newtonsoft.Json.Linq;
 
@@ -26,8 +25,8 @@ namespace MangaDex_Library
         //Feed API Data
         private static List<string> chapterIDs = new List<string>(), chapterTitles = new List<string>(), chapterGroups = new List<string>();
         private static List<int> chapterPages = new List<int>();
-        private static List<decimal?> chapterNumbers = new List<decimal?>(), chapterVolumes = new List<decimal?>();
-        private static decimal lastChapter, lastVolume;
+        private static List<MDNumber> chapterNumbers = new List<MDNumber>(), chapterVolumes = new List<MDNumber>();
+        private static MDNumber lastChapter, lastVolume;
 
         //Downloads
         public static Stream pageImage;
@@ -283,12 +282,12 @@ namespace MangaDex_Library
                     chapterIDs.Add(chapter.SelectToken("id").Value<string>());
 
                     if (chapter.SelectToken("attributes.volume").Type != JTokenType.Null)
-                        chapterVolumes.Add(Convert.ToDecimal(chapter.SelectToken("attributes.volume").Value<string>(), new CultureInfo("en-US")));
+                        chapterVolumes.Add(new MDNumber(chapter.SelectToken("attributes.volume").Value<string>()));
                     else
                         chapterVolumes.Add(null);
                     
                     if (chapter.SelectToken("attributes.chapter").Type != JTokenType.Null)
-                        chapterNumbers.Add(Convert.ToDecimal(chapter.SelectToken("attributes.chapter").Value<string>(), new CultureInfo("en-US")));
+                        chapterNumbers.Add(new MDNumber(chapter.SelectToken("attributes.chapter").Value<string>()));
                     else
                         chapterNumbers.Add(null);
                     
@@ -317,13 +316,13 @@ namespace MangaDex_Library
             for (int i = 0; i < chapterNumbers.Count; i++) // Need to go through the array anyway so might as well find the last chapter and volume manually
             {
                 if (chapterNumbers[i] != null)
-                    lastChapter = Convert.ToDecimal(chapterNumbers[i], new CultureInfo("en-US"));
+                    lastChapter = chapterNumbers[i];
                 if (chapterVolumes[i] != null)
-                    lastVolume = Convert.ToDecimal(chapterVolumes[i], new CultureInfo("en-US"));
+                    lastVolume = chapterVolumes[i];
 
                 if (chapterNumbers[i] != null && chapterVolumes[i] == null)
                 {
-                    chapterVolumes[i] = lastVolume + 1M;
+                    chapterVolumes[i] = lastVolume + 1;
                     inProgressVolume = true;
                 }
             }
@@ -347,14 +346,14 @@ namespace MangaDex_Library
             return chapterIDs;
         }
 
-        public static List<decimal?> GetChapterVolumes()
+        public static List<MDNumber> GetChapterVolumes()
         {
             if (oldIDFeed != MDLParameters.MangaID || feed == null)
                 UpdateFeed();
             return chapterVolumes;
         }
 
-        public static List<decimal?> GetChapterNumbers()
+        public static List<MDNumber> GetChapterNumbers()
         {
             if (oldIDFeed != MDLParameters.MangaID || feed == null)
                 UpdateFeed();
@@ -382,14 +381,14 @@ namespace MangaDex_Library
             return chapterGroups;
         }
 
-        public static decimal GetLastChapter()
+        public static MDNumber GetLastChapter()
         {
             if (oldIDFeed != MDLParameters.MangaID || feed == null)
                 UpdateFeed();
             return lastChapter;
         }
 
-        public static decimal GetLastVolume()
+        public static MDNumber GetLastVolume()
         {
             if (oldIDFeed != MDLParameters.MangaID || feed == null)
                 UpdateFeed();

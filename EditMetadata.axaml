@@ -70,9 +70,9 @@
           </Button>
         </StackPanel>
         <TextBlock Background="DimGray" Foreground="White" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center" Text="Last chapter on file"/>
-        <NumericUpDown x:Name="LastChapterNumeric" VerticalAlignment="Center" Minimum="0" FormatString="0.0" Increment="1" FontSize="15" Margin="0" Width="150" TextAlignment="Center"/>
+        <TextBox x:Name="LastChapterNumeric" VerticalAlignment="Center" FontSize="15" Margin="0" Width="150" TextAlignment="Center" AcceptsReturn="False"/>
         <TextBlock Background="DimGray" Foreground="White" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center" Text="Last volume on file"/>
-        <NumericUpDown x:Name="LastVolumeNumeric" VerticalAlignment="Center" Minimum="0" FormatString="0" Increment="1" FontSize="15" Margin="0" Width="150" TextAlignment="Center"/>
+        <TextBox x:Name="LastVolumeNumeric" VerticalAlignment="Center" FontSize="15" Margin="0" Width="150" TextAlignment="Center" AcceptsReturn="False"/>
         <TextBlock Background="DimGray" Foreground="White" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center" Text="Ongoing status"/>
         <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="6">
           <ComboBox x:Name="OngoingStatusComboBox" HorizontalAlignment="Center" Width="130">

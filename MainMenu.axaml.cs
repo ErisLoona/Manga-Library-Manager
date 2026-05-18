@@ -21,7 +21,6 @@ using Avalonia.Input;
 using System.Linq;
 using System.Xml;
 using System.Text.RegularExpressions;
-using System.Globalization;
 using Avalonia.Platform.Storage;
 using System.Net.Http;
 using Avalonia.Input.Platform;
@@ -152,6 +151,9 @@ namespace Manga_Manager
 
             if (foundJsonFormat == 4)
                 foundJsonFormat = 5;
+
+            if (foundJsonFormat == 5)
+                foundJsonFormat = 6;
             #endregion
             hideJsonFile = saveJson.SelectToken("HideJsonFile").Value<bool>();
             downloaderLastUsedFormat = saveJson.SelectToken("DownloaderLastUsedFormat").Value<int>();
@@ -235,7 +237,7 @@ namespace Manga_Manager
             {
                 LastChapterOnlineLabel.IsVisible = true;
                 LastCheckedDateLabel.IsVisible = true;
-                if (currentManga.OnlineLastChapter - currentManga.FileLastChapter > 0 && notFound == false)
+                if (currentManga.OnlineLastChapter > currentManga.FileLastChapter && notFound == false)
                     UpdateMangaButton.IsEnabled = true;
             }
 
@@ -382,17 +384,17 @@ namespace Manga_Manager
             try
             {
                 MatchCollection chapters = chapterRegex.Matches(desc);
-                List<decimal> tempChapters = new List<decimal>();
+                List<MDNumber> tempChapters = new List<MDNumber>();
                 foreach (Match match in chapters)
-                    tempChapters.Add(Convert.ToDecimal(match.Value.Substring(3), new CultureInfo("en-US")));
+                    tempChapters.Add(match.Value.Substring(3));
                 tempManga.FileLastChapter = tempChapters.Max();
             } catch { }
             try
             {
                 MatchCollection volumes = volumeRegex.Matches(desc);
-                List<decimal> tempVolumes = new List<decimal>();
+                List<MDNumber> tempVolumes = new List<MDNumber>();
                 foreach (Match match in volumes)
-                    tempVolumes.Add(Convert.ToDecimal(match.Value.Substring(4), new CultureInfo("en-US")));
+                    tempVolumes.Add(match.Value.Substring(4));
                 tempManga.FileLastVolume = tempVolumes[tempVolumes.Count - 1];
             } catch { }
             if (ValidateLink(link) == true)
@@ -527,8 +529,8 @@ namespace Manga_Manager
                 SearchBox.IsEnabled = true;
                 return;
             }
-            decimal onlineChapter = MDLGetData.GetLastChapter();
-            decimal onlineVolume = MDLGetData.GetLastVolume();
+            MDNumber onlineChapter = MDLGetData.GetLastChapter();
+            MDNumber onlineVolume = MDLGetData.GetLastVolume();
             currentManga.OnlineLastChapter = onlineChapter;
             currentManga.OnlineLastVolume = onlineVolume;
             currentManga.LastChecked = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
@@ -542,7 +544,7 @@ namespace Manga_Manager
             {
                 try
                 {
-                    currentManga.FileLastVolume = Convert.ToDecimal(MDLGetData.GetChapterVolumes()[MDLGetData.GetChapterNumbers().IndexOf(currentManga.FileLastChapter)], new CultureInfo("en-US"));
+                    currentManga.FileLastVolume = MDLGetData.GetChapterVolumes()[MDLGetData.GetChapterNumbers().IndexOf(currentManga.FileLastChapter)];
                     initializedVolume = true;
                 } catch { }
             }
@@ -660,7 +662,7 @@ namespace Manga_Manager
 
         private List<TextBlock> displayTitles = new List<TextBlock>(), displayChapters = new List<TextBlock>();
         private List<StackPanel> displayPanels = new List<StackPanel>();
-        private void DisplayAdd(string title, decimal chapterOnFile, decimal volumeOnFile, bool ahead)
+        private void DisplayAdd(string title, MDNumber chapterOnFile, MDNumber volumeOnFile, bool ahead)
         {
             displayTitles.Add(new TextBlock
             {

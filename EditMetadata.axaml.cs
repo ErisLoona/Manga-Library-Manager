@@ -22,7 +22,7 @@ public partial class EditMetadata : Window
     private List<CheckBox> tagCheckBoxes = new List<CheckBox>();
     private SKBitmap newCoverSKBitmap;
 
-    private static readonly string[] contentRatings = [ "Safe", "Suggestive", "Erotica", "Pornographic" ], ongoingStatuses = [ "Ongoing", "Completed", "Hiatus", "Cancelled" ];
+    private static readonly string[] contentRatings = ["Safe", "Suggestive", "Erotica", "Pornographic"], ongoingStatuses = ["Ongoing", "Completed", "Hiatus", "Cancelled"];
 
     public EditMetadata()
     {
@@ -80,8 +80,8 @@ public partial class EditMetadata : Window
             });
         }
         DescriptionTextBox.Text = mangaList[passIndex].Description;
-        LastChapterNumeric.Value = mangaList[passIndex].FileLastChapter;
-        LastVolumeNumeric.Value = mangaList[passIndex].FileLastVolume;
+        LastChapterNumeric.Text = mangaList[passIndex].FileLastChapter;
+        LastVolumeNumeric.Text = mangaList[passIndex].FileLastVolume;
         OngoingStatusComboBox.SelectedIndex = Array.IndexOf(ongoingStatuses, mangaList[passIndex].OngoingStatus);
         ContentRatingComboBox.SelectedIndex = Array.IndexOf(contentRatings, mangaList[passIndex].ContentRating);
         AddNewTagPanel();
@@ -275,7 +275,8 @@ public partial class EditMetadata : Window
             string[] subdirs = Directory.GetDirectories(path);
             foreach (string subdir in subdirs)
                 FindMeFiles(subdir);
-        } catch { }
+        }
+        catch { }
     }
 
     private void UpdateCoverButton_Clicked(object sender, RoutedEventArgs e)
@@ -398,11 +399,11 @@ public partial class EditMetadata : Window
         if (newTagTextBox.Text == string.Empty || newTagTextBox.Text == null)
             return;
         foreach (CheckBox tagCheckBox in tagCheckBoxes)
-                if (tagCheckBox.Content.ToString().ToLower() == newTagTextBox.Text.ToLower())
-                {
-                    await MessageBoxManager.GetMessageBoxStandard("Tag already exists", "This tag already exists!").ShowAsync();
-                    return;
-                }
+            if (tagCheckBox.Content.ToString().ToLower() == newTagTextBox.Text.ToLower())
+            {
+                await MessageBoxManager.GetMessageBoxStandard("Tag already exists", "This tag already exists!").ShowAsync();
+                return;
+            }
         CheckBox checkBox = new CheckBox()
         {
             Foreground = new SolidColorBrush(Colors.White),
@@ -473,10 +474,10 @@ public partial class EditMetadata : Window
         }
 
         mangaList[passIndex].Description = DescriptionTextBox.Text;
-        if (LastChapterNumeric.Value != null)
-            mangaList[passIndex].FileLastChapter = (decimal)LastChapterNumeric.Value;
-        if (LastVolumeNumeric.Value != null)
-            mangaList[passIndex].FileLastVolume = (decimal)LastVolumeNumeric.Value;
+        if (LastChapterNumeric.Text != null)
+            mangaList[passIndex].FileLastChapter = LastChapterNumeric.Text;
+        if (LastVolumeNumeric.Text != null)
+            mangaList[passIndex].FileLastVolume = LastVolumeNumeric.Text;
         if (OngoingStatusComboBox.SelectedIndex != -1)
         {
             mangaList[passIndex].OngoingStatus = ongoingStatuses[OngoingStatusComboBox.SelectedIndex];
