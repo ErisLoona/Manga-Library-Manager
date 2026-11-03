@@ -57,7 +57,7 @@ public partial class Downloader : Window
     private static Dictionary<string, string> apiErrorManga = new Dictionary<string, string>(); // Collects errors after bulk adds; Manga ID | Error "code"
     private static List<QueuedManga> mangaQueue = new List<QueuedManga>();
     private static List<TextBlock> mangaQueueStatuses = new List<TextBlock>();
-    private static bool downloadError = false, shiftHeld = false, loading = false; // loading stops the "animation" when set to false
+    private static bool downloadError = false, shiftHeld = false, enableDlButton = false, loading = false; // loading stops the "animation" when set to false
 
     public Downloader()
     {
@@ -503,7 +503,7 @@ public partial class Downloader : Window
         mangaQueue.Add(newManga);
         addedMangas.Add(mangaID); // This is to not add these to "Add from library"
         mangaQueueStatuses.Add(status);
-        DownloadButton.IsEnabled = true;
+        enableDlButton = true;
     }
 
     #region Downloading
@@ -557,7 +557,7 @@ public partial class Downloader : Window
                 Maximum = mangaQueue[QueueListBox.SelectedIndex].ProgressBars[i].Maximum,
                 Value = mangaQueue[QueueListBox.SelectedIndex].ProgressBars[i].Value,
                 IsVisible = (bool)checkBox.IsChecked,
-                Foreground = new SolidColorBrush(Color.FromRgb(248, 200, 220)),
+                Foreground = new SolidColorBrush(Color.FromRgb(77, 35, 207)),
                 Background = new SolidColorBrush(Colors.White),
                 Margin = new Avalonia.Thickness(3, 0)
             };
@@ -583,8 +583,6 @@ public partial class Downloader : Window
     private bool skip = false;
     private async void DownloadButton_Clicked(object sender, RoutedEventArgs args)
     {
-        if (loading == true)
-            return;
         if (downloading == true)
         {
             string result = await MessageBoxManager.GetMessageBoxCustom(new MessageBoxCustomParams
@@ -1596,6 +1594,7 @@ public partial class Downloader : Window
         QualityComboBox.IsEnabled = false;
         AddFromLinkButton.IsEnabled = false;
         AddFromLibraryButton.IsEnabled = false;
+        enableDlButton = DownloadButton.IsEnabled;
         DownloadButton.IsEnabled = false;
         QueueListBox.IsEnabled = false;
 
@@ -1626,6 +1625,11 @@ public partial class Downloader : Window
                 AddFromLinkButton.IsEnabled = true;
                 AddFromLibraryButton.IsEnabled = true;
                 QueueListBox.IsEnabled = true;
+                if (enableDlButton == true)
+                {
+                    enableDlButton = false;
+                    DownloadButton.IsEnabled = true;
+                }
             });
         });
     }
@@ -1659,6 +1663,7 @@ public partial class Downloader : Window
         mangaQueueStatuses.Clear();
         downloadError = false;
         shiftHeld = false;
+        enableDlButton = false;
         loading = false;
 
         base.OnClosing(e);

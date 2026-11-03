@@ -14,8 +14,8 @@ namespace MangaDex_Library
         public static event EventHandler ApiRequestFailed, DownloadError;
         private const string apiLink = "https://api.mangadex.org/manga/";
         private static HttpClient client = MDLParameters.client;
-        private static string oldIDManga = null, oldIDFeed = null, oldNameSearch = null;
-        private static JObject manga = null, search = null;
+        private static string oldIDManga = null, oldIDFeed = null;
+        private static JObject manga = null;
         private static List<JObject> feed = new List<JObject>();
 
         //Manga API Data
@@ -38,8 +38,6 @@ namespace MangaDex_Library
             oldIDManga = null;
             feed = null;
             oldIDFeed = null;
-            search = null;
-            oldNameSearch = null;
         }
 
         #region Manga API Data
@@ -53,7 +51,7 @@ namespace MangaDex_Library
             RateLimiter.ApiCall();
             try
             {
-                manga = JObject.Parse(client.GetStringAsync($"{apiLink}{MDLParameters.MangaID}?includes[]=cover_art&includes[]=author&includes[]=artist").Result);
+                manga = JObject.Parse(client.GetStringAsync($"{apiLink}{MDLParameters.MangaID}?includes%5B%5D=cover_art&includes%5B%5D=author&includes%5B%5D=artist").Result);
             }
             catch
             {
@@ -244,7 +242,7 @@ namespace MangaDex_Library
             RateLimiter.ApiCall();
             try
             {
-                pages.Add(JObject.Parse(client.GetStringAsync($"{apiLink}{MDLParameters.MangaID}/feed?translatedLanguage[]={MDLParameters.Language}&limit=100&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic&includes[]=scanlation_group&order[volume]=asc&order[chapter]=asc").Result));
+                pages.Add(JObject.Parse(client.GetStringAsync($"{apiLink}{MDLParameters.MangaID}/feed?translatedLanguage%5B%5D={MDLParameters.Language}&limit=100&contentRating%5B%5D=safe&contentRating%5B%5D=suggestive&contentRating%5B%5D=erotica&contentRating%5B%5D=pornographic&includes%5B%5D=scanlation_group&order%5Bvolume%5D=asc&order%5Bchapter%5D=asc").Result));
                 int nrPages = pages[0].SelectToken("total").Value<int>();
                 if (nrPages > 100)
                 {
@@ -253,7 +251,7 @@ namespace MangaDex_Library
                     while (passed <= passes)
                     {
                         RateLimiter.ApiCall();
-                        pages.Add(JObject.Parse(client.GetStringAsync($"{apiLink}{MDLParameters.MangaID}/feed?translatedLanguage[]={MDLParameters.Language}&limit=100&offset={passed * 100}&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic&includes[]=scanlation_group&order[volume]=asc&order[chapter]=asc").Result));
+                        pages.Add(JObject.Parse(client.GetStringAsync($"{apiLink}{MDLParameters.MangaID}/feed?translatedLanguage%5B%5D={MDLParameters.Language}&limit=100&offset={passed * 100}&contentRating%5B%5D=safe&contentRating%5B%5D=suggestive&contentRating%5B%5D=erotica&contentRating%5B%5D=pornographic&includes%5B%5D=scanlation_group&order%5Bvolume%5D=asc&order%5Bchapter%5D=asc").Result));
                         passed++;
                     }
                 }
@@ -477,34 +475,6 @@ namespace MangaDex_Library
         }
 
         #endregion
-
-        public static Dictionary<string, string> GetSearchResults(string mangaTitle)
-        {
-            if (MDLParameters.AgentSet == false)
-                throw new Exception("No User Agent set for the HttpClient.");
-            Dictionary<string, string> results = new Dictionary<string, string>();
-            if (mangaTitle != oldNameSearch)
-            {
-                if (MDLParameters.AgentSet == false)
-                    throw new Exception("No User Agent set for the HttpClient.");
-                mangaTitle = mangaTitle.ToLower();
-                mangaTitle = MDLParameters.titleSanitationRegex.Replace(mangaTitle, "");
-                RateLimiter.ApiCall();
-                try
-                {
-                    search = JObject.Parse(client.GetStringAsync($"{apiLink}?title={mangaTitle}&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic&order[relevance]=desc").Result);
-                }
-                catch
-                {
-                    ApiRequestFailed?.Invoke(null, EventArgs.Empty);
-                    return null;
-                }
-                oldNameSearch = mangaTitle;
-            }
-            foreach (JToken result in search.SelectToken("data"))
-                results[result.SelectToken("attributes.title.en").Value<string>()] = result.SelectToken("attributes.id").Value<string>();
-            return results;
-        }
 
         #region Downloads
 

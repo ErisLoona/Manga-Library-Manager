@@ -6,7 +6,6 @@ using System.Runtime.InteropServices;
 using MsBox.Avalonia.Enums;
 using MsBox.Avalonia;
 using System.Diagnostics;
-using Avalonia.Threading;
 using System.Linq;
 
 namespace Manga_Manager
@@ -113,6 +112,7 @@ namespace Manga_Manager
         internal static bool noWarning = false, checkUpdates = false, hideJsonFile = false;
         internal static int downloaderLastUsedFormat = 0;
         internal const int JSON_FORMAT_VERSION = 6;
+        internal readonly static int[] MLM_VERSION = [ 3, 2, 3 ]; // Turns out the previous implementation behaves weird on Linux https://github.com/dotnet/runtime/issues/123174 and / or https://github.com/dotnet/dotnet-api-docs/issues/11988
         #endregion
 
         internal static Dictionary<string, string> languageDictionary = new Dictionary<string, string>();

@@ -144,15 +144,12 @@ namespace Manga_Manager
                         manga["ID"] = manga.SelectToken("Link").Value<string>().Split('/')[4];
                     else
                         manga["ID"] = manga["Link"];
-                    
+
                     foundJsonFormat = 4;
                 }
             }
 
-            if (foundJsonFormat == 4)
-                foundJsonFormat = 5;
-
-            if (foundJsonFormat == 5)
+            if (foundJsonFormat == 4 || foundJsonFormat == 5)
                 foundJsonFormat = 6;
             #endregion
             hideJsonFile = saveJson.SelectToken("HideJsonFile").Value<bool>();
@@ -165,30 +162,56 @@ namespace Manga_Manager
                 {
                     using HttpClient client = new HttpClient();
                     client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-                    client.DefaultRequestHeaders.UserAgent.ParseAdd("Manga Library Manager by (github) ErisLoona");
+                    client.DefaultRequestHeaders.UserAgent.ParseAdd("Manga Library Manager by ErisLoona");
+                    HttpResponseMessage response;
                     try
                     {
-                        JObject githubResponse = JObject.Parse(client.GetStringAsync("https://api.github.com/repos/erisloona/manga-library-manager/releases/latest").Result);
-                        List<string> versionNumbers = githubResponse.SelectToken("tag_name").Value<string>().Substring(1).Split(".").ToList();
-                        string[] currentVersion = FileVersionInfo.GetVersionInfo(Environment.ProcessPath).FileVersion.Split(".");
+                        response = client.GetAsync("https://api.github.com/repos/erisloona/manga-library-manager/releases/latest").Result;
+                        response.EnsureSuccessStatusCode();
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            // TODO check from Codeberg
+                            response = client.GetAsync("https://codeberg.org/api/v1/repos/ErisLoona/TODOREPONAME/releases/latest").Result;
+                            response.EnsureSuccessStatusCode();
+                        }
+                        catch
+                        {
+                            return;
+                        }
+                    }
+
+                    try
+                    {
+                        JObject obtainedResponse = JObject.Parse(response.Content.ReadAsStringAsync().Result);
+                        List<string> versionNumbers = obtainedResponse.SelectToken("tag_name").Value<string>().Substring(1).Split(".").ToList();
+
                         bool update = false;
                         for (int i = 0; i < versionNumbers.Count; i++)
-                            if (Convert.ToInt32(versionNumbers[i]) > Convert.ToInt32(currentVersion[i]))
+                            if (Convert.ToInt32(versionNumbers[i]) > MLM_VERSION[i])
                             {
                                 update = true;
                                 break;
                             }
-                            else if (Convert.ToInt32(versionNumbers[i]) < Convert.ToInt32(currentVersion[i]))
+                            else if (Convert.ToInt32(versionNumbers[i]) < MLM_VERSION[i])
                                 break;
+
                         if (update == true)
                         {
+                            string link = obtainedResponse.SelectToken("html_url").Value<string>();
                             Dispatcher.UIThread.Post(async () =>
                             {
                                 if (await MessageBoxManager.GetMessageBoxStandard("Update available", "A new version is available!\nWould you like to go download it?", ButtonEnum.YesNo).ShowAsync() == ButtonResult.Yes)
-                                    OpenLink(githubResponse.SelectToken("html_url").Value<string>());
+                                    OpenLink(link);
                             });
                         }
-                    } catch { }
+                    }
+                    catch
+                    {
+                        return;
+                    }
                 });
             }
 
@@ -570,11 +593,11 @@ namespace Manga_Manager
                 Filter();
 
                 for (int i = 0; i < displayTitles.Count; i++)
-                if (displayTitles[i].Text == mangaList[tempIndex].Title)
-                {
-                    MainDisplayList.SelectedIndex = i;
-                    break;
-                }
+                    if (displayTitles[i].Text == mangaList[tempIndex].Title)
+                    {
+                        MainDisplayList.SelectedIndex = i;
+                        break;
+                    }
             }
 
             CheckOnlineButton.IsEnabled = true;
@@ -651,7 +674,7 @@ namespace Manga_Manager
 
             RebuildTags();
             Filter();
-            
+
             for (int i = 0; i < displayTitles.Count; i++)
                 if (displayTitles[i].Text == mangaList[passIndex].Title)
                 {
